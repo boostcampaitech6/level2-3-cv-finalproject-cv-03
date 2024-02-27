@@ -1,9 +1,9 @@
 name: black and ruff
 
 on:
-  pull_request: # main에 pull_request 요청이 왔을 때 workflow(jobs) 실행
+  pull_request:
     branches:
-      - 'main'
+      - 'release'
 
 jobs:
   Black_code_formatter:
