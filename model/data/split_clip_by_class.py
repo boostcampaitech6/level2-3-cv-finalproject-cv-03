@@ -28,7 +28,7 @@ def split_clip(anno_df, fname2idx, video_path, clip_path, video_name):
 def main(anno_csv_path, video_path, clip_path):
     anno_df = pd.read_csv(anno_csv_path)
     fname2idx = {}
-    for i in range(anno_df.__len__()):
+    for i in range(len(anno_df)):
         fname = anno_df.loc[i]["file_name"]
         if fname2idx.get(fname) is None:
             fname2idx[fname] = [i]
