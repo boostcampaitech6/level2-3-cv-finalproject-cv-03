@@ -44,7 +44,7 @@ def main(video_path, anno_csv_path, save_csv_path):
     # csv
     df = pd.DataFrame(
         {
-            "file_name": video,
+            "file_name": file_names,
             "start_sec": start_sec,
             "end_sec": end_sec,
             "start_frame": start_frame,
