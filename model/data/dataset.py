@@ -26,16 +26,15 @@ class TrainDataset(Dataset):
 
     def __getitem__(self, item):
         frames = []
+        cur_idx = 0
 
         video_path = self.video_paths[item]
         video = cv2.VideoCapture(video_path)
         video_frame_num = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-        interval = max(round(int(video_frame_num / self.frame_num)), 1)
+        interval = max(int(round(video_frame_num / self.frame_num)), 1)
 
-        for frame_idx in range(
-            0, min(video_frame_num, self.frame_num * interval), interval
-        ):
-            video.set(cv2.CAP_PROP_POS_FRAMES, frame_idx)
+        for _ in range(self.frame_num):
+            video.set(cv2.CAP_PROP_POS_FRAMES, cur_idx)
             success, frame = video.read()
 
             if not success:
@@ -46,11 +45,9 @@ class TrainDataset(Dataset):
             normalized_frame = normalized_frame.astype(np.float32)
             frames.append(normalized_frame)
 
-        video.release()
+            cur_idx = min(cur_idx + interval, video_frame_num)
 
-        while len(frames) < self.frame_num:
-            if video_frame_num < self.frame_num:
-                frames.append(frames[-1])
+        video.release()
 
         frames = np.array(frames)
         frames = np.transpose(frames, (0, 3, 1, 2))
