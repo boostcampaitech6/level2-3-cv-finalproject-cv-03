@@ -63,6 +63,7 @@ def make_normal_clip(anno_path, video_path, clip_path, metadata, interval):
             cur = start
             while cur + interval <= end:
                 clip_sec.append((cur, cur + interval))
+                cur = cur + interval
 
         video = VideoFileClip(os.path.join(video_path, video_name))
         for start, end in clip_sec:
