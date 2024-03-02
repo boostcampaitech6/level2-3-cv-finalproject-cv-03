@@ -46,7 +46,7 @@ class TrainDataset(Dataset):
             else:
                 frames.append(normalized_frame)
 
-            cur_idx = min(cur_idx + interval, video_frame_num)
+            cur_idx = min(cur_idx + interval, video_frame_num - 1)
 
         video.release()
 
