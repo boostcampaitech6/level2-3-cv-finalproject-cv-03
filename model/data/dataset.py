@@ -43,7 +43,12 @@ class TrainDataset(Dataset):
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             normalized_frame = frame / 255.0
             normalized_frame = normalized_frame.astype(np.float32)
-            frames.append(normalized_frame)
+
+            if self.transforms is not None:
+                transformed_frame = self.transform(normalized_frame)
+                frames.append(transformed_frame)
+            else:
+                frames.append(normalized_frame)
 
             cur_idx = min(cur_idx + interval, video_frame_num)
 
@@ -55,10 +60,3 @@ class TrainDataset(Dataset):
         labels = [self.video_labels[item] for _ in range(self.frame_num)]
 
         return frames, labels
-
-
-frame_num = 64
-video_dir_path = "../dataset/videos"
-anno_csv_path = "../dataset/metadata.csv"
-
-dataset = TrainDataset(frame_num, video_dir_path, anno_csv_path)
