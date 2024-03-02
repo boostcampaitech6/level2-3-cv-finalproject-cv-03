@@ -1,24 +1,19 @@
 import os
 import cv2
 import numpy as np
-import pandas as pd
 import torch
 from torch.utils.data import Dataset
 
 
 class TrainDataset(Dataset):
-    def __init__(
-        self, frame_num, video_dir_path, anno_csv_path, transforms=None
-    ):
-        csv_data = pd.read_csv(anno_csv_path)
-
+    def __init__(self, frame_num, video_dir_path, transforms=None):
         self.video_paths = [
             os.path.join(video_dir_path, fname)
-            for fname in csv_data["clip_fname"]
+            for fname in os.listdir(video_dir_path)
         ]
         self.video_labels = [
             0 if fname.split("_")[0] == "Normal" else 1
-            for fname in csv_data["clip_fname"]
+            for fname in os.listdir(video_dir_path)
         ]
         self.frame_num = frame_num
         self.transforms = transforms
@@ -46,7 +41,7 @@ class TrainDataset(Dataset):
             normalized_frame = (frame / 255.0).astype(np.float32)
 
             if self.transforms is not None:
-                transformed_frame = self.transform(normalized_frame)
+                transformed_frame = self.transforms(normalized_frame)
                 frames.append(transformed_frame)
             else:
                 frames.append(normalized_frame)
