@@ -2,6 +2,7 @@ import os
 import cv2
 import numpy as np
 import pandas as pd
+import torch
 from torch.utils.data import Dataset
 
 
@@ -16,7 +17,8 @@ class TrainDataset(Dataset):
             for fname in csv_data["clip_fname"]
         ]
         self.video_labels = [
-            fname.split("_")[0] for fname in csv_data["clip_fname"]
+            0 if fname.split("_")[0] == "Normal" else 1
+            for fname in csv_data["clip_fname"]
         ]
         self.frame_num = frame_num
         self.transforms = transforms
@@ -41,8 +43,7 @@ class TrainDataset(Dataset):
                 break
 
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            normalized_frame = frame / 255.0
-            normalized_frame = normalized_frame.astype(np.float32)
+            normalized_frame = (frame / 255.0).astype(np.float32)
 
             if self.transforms is not None:
                 transformed_frame = self.transform(normalized_frame)
@@ -55,8 +56,9 @@ class TrainDataset(Dataset):
         video.release()
 
         frames = np.array(frames)
-        frames = np.transpose(frames, (0, 3, 1, 2))
+        frames = torch.from_numpy(np.transpose(frames, (0, 3, 1, 2)))
 
         labels = [self.video_labels[item] for _ in range(self.frame_num)]
+        labels = torch.tensor(labels, dtype=torch.long)
 
         return frames, labels
