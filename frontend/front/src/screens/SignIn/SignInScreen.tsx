@@ -103,7 +103,7 @@ export default function SignInScreen(props: SignInScreenProps) {
 
   return (
     <View style={styles.container}>
-      <Image source={Logo} style={{ width: 150, height: 150 }} />
+      <Image source={Logo} style={{ width: 150, height: 150, resizeMode: 'contain' }} />
       <Text style={styles.header}>가 디 언 </Text>
       <Text style={styles.header2}>아 이 즈</Text>
       <TextInput

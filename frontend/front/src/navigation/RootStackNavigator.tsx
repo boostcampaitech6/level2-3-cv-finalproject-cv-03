@@ -40,7 +40,7 @@ export default function RootStackNavigator() {
         headerLeft: () => (
           <Image
             source={require('../../assets/Logo.png')}
-            style={{ width: 50, height: 50 }}
+            style={{ width: 50, height: 50, resizeMode: 'contain' }}
           />)}}>
     <Stack.Screen name="SignIn" component={SignInScreen} />
     <Stack.Screen name="SignUp" component={SignUpScreen} />
