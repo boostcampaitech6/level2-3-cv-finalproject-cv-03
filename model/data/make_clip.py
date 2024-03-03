@@ -87,6 +87,11 @@ def main(anno_path, video_path, clip_path, meta_path):
     shoplifting_clip_path = os.path.join(clip_path, "shoplifting")
     normal_clip_path = os.path.join(clip_path, "normal")
 
+    if not os.path.exists(shoplifting_clip_path):
+        os.makedirs(shoplifting_clip_path)
+    if not os.path.exists(normal_clip_path):
+        os.makedirs(normal_clip_path)
+
     clip_num, median_sec = make_shoplifting_clip(
         anno_path, video_path, shoplifting_clip_path, metadata
     )
@@ -103,10 +108,10 @@ def main(anno_path, video_path, clip_path, meta_path):
 
 
 if __name__ == "__main__":
-    anno_path = "../dataset/anno_frame.csv"
-    video_path = "../dataset/videos"
-    clip_path = "../dataset/clips"
-    meta_path = "../dataset/metadata.csv"
+    anno_path = "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/annotation.csv"
+    video_path = "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/videos"
+    clip_path = "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/clips"
+    meta_path = "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/metadata.csv"
 
     if not os.path.exists(clip_path):
         os.makedirs(clip_path)
