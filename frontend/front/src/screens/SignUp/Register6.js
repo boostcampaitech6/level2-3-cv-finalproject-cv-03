@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     fontFamily: 'SG',
   },
   text2: {
-    fontFamily: 'SG',
+    fontFamily: 'NGB',
     fontSize: 14,
   },
 });

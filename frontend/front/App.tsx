@@ -22,7 +22,7 @@ const theme = createTheme({
     },
     Text: {
       style: {
-        fontFamily: 'SG',
+        fontFamily: 'NGB',
       },
     },
     }
@@ -32,7 +32,8 @@ const theme = createTheme({
 
 export default function App() {
   let [fontsLoaded] = useFonts({
-    'SG': require('./assets/fonts/SEBANG Gothic.ttf'), 
+    'SG': require('./assets/fonts/SEBANG Gothic.ttf'),
+    'NGB': require('./assets/fonts/NanumGothicBold.otf'), 
   });
 
   if (!fontsLoaded) {
