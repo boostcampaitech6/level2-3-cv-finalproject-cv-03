@@ -10,6 +10,16 @@ import Tab3Screen from '../screens/Tab3/Tab3Screen';
 import LogDetailScreen from "../screens/Tab1/LogDetailScreen";
 import { useNavigation } from '@react-navigation/native';
 
+import Onboarding from '../screens/Onboarding/Onboarding';
+import Register from '../screens/SignUp/Register';
+import Register2 from '../screens/SignUp/Register2';
+import Register3 from '../screens/SignUp/Register3';
+import Register4 from '../screens/SignUp/Register4';
+import Register5 from '../screens/SignUp/Register5';
+import Register6 from '../screens/SignUp/Register6';
+
+import Login from '../screens/SignIn/Login';
+
 export type RootStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
@@ -17,6 +27,14 @@ export type RootStackParamList = {
   Tab1Screen: undefined;
   Tab2Screen: undefined;
   Tab3Screen: undefined;
+  Onboarding: undefined;
+  Register: undefined;
+  Register2: undefined;
+  Register3: undefined;
+  Register4: undefined;
+  Register5: undefined;
+  Register6: undefined;
+  Login: undefined;
   LogDetailScreen: {   
     log_id: number;
     anomaly_create_time: string;
@@ -33,22 +51,40 @@ export default function RootStackNavigator() {
   const navigation = useNavigation();
 
   return (
-    <Stack.Navigator initialRouteName="SignIn" 
+    <Stack.Navigator initialRouteName="Onboarding" 
       screenOptions = {{ 
-        headerShown: true,
-        headerTitle: '가디언아이즈',
+        headerShown: false,
+        headerTitle: '와치덕',
         headerLeft: () => (
           <Image
             source={require('../../assets/Logo.png')}
             style={{ width: 50, height: 50, resizeMode: 'contain' }}
           />)}}>
-    <Stack.Screen name="SignIn" component={SignInScreen} />
-    <Stack.Screen name="SignUp" component={SignUpScreen} />
-    <Stack.Screen name="Home" component={BottomTabNavigator}/>
-    <Stack.Screen name="Tab1Screen" component={Tab1Screen} />
-    <Stack.Screen name="Tab2Screen" component={Tab2Screen} />
-    <Stack.Screen name="Tab3Screen" component={Tab3Screen} />
-    <Stack.Screen name="LogDetailScreen" component={LogDetailScreen} />
+      <Stack.Screen name="Onboarding" component={Onboarding} />
+      <Stack.Screen name="Register" component={Register} />
+      <Stack.Screen name="Register2" component={Register2} />
+      <Stack.Screen name="Register3" component={Register3} />
+      <Stack.Screen name="Register4" component={Register4} />
+      <Stack.Screen name="Register5" component={Register5} />
+      <Stack.Screen name="Register6" component={Register6} />
+      <Stack.Screen name="Login" component={Login} />
+
+      <Stack.Screen name="SignIn" component={SignInScreen} />
+      <Stack.Screen name="SignUp" component={SignUpScreen} />
+      <Stack.Screen name="Home" component={BottomTabNavigator}
+        options={{ 
+          headerLeft: () => (
+            // <TouchableOpacity onPress={() => navigation.navigate('SignInScreen')}>
+              <Image source={require('../../assets/Logo.png')} style={{ width: 50, height: 50 }} />
+            // </TouchableOpacity>
+          ), 
+          headerShown: true,
+          headerTitle: '와치덕',
+        }}/>
+      <Stack.Screen name="Tab1Screen" component={Tab1Screen} />
+      <Stack.Screen name="Tab2Screen" component={Tab2Screen} />
+      <Stack.Screen name="Tab3Screen" component={Tab3Screen} />
+      <Stack.Screen name="LogDetailScreen" component={LogDetailScreen} />
     </Stack.Navigator>
   );
 }
