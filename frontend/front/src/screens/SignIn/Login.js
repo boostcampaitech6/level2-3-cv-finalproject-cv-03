@@ -74,7 +74,7 @@ class Login extends React.Component {
                     behavior="padding"
                     enabled
                   >
-                    <Block width={width * 0.8} style={{ marginBottom: 15 }}>
+                    <Block width={width * 0.8} style={{ marginBottom: 0 }}>
                       <Input
                         borderless
                         placeholder="Email"
@@ -105,19 +105,17 @@ class Login extends React.Component {
                     </Block>
 
                     <Block middle>
-                    <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                      <Text bold size={14} color={argonTheme.COLORS.PLACEHOLDER} style={styles.subTitle}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Register')} >
+                      <Text bold size={14} style={{ fontSize: 13, color: argonTheme.COLORS.PLACEHOLDER, fontFamily: 'NGB', marginTop: 20}}>
                         회원가입
                       </Text>
                     </TouchableOpacity>
 
-                      <Text bold size={14} color={argonTheme.COLORS.PLACEHOLDER} style={styles.subTitle}>
+                      <Text bold size={14} style={{ fontSize: 13, color: argonTheme.COLORS.PLACEHOLDER, fontFamily: 'NGB', marginTop: 20}}>
                         이메일/비밀번호 찾기
                       </Text>
-                      <Button color="primary" style={styles.createButton} onPress={() => navigation.navigate('Home')}>
-                        <Text bold size={14} color={argonTheme.COLORS.WHITE} style={styles.text}>
-                          확인
-                        </Text>
+                      <Button color="primary" style={styles.createButton} textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}} onPress={() => navigation.navigate('Home')}>
+                        확인
                       </Button>
                     </Block>
                   </KeyboardAvoidingView>
@@ -187,7 +185,7 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   text: {
-    fontFamily: 'SG',
+    fontFamily: 'NGB',
   },
   
 });

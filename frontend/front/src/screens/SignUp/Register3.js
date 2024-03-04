@@ -102,7 +102,7 @@ const Register2 = (props) => {
                   회원가입
                 </Text>
               </Block>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+              <View paddingLeft={30} style={{ flexDirection: 'row'}}>
                 <Text color={argonTheme.COLORS.MUTED} size={12} paddingBottom={20} style={styles.text}>
                   1. 약관 동의{" "} > {""}
                 </Text>
@@ -140,10 +140,9 @@ const Register2 = (props) => {
                         onPress={handleSendAuth}
                         color="button_color2"
                         style={{...styles.createButton, width: '25%', marginTop:6, marginRight:0}}
+                        textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
                       >
-                        <Text bold size={14} color={argonTheme.COLORS.WHITE} style={styles.text}>
-                          전송
-                        </Text>
+                        전송
                       </Button>
                     </View>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -165,10 +164,9 @@ const Register2 = (props) => {
                         onPress={handleAuth}
                         color="button_color2"
                         style={{...styles.createButton, width: '25%', marginTop:6, marginRight:0 }}
+                        textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
                       >
-                        <Text bold size={14} color={argonTheme.COLORS.WHITE} style={styles.text}>
-                          제출
-                        </Text>
+                        제출
                       </Button>
                     </View>
                   
@@ -179,10 +177,9 @@ const Register2 = (props) => {
                       color={auth ? "primary" : "muted" } 
                       style={styles.createButton}
                       disabled={!auth} // Button is disabled if either isChecked2 or isChecked3 is not checked
+                      textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
                     >
-                      <Text bold size={14} color={argonTheme.COLORS.WHITE} style={styles.text}>
-                        다음
-                      </Text>
+                      다음
                     </Button>
                   </Block>
                 </KeyboardAvoidingView>
@@ -252,12 +249,12 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   text: {
-    fontFamily: 'SG',
-    fontSize: 12,
+    fontFamily: 'NGB',
+    fontSize: 10,
   },
-  text2: {
-    fontFamily: 'SG',
-    fontSize: 14,
+  text3: {
+    fontFamily: 'NGB',
+    fontSize: 12,
   },
 });
 

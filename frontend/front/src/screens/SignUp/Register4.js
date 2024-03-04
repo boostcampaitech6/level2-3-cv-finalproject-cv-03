@@ -47,7 +47,7 @@ const Register4 = (props) => {
                   회원가입
                 </Text>
               </Block>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+              <View  paddingLeft={30} style={{ flexDirection: 'row' }}>
                 <Text color={argonTheme.COLORS.MUTED} size={12} paddingBottom={20} style={styles.text}>
                   1. 약관 동의{" "} > 2. 이메일 인증{" "}>{" "}
                 </Text>
@@ -133,10 +133,9 @@ const Register4 = (props) => {
                       color={(fail || fail2) ? "muted" : "primary"} 
                       style={styles.createButton}
                       disabled={fail || fail2} // Button is disabled if either isChecked2 or isChecked3 is not checked
+                      textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
                     >
-                      <Text bold size={14} color={argonTheme.COLORS.WHITE} style={styles.text}>
-                        다음
-                      </Text>
+                      다음
                     </Button>
                   </Block>
                 </KeyboardAvoidingView>
@@ -206,10 +205,11 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   text: {
-    fontFamily: 'SG',
+    fontFamily: 'NGB',
+    fontSize: 10,
   },
   text2: {
-    fontFamily: 'SG',
+    fontFamily: 'NGB',
     fontSize: 14,
   },
 });

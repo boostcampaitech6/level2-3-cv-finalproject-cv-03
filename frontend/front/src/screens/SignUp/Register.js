@@ -53,11 +53,11 @@ const Register = (props) => {
                   회원가입
                 </Text>
               </Block>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                <Text color="black" size={12} paddingBottom={20} style={styles.text}>
+              <View paddingLeft={30} style={{ flexDirection: 'row'}}>
+                <Text color="black" size={10} paddingBottom={20} style={styles.text}>
                   1. 약관 동의{" "}
                 </Text>
-                <Text color={argonTheme.COLORS.MUTED} size={12} paddingBottom={20} style={styles.text}>
+                <Text color={argonTheme.COLORS.MUTED} size={10} paddingBottom={20} style={styles.text}>
                   > 2. 이메일 인증 > 3. 비밀번호 입력 > 4. URL 등록
                 </Text>
               </View>
@@ -95,11 +95,11 @@ const Register = (props) => {
                         onChange={handleCheckbox2Change}
                         isChecked={isChecked2}
                       />
-                      <Text bold size={13} color="black" style={styles.text}>
+                      <Text bold size={12} color="black" style={styles.text}>
                         {"  "}이용약관에 동의합니다. (필수)
                       </Text>
                     </View>
-                    <Text bold size={13} color="black" style={styles.text}>
+                    <Text bold size={12} color="black" style={styles.text2}>
                       보기
                     </Text>
                   </Block>
@@ -114,11 +114,11 @@ const Register = (props) => {
                         onChange={handleCheckbox3Change}
                         isChecked={isChecked3}
                       />
-                      <Text bold size={13} color="black" style={styles.text}>
+                      <Text bold size={12} color="black" style={styles.text}>
                         {"  "}개인정보 수집 및 이용에 동의합니다. (필수)
                       </Text>
                     </View>
-                      <Text bold size={13} color="black" style={styles.text}>
+                      <Text bold size={12} color="black" style={styles.text2}>
                         보기
                       </Text>
                   </Block>
@@ -128,10 +128,9 @@ const Register = (props) => {
                       color={(!isChecked2 || !isChecked3) ? "muted" : "primary"} 
                       style={styles.createButton}
                       disabled={!isChecked2 || !isChecked3} // Button is disabled if either isChecked2 or isChecked3 is not checked
+                      textStyle={{ fontSize: 14, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
                     >
-                      <Text bold size={14} color={argonTheme.COLORS.WHITE} style={styles.text}>
-                        다음
-                      </Text>
+                      다음
                     </Button>
                   </Block>
                 </KeyboardAvoidingView>
@@ -200,7 +199,11 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   text: {
-    fontFamily: 'SG',
+    fontFamily: 'NGB',
+  },
+  text2: {
+    fontFamily: 'NGB',
+    marginTop: 3,
   },
 });
 
