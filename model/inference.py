@@ -44,10 +44,10 @@ def capture_frames(video_source, frame_height=224, frame_width=224):
     video.release()
 
 
-def inference(frame_per_sec=10):
+def inference(frame_per_sec=10, total_sec=3):
     global stop_flag
 
-    frame_per_inference = frame_per_sec * 3
+    frame_per_inference = frame_per_sec * total_sec
 
     model = MobileNetGRU()
     model = model.to(device)
