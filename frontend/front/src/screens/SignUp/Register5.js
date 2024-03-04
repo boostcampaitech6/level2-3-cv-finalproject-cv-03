@@ -40,11 +40,11 @@ const Register5 = (props) => {
                   회원가입
                 </Text>
               </Block>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                <Text color={argonTheme.COLORS.MUTED} size={12} paddingBottom={20} style={styles.text}>
+              <View paddingLeft={30} style={{ flexDirection: 'row' }}>
+                <Text color={argonTheme.COLORS.MUTED} size={10} paddingBottom={20} style={styles.text}>
                   1. 약관 동의{" "} > 2. 이메일 인증{" "}>{" "}3. 비밀번호 입력{" "}>{" "}
                 </Text>
-                <Text color="black" size={12} paddingBottom={20} style={styles.text} >
+                <Text color="black" size={10} paddingBottom={20} style={styles.text} >
                   4. URL 등록
                 </Text>
               </View>
@@ -109,10 +109,9 @@ const Register5 = (props) => {
                       color={(fail) ? "muted" : "primary"} 
                       style={styles.createButton}
                       disabled={fail} // Button is disabled if either isChecked2 or isChecked3 is not checked
+                      textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
                     >
-                      <Text bold size={14} color={argonTheme.COLORS.WHITE} style={styles.text}>
-                        제출
-                      </Text>
+                      제출
                     </Button>
                   </Block>
                 </KeyboardAvoidingView>
@@ -182,11 +181,11 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   text: {
-    fontFamily: 'SG',
+    fontFamily: 'NGB',
   },
   text2: {
-    fontFamily: 'SG',
-    fontSize: 14,
+    fontFamily: 'NGB',
+    fontSize: 13,
   },
 });
 

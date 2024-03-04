@@ -100,14 +100,14 @@ const Register2 = (props) => {
                   회원가입
                 </Text>
               </Block>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                <Text color={argonTheme.COLORS.MUTED} size={12} paddingBottom={20} style={styles.text}>
+              <View paddingLeft={30} style={{ flexDirection: 'row'}}>
+                <Text color={argonTheme.COLORS.MUTED} size={12} paddingBottom={10} style={styles.text}>
                   1. 약관 동의{" "} > {""}
                 </Text>
-                <Text color="black" size={12} paddingBottom={20} style={styles.text}>
+                <Text color="black" size={10} paddingBottom={10} style={styles.text}>
                   2. 이메일 인증{" "}
                 </Text>
-                <Text color={argonTheme.COLORS.MUTED} size={12} paddingBottom={20} style={styles.text}>
+                <Text color={argonTheme.COLORS.MUTED} size={10} paddingBottom={10} style={styles.text}>
                   > 3. 비밀번호 입력 > 4. URL 등록
                 </Text>
               </View>
@@ -117,7 +117,7 @@ const Register2 = (props) => {
                   behavior="padding"
                   enabled
                 >
-                  <Text color="black" size={14} paddingBottom={20} style={styles.text2} marginStart={0}>
+                  <Text color="black" paddingBottom={20} style={styles.text} marginStart={10}>
                     이메일은 추후 변경이 불가능합니다.
                   </Text>
                   
@@ -141,10 +141,9 @@ const Register2 = (props) => {
                         onPress={handleDup}
                         color="button_color2"
                         style={{...styles.createButton, width: '25%', marginTop:6, marginRight:0}}
+                        textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
                       >
-                        <Text bold size={14} color={argonTheme.COLORS.WHITE} style={styles.text}>
-                          중복 확인
-                        </Text>
+                        중복 확인
                       </Button>
                     </View>
                     {dup && (
@@ -161,10 +160,9 @@ const Register2 = (props) => {
                       color={!(dup || dup2) ? "primary" : "muted" } 
                       style={styles.createButton}
                       disabled={dup || dup2} // Button is disabled if either isChecked2 or isChecked3 is not checked
+                      textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
                     >
-                      <Text bold size={14} color={argonTheme.COLORS.WHITE} style={styles.text}>
-                        다음
-                      </Text>
+                      다음
                     </Button>
                   </Block>
                 </KeyboardAvoidingView>
@@ -234,12 +232,16 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   text: {
-    fontFamily: 'SG',
-    fontSize: 12,
+    fontFamily: 'NGB',
+    fontSize: 10,
   },
   text2: {
-    fontFamily: 'SG',
-    fontSize: 14,
+    fontFamily: 'NGB',
+    fontSize: 13,
+  },
+  text3: {
+    fontFamily: 'NGB',
+    fontSize: 12,
   },
 });
 
