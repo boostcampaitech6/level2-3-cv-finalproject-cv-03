@@ -29,10 +29,16 @@ const theme = createTheme({
   },
 );
 
+
 export default function App() {
   let [fontsLoaded] = useFonts({
     'SG': require('./assets/fonts/SEBANG Gothic.ttf'), 
   });
+
+  if (!fontsLoaded) {
+    return <Text>Font Not Available</Text>;
+  }
+
   return(
     <UserProvider>
       <ThemeProvider theme={theme}>
@@ -42,10 +48,4 @@ export default function App() {
       </ThemeProvider>
     </UserProvider>
   );
-
-  if (!fontsLoaded) {
-    return <Text>Font Not Available</Text>;
-  }
-
-  return <Text style={{ fontFamily: 'SG' }}>Hello, world!</Text>; 
 }
