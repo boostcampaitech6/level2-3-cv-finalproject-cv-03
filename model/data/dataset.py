@@ -41,7 +41,9 @@ class TrainDataset(Dataset):
             normalized_frame = (frame / 255.0).astype(np.float32)
 
             if self.transforms is not None:
-                transformed_frame = self.transforms(normalized_frame)
+                transformed_frame = self.transforms(image=normalized_frame)[
+                    "image"
+                ]
                 frames.append(transformed_frame)
             else:
                 frames.append(normalized_frame)
@@ -57,3 +59,64 @@ class TrainDataset(Dataset):
         labels = torch.tensor(labels, dtype=torch.long)
 
         return frames, labels
+
+
+class FrameTrainDataset(Dataset):
+    def __init__(self, frame_dir_path, transforms=None):
+        self.frame_paths = [
+            os.path.join(frame_dir_path, fname)
+            for fname in os.listdir(frame_dir_path)
+        ]
+        self.frame_labels = [
+            0 if fname.split("_")[0] == "Normal" else 1
+            for fname in os.listdir(frame_dir_path)
+        ]
+        self.transforms = transforms
+
+    def __len__(self):
+        return len(self.frame_paths)
+
+    def __getitem__(self, item):
+        frames = np.load(self.frame_paths[item])
+        frames = (frames / 255.0).astype(np.float32)
+
+        if self.transforms is not None:
+            frames = self.transforms(image=frames)["image"]
+
+        frames = torch.from_numpy(frames)
+
+        labels = [self.frame_labels[item] for _ in range(frames.shape[0])]
+        labels = torch.tensor(labels, dtype=torch.long)
+
+        return frames, labels
+
+
+class ClipTrainDataset(Dataset):
+    def __init__(self, frame_dir_path, transforms=None):
+        self.frame_paths = [
+            os.path.join(frame_dir_path, fname)
+            for fname in os.listdir(frame_dir_path)
+        ]
+        self.transforms = transforms
+
+    def __len__(self):
+        return len(self.frame_paths)
+
+    def __getitem__(self, item):
+        frames = np.load(self.frame_paths[item])
+        frames = (frames / 255.0).astype(np.float32)
+
+        if self.transforms is not None:
+            frames = self.transforms(image=frames)["image"]
+
+        frames = torch.from_numpy(frames)
+
+        label = (
+            0
+            if os.path.basename(self.frame_paths[item]).split("_")[0]
+            == "Normal"
+            else 1
+        )
+        label = torch.tensor(label, dtype=torch.long)
+
+        return frames, label
