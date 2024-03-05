@@ -16,7 +16,10 @@ import { View } from 'react-native';
 const { width, height } = Dimensions.get("screen");
 
 const Register5 = (props) => {
-  const { navigation } = props;
+  const { navigation, route } = props;
+  const { email } = route.params;
+  const { password } = route.params;
+  // console.log(email, password)
   const [fail, setFail] = useState(true);
   const [url, setUrl] = useState("");
 
@@ -60,6 +63,7 @@ const Register5 = (props) => {
                       borderless
                       placeholder="CCTV URL"
                       onChangeText={(text) => {setUrl(text)}}
+                      value={url}
                       iconContent={
                         <Icon
                           size={16}
@@ -105,7 +109,7 @@ const Register5 = (props) => {
                   </Block> */}
                   <Block middle marginTop={40}>
                     <Button 
-                      onPress={() => navigation.navigate('Register6')}
+                      onPress={() => navigation.navigate('Register6', { email: email, password: password, cctv_url: url })}
                       color={(fail) ? "muted" : "primary"} 
                       style={styles.createButton}
                       disabled={fail} // Button is disabled if either isChecked2 or isChecked3 is not checked

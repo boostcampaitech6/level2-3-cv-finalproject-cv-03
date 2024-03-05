@@ -37,7 +37,7 @@ export default function App() {
   });
 
   if (!fontsLoaded) {
-    return <Text>Font Not Available</Text>;
+    return <Text style={{fontSize:20}}>Loading...</Text>;
   }
 
   return(

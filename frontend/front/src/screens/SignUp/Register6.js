@@ -16,9 +16,42 @@ import { View } from 'react-native';
 const { width, height } = Dimensions.get("screen");
 
 const Register6 = (props) => {
-  const { navigation } = props;
+  const { navigation, route } = props;
+  const { email } = route.params;
+  const { password } = route.params;
+  const { cctv_url } = route.params;
   const [name, setName] = useState("");
+  const [fail, setFail] = useState(false);
 
+  const handleRegister = async () => {
+    console.log(email, password, name, cctv_url)
+    try {
+      const response = await fetch(`http://10.28.224.142:30016/api/v0/members/register?email=${encodeURIComponent(email)}&password=${password}&member_name=${""}d&store_name=${name}&cctv_url=${cctv_url}`, {
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+        },
+        // body: JSON.stringify({ email }),
+      });
+      // console.log(email)
+      const data = await response.json();
+      console.log(data);
+      if (data.isSuccess) {
+        setFail(false)
+        navigation.navigate("Login");
+      }
+      else {
+        setFail(true)
+    }
+    } catch (error) {
+      console.error('Network error:', error);
+    }
+  };
+
+  // const handleRegisterSkip = async () => {
+  //   setName="기본값";
+  //   navigation.navigate("Login");
+  // }
 
   return (
     <Block flex middle>
@@ -51,6 +84,7 @@ const Register6 = (props) => {
                       borderless
                       placeholder="매장 이름"
                       onChangeText={(text) => {setName(text)}}
+                      value={name}
                       iconContent={
                         <Icon
                           size={16}
@@ -94,23 +128,27 @@ const Register6 = (props) => {
                   </Block> */}
                   <Block middle marginTop={40}>
                     <Button 
-                      onPress={() => navigation.navigate('Login')}
+                      // onPress={() => navigation.navigate('Login')}
+                      onPress={handleRegister}
                       color={"primary"} 
                       style={styles.createButton}
+                      textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
                     >
-                      <Text bold size={14} color={argonTheme.COLORS.WHITE} style={styles.text}>
-                        제출
-                      </Text>
+                      제출
                     </Button>
                     <Button 
-                      onPress={() => navigation.navigate('Login')}
+                      // onPress={() => navigation.navigate('Login')}
+                      onPress={handleRegister}
                       color={"primary"} 
                       style={{...styles.createButton, marginTop:7}}
+                      textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
                     >
-                      <Text bold size={14} color={argonTheme.COLORS.WHITE} style={styles.text}>
-                        건너뛰기
-                      </Text>
+                      건너뛰기
                     </Button>
+
+                    {fail && (
+                      <Text style={styles.failText}>회원가입에 실패했습니다.</Text>
+                    )}
                   </Block>
                 </KeyboardAvoidingView>
               </Block>
