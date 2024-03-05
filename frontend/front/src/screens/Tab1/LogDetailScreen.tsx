@@ -85,6 +85,9 @@ export default function CCTVDetailScreen({ route, navigation }: LogDetailScreenP
           <TouchableOpacity style={styles.feedback_button}>
             <Text style={styles.buttonText}>피드백 남기기</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.download_button}>
+            <Text style={styles.buttonText}>영상 다운로드</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.delete_button}>
             <Text style={styles.buttonText}>기록 삭제하기</Text>
           </TouchableOpacity>
@@ -92,15 +95,10 @@ export default function CCTVDetailScreen({ route, navigation }: LogDetailScreenP
       </View>
       <View style={styles.footer}>
         <TouchableOpacity 
-          style={styles.button}
+          style={styles.back_button}
           onPress={() => {navigation.goBack();
         }}>
           <Text style={styles.buttonText}>이전</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>저장</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.not_button}>
         </TouchableOpacity>
       </View>
     </View>
@@ -139,7 +137,7 @@ export default function CCTVDetailScreen({ route, navigation }: LogDetailScreenP
     },
     footer: {
       flexDirection: 'row',
-      justifyContent: 'space-around',
+      justifyContent: 'flex-start',
       paddingVertical: 20,
       backgroundColor: '#fff',
       bottom: 0,
@@ -156,6 +154,13 @@ export default function CCTVDetailScreen({ route, navigation }: LogDetailScreenP
       flex: 1,
       marginHorizontal: 10,
     },
+    download_button: {
+      padding: 10,
+      backgroundColor: argonTheme.COLORS.GRADIENT_START,
+      borderRadius: 5,
+      flex: 1,
+      marginHorizontal: 10,
+    },  
     delete_button: {
       padding: 10,
       backgroundColor: argonTheme.COLORS.LABEL,
@@ -163,18 +168,19 @@ export default function CCTVDetailScreen({ route, navigation }: LogDetailScreenP
       flex: 1,
       marginHorizontal: 10,
     },    
-    button: {
+    back_button: {
       padding: 10,
-      backgroundColor: '#007bff',
+      backgroundColor: argonTheme.COLORS.ACTIVE,
       borderRadius: 5,
-    },
-    not_button: {
-      padding: 10,
-      borderRadius: 5,
+      width: 120,
+      height: 40,
+      marginHorizontal: 20,
     },
     buttonText: {
       color: '#fff',
       fontSize: 16,
+      alignContent: 'center',
+      textAlign: 'center',
       fontFamily: 'NGB',
     },
   });
