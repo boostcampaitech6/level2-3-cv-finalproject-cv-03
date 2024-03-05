@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   ImageBackground,
@@ -19,39 +19,43 @@ const Register2 = (props) => {
   const { navigation } = props;
   const [isChecked2, setIsChecked2] = useState(false);
   const [isChecked3, setIsChecked3] = useState(false);
+  const [email, setEmail] = useState("");
+  const [fail, setFail] = useState(false);
+  const [fail2, setFail2] = useState(false);
   const [dup, setDup] = useState(true);
   const [dup2, setDup2] = useState(false);
+
+  useEffect(() => {
+    // console.log("Updated fail2:", fail2);
+    // console.log("Updated dup:", dup);
+  }, [fail2, dup, dup2]);
 
   const handleDup = async () => {
     setDup(false);
     setDup2(false);
-    // try {
-    //   const response = await fetch('http://34.64.33.83:3000/dup', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({ email }),
-    //   });
-  
-    //   const data = await response.json();
-    //   console.log(data);
-    //   if (response.ok) {
-    //     if (data.isDuplicate) {
-    //       // 이메일이 이미 중복되는 경우
-    //       setDup(true);
-    //       setDup2(true);
-    //     } else {
-    //       // 이메일이 중복되지 않는 경우
-    //       setDup(false);
-    //       setDup2(false);
-    //     }
-    //   } else {
-    //     console.log('Failed to check email duplication');
-    //   }
-    // } catch (error) {
-    //   console.error('Network error:', error);
-    // }
+    try {
+      const response = await fetch(`http://10.28.224.142:30016/api/v0/members/duplicate?email=${encodeURIComponent(email)}`, {
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+        },
+        // body: JSON.stringify({ email }),
+      });
+      // console.log(email)
+      const data = await response.json();
+      console.log(data);
+      if (data.isSuccess) {
+        setDup(false);
+        setDup2(false);
+      }
+      else {
+        // 이메일이 중복되는 경우
+        setDup(true);
+        setDup2(true);
+    }
+    } catch (error) {
+      console.error('Network error:', error);
+    }
   };
 
   return (
@@ -127,6 +131,8 @@ const Register2 = (props) => {
                         <Input
                           borderless
                           placeholder="Email"
+                          onChangeText={(text) => setEmail(text)}
+                          value={email}
                           iconContent={
                             <Icon
                               size={16}
@@ -156,7 +162,7 @@ const Register2 = (props) => {
                   
                   <Block middle marginTop={50}>
                     <Button 
-                      onPress={() => navigation.navigate('Register3')}
+                      onPress={() => navigation.navigate('Register4', { email: email })}
                       color={!(dup || dup2) ? "primary" : "muted" } 
                       style={styles.createButton}
                       disabled={dup || dup2} // Button is disabled if either isChecked2 or isChecked3 is not checked

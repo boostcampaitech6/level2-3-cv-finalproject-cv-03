@@ -16,7 +16,9 @@ import { View } from 'react-native';
 const { width, height } = Dimensions.get("screen");
 
 const Register4 = (props) => {
-  const { navigation } = props;
+  const { navigation, route } = props;
+  const { email } = route.params; // Access email from navigation parameters
+  // console.log(email);
   const [fail, setFail] = useState(true);
   const [fail2, setFail2] = useState(false);
   const [password, setPassword] = useState("");
@@ -129,7 +131,7 @@ const Register4 = (props) => {
                   </Block> */}
                   <Block middle marginTop={40}>
                     <Button 
-                      onPress={() => navigation.navigate('Register5')}
+                      onPress={() => navigation.navigate('Register5', { email: email, password: password })}
                       color={(fail || fail2) ? "muted" : "primary"} 
                       style={styles.createButton}
                       disabled={fail || fail2} // Button is disabled if either isChecked2 or isChecked3 is not checked
