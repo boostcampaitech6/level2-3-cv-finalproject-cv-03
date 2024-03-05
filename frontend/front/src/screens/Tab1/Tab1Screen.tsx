@@ -3,12 +3,16 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native
 import { NavigationProp } from '@react-navigation/native';
 
 interface AnomalyEvent {
-  log_id: number;
-  anomaly_create_time: string;
-  anomaly_save_path: string;
-  cctv_id: number;
-  cctv_name: string;
-  cctv_url: string;
+  anomaly_create_time: string,
+  cctv_id: number,
+  anomaly_save_path: string,
+  anomaly_delete_yn: boolean,
+  log_id: number,
+  anomaly_score: number,
+  anomaly_feedback: boolean,
+  member_id: number,
+  cctv_name: string,
+  cctv_url: string
 }
 
 interface Tab1ScreenProps {
@@ -63,10 +67,14 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
     <TouchableOpacity 
       style={styles.item} 
       onPress={() => navigation.navigate('LogDetailScreen', 
-      { log_id: item.log_id, 
-        anomaly_create_time: formatDateTime(item.anomaly_create_time),
-        anomaly_save_path: item.anomaly_save_path,
+      { anomaly_create_time: formatDateTime(item.anomaly_create_time),
         cctv_id: item.cctv_id,
+        anomaly_save_path: item.anomaly_save_path,
+        anomaly_delete_yn: item.anomaly_delete_yn,
+        log_id: item.log_id,
+        anomaly_score: item.anomaly_score,
+        anomaly_feedback: item.anomaly_feedback,
+        member_id: item.member_id,
         cctv_name: item.cctv_name,
         cctv_url: item.cctv_url
          })}
