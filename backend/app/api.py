@@ -276,7 +276,7 @@ def select_loglist_lookup(member_id: int, session: Session = Depends(get_db)):
             .join(models.CCTV, models.CCTV.cctv_id == models.Log.cctv_id)
             .filter(
                 models.CCTV.member_id == member_id,
-                models.Log.anomaly_delete_yn is False,
+                models.Log.anomaly_delete_yn == False,  # noqa: E712
             )
             .order_by(models.Log.log_id.desc())
             .all()
