@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.db import models
 from sqlalchemy.orm.exc import NoResultFound
+from passlib.context import CryptContext
 
 DEFAULT_RETURN_DICT = {"isSuccess": True, "result": None}
 
@@ -13,6 +14,16 @@ memberRouter = APIRouter(prefix="/api/v0/members")
 cctvRouter = APIRouter(prefix="/api/v0/cctv")
 streamingRouter = APIRouter(prefix="/api/v0/streaming")
 settingRouter = APIRouter(prefix="/api/v0/settings")
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def hash_password(password):
+    return pwd_context.hash(password)
+
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
 
 
 @router.get("/")
@@ -42,7 +53,7 @@ def register_member(
 
     mem = models.Member(
         email=email,
-        password=password,
+        password=hash_password(password),
         member_name=member_name,
         store_name=store_name,
     )
@@ -81,7 +92,7 @@ def login(email: str, password: str, session: Session = Depends(get_db)):
         def_return_dict["isSuccess"] = False
         return def_return_dict
 
-    if member.password == password:
+    if verify_password(password, member.password):
         def_return_dict["result"] = {"member_id": member.member_id}
     else:
         def_return_dict["isSuccess"] = False
@@ -144,7 +155,7 @@ def profile_edit(
     member = session.query(models.Member).get(member_id)
     if member:
         member.email = email
-        member.password = password
+        member.password = hash_password(password)
         member.store_name = store_name
         session.commit()
 
