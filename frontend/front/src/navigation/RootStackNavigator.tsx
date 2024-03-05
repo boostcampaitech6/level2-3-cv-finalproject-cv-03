@@ -36,12 +36,16 @@ export type RootStackParamList = {
   Register6: undefined;
   Login: undefined;
   LogDetailScreen: {   
-    log_id: number;
-    anomaly_create_time: string;
-    anomaly_save_path: string;
-    cctv_id: number;
-    cctv_name: string;
-    cctv_url: string; 
+    anomaly_create_time: string,
+    cctv_id: number,
+    anomaly_save_path: string,
+    anomaly_delete_yn: boolean,
+    log_id: number,
+    anomaly_score: number,
+    anomaly_feedback: boolean,
+    member_id: number,
+    cctv_name: string,
+    cctv_url: string
   };
 };
 
