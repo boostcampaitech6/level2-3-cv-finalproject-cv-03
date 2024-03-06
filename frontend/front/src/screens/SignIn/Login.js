@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   ImageBackground,
@@ -12,6 +12,8 @@ import { Button, Input } from "../../components";
 import { Images, argonTheme } from "../../constants";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { TouchableOpacity } from 'react-native';
+import { UserContext } from '../../UserContext';
+
 
 
 const { width, height } = Dimensions.get("screen");
@@ -21,6 +23,7 @@ const Login = (props) => {
   const [password, setPassword] = useState("");
   const [fail, setFail] = useState(false);
   const [fail2, setFail2] = useState(false);
+  const { user, setUser } = useContext(UserContext);
 
 
   const { navigation } = props;
@@ -37,18 +40,20 @@ const Login = (props) => {
 
       const data = await response.json();
       console.log(data.isSuccess);
+      console.log(data.result);
 
-      if (data.isSuccess) {
-        const token = data.token;
+      if (data.isSuccess && data.result) {
+        // const token = data.token;
         
         // 로그인 성공
         console.log("Login successful", data);
         
+        
         // 여기서 필요한 동작을 수행하고 홈 화면으로 이동
         // dispatch(setUser(data.user));
         // AsyncStorage.setItem('authToken', token);
-        // setUser(data.user);
-        // setUserContext(data.user);
+        setUser(data.result.member_id);
+        // setUserContext(data.result.member_id);
         navigation.navigate("Home");
       } else {
         // 로그인 실패
@@ -58,6 +63,7 @@ const Login = (props) => {
     } catch (error) {
       console.error("Network error:", error);
       setFail2(true);
+      setFail(false);
     }
   };
 

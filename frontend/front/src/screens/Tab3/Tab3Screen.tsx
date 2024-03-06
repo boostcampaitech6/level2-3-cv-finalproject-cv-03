@@ -26,7 +26,7 @@ export default function Tab2Screen(props: Tab2ScreenProps) {
       </TouchableOpacity>
       <TouchableOpacity 
         style={styles.button}
-        onPress={() => navigation.navigate('ProfileSettingScreen', {})}
+        onPress={() => navigation.navigate('Profile', {})}
       >
         <Text style={styles.buttonText}>개인 정보</Text>
       </TouchableOpacity>

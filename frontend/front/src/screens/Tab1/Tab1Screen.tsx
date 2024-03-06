@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect, useContext } from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
+import { UserContext } from '../../UserContext';
 
 interface AnomalyEvent {
   anomaly_create_time: string,
@@ -20,6 +21,7 @@ interface Tab1ScreenProps {
 }
 
 function formatDateTime(dateTimeString: string): string {
+  
   const date = new Date(dateTimeString);
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -34,13 +36,15 @@ function formatDateTime(dateTimeString: string): string {
 const member_id = 13
 
 export default function Tab1Screen(props: Tab1ScreenProps) {
+  const { user } = useContext(UserContext);
+  console.log(user)
   const { navigation } = props;
   const [anomalyEvents, setAnomalyEvents] = useState<AnomalyEvent[]>([]);
 
   useEffect(() => {
     const fetchAnomalyEvents = async () => {
       try {
-        const response = await fetch(`http://10.28.224.142:30016/api/v0/cctv/loglist_lookup?member_id=${member_id}`, {
+        const response = await fetch(`http://10.28.224.142:30016/api/v0/cctv/loglist_lookup?member_id=${user}`, {
           method: "GET",
           headers: { 'accept': 'application/json' },
           });
