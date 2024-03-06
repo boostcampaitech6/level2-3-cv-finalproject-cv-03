@@ -1,3 +1,4 @@
+import os
 import torch.nn as nn
 from torchvision import models
 from ultralytics.nn.tasks import ClassificationModel
@@ -19,13 +20,13 @@ class MobileNet(nn.Module):
 
 
 class YOLO(nn.Module):
-    def __init__(self):
+    def __init__(self, cfg="./yolo_yaml/yolov8n-cls.yaml"):
         super(YOLO, self).__init__()
-        self.cfg = "./yolo_yaml/yolov8x-cls.yaml"
+        self.cfg = cfg
         self.yolo = ClassificationModel(cfg=self.cfg, ch=3, nc=2)
 
     def __str__(self):
-        model_name = self.cfg.split("/")[-1].split(".")[0].split("-")[0]
+        model_name = os.path.basename(self.cfg).split(".")[0].split("-")[0]
         return model_name
 
     def forward(self, x):
