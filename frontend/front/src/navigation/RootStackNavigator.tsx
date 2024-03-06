@@ -8,6 +8,9 @@ import Tab1Screen from '../screens/Tab1/Tab1Screen';
 import Tab2Screen from '../screens/Tab2/Tab2Screen';
 import Tab3Screen from '../screens/Tab3/Tab3Screen';
 import LogDetailScreen from "../screens/Tab1/LogDetailScreen";
+import AlarmSettingScreen from "../screens/Tab3/AlarmSettingScreen";
+import CctvSettingScreen from "../screens/Tab3/CctvSettingScreen";
+import ProfileSettingScreen from "../screens/Tab3/ProfileSettingScreen";
 import { useNavigation } from '@react-navigation/native';
 
 import Onboarding from '../screens/Onboarding/Onboarding';
@@ -47,6 +50,9 @@ export type RootStackParamList = {
     cctv_name: string,
     cctv_url: string
   };
+  AlarmSettingScreen: undefined;
+  CctvSettingScreen: undefined;
+  ProfileSettingScreen: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -89,6 +95,9 @@ export default function RootStackNavigator() {
       <Stack.Screen name="Tab2Screen" component={Tab2Screen} />
       <Stack.Screen name="Tab3Screen" component={Tab3Screen} />
       <Stack.Screen name="LogDetailScreen" component={LogDetailScreen} />
+      <Stack.Screen name="AlarmSettingScreen" component={AlarmSettingScreen} />
+      <Stack.Screen name="CctvSettingScreen" component={CctvSettingScreen} />
+      <Stack.Screen name="ProfileSettingScreen" component={ProfileSettingScreen} />
     </Stack.Navigator>
   );
 }
