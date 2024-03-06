@@ -11,6 +11,7 @@ import LogDetailScreen from "../screens/Tab1/LogDetailScreen";
 import AlarmSettingScreen from "../screens/Tab3/AlarmSettingScreen";
 import CctvSettingScreen from "../screens/Tab3/CctvSettingScreen";
 import ProfileSettingScreen from "../screens/Tab3/ProfileSettingScreen";
+
 import { useNavigation } from '@react-navigation/native';
 
 import Onboarding from '../screens/Onboarding/Onboarding';
@@ -38,6 +39,8 @@ export type RootStackParamList = {
   Register5: undefined;
   Register6: undefined;
   Login: undefined;
+  Profile: undefined;
+  ProfileEdit: undefined;
   LogDetailScreen: {   
     anomaly_create_time: string,
     cctv_id: number,
@@ -61,15 +64,7 @@ export default function RootStackNavigator() {
   const navigation = useNavigation();
 
   return (
-    <Stack.Navigator initialRouteName="Onboarding" 
-      screenOptions = {{ 
-        headerShown: false,
-        headerTitle: '와치덕',
-        headerLeft: () => (
-          <Image
-            source={require('../../assets/Logo.png')}
-            style={{ width: 50, height: 50, resizeMode: 'contain' }}
-          />)}}>
+    <Stack.Navigator initialRouteName="Onboarding" screenOptions={{headerShown: false,}}>
       <Stack.Screen name="Onboarding" component={Onboarding} />
       <Stack.Screen name="Register" component={Register} />
       <Stack.Screen name="Register2" component={Register2} />
@@ -85,11 +80,20 @@ export default function RootStackNavigator() {
         options={{ 
           headerLeft: () => (
             // <TouchableOpacity onPress={() => navigation.navigate('SignInScreen')}>
-              <Image source={require('../../assets/Logo.png')} style={{ width: 50, height: 50 }} />
+              <Image source={require('../../assets/Logo.png')} style={{ margin:8, marginBottom:20, width: 40, height: 40, resizeMode: 'contain' }} />
             // </TouchableOpacity>
           ), 
           headerShown: true,
-          headerTitle: '와치덕',
+          headerTitle: '홈',
+          headerTitleStyle: {
+            fontSize: 15,
+            fontFamily: 'SGB',
+          },
+          headerStyle: {
+            backgroundColor: '#DAD5F2',
+            borderBottomWidth: 1,
+            borderBottomColor: '#E7E7E7',
+          },
         }}/>
       <Stack.Screen name="Tab1Screen" component={Tab1Screen} />
       <Stack.Screen name="Tab2Screen" component={Tab2Screen} />

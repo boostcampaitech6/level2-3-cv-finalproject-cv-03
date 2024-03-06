@@ -31,11 +31,11 @@ const Register = (props) => {
   // };
   const handleCheckbox2Change = (checked) => {
     setIsChecked2(checked);
-    console.log(isChecked2)
+    // console.log(isChecked2)
   };
   const handleCheckbox3Change = (checked) => {
     setIsChecked3(checked);
-    console.log(isChecked3)
+    // console.log(isChecked3)
   };
 
   return (

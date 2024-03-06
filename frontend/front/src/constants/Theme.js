@@ -28,6 +28,7 @@ export default {
     BORDER: '#CAD1D7',
     WHITE: '#FFFFFF',
     BLACK: '#000000',
-    BUTTON_COLOR2: "#7485e8"
+    BUTTON_COLOR2: "#7485e8",
+    HEADER2: "#DAD5F2",
   }
 };
