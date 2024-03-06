@@ -1,28 +1,32 @@
-import cv2
-import torch
-import queue
 import threading
 import time
-from arch import MobileNetGRU
-import albumentations as A
 import numpy as np
+import cv2
+import torch
+import torch.nn.functional as F
+import albumentations as A
+from arch import *
 
 
-frame_queue = queue.Queue(maxsize=1000)
-stop_flag = False
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+class StopFlag:
+    def __init__(self):
+        self.flag = False
+
+    def set(self, value):
+        self.flag = value
+
+    def get(self):
+        return self.flag
 
 
-def capture_frames(video_source, frame_height=224, frame_width=224):
-    global stop_flag
-
+def capture_frames(video_source, buffer, stop_flag, interval=0.1):
     video = cv2.VideoCapture(video_source)
 
-    interval = 0.05
+    interval = 0.1
     start_time = time.time()
     next_time = start_time + interval
 
-    while not stop_flag:
+    while not stop_flag.get():
         success, frame = video.read()
 
         if not success:
@@ -30,56 +34,76 @@ def capture_frames(video_source, frame_height=224, frame_width=224):
 
         cur_time = time.time()
         if cur_time >= next_time:
-            if frame_queue.full():
-                pass
-            else:
-                frame = A.Resize(frame_height, frame_width)(image=frame)[
-                    "image"
-                ]
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                frame_queue.put(frame)
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            buffer.append(frame)
 
             next_time += interval
 
     video.release()
 
 
-def inference(frame_per_sec=10, total_sec=3):
-    global stop_flag
+def predict(model, buffer, stop_flag, frame_per_sec=10, total_sec=3):
+    total_time, pred_time, cnt = 0, 0, 0
+    init_st = time.time()
 
-    frame_per_inference = frame_per_sec * total_sec
+    frame_per_pred = frame_per_sec * total_sec
 
-    model = MobileNetGRU()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
     model.eval()
 
-    while not stop_flag:
-        if frame_queue.qsize() >= frame_per_inference:
-            frames = [frame_queue.get() for _ in range(frame_per_inference)]
+    while not stop_flag.get():
+        if len(buffer) >= frame_per_pred:
+            total_st = time.time()
+
+            with threading.Lock():
+                _frames = [buffer[i] for i in range(frame_per_pred)]
+            
+            frames = []
+            for frame in _frames:
+                frame = A.Resize(224, 224)(image=frame)["image"]
+                frame = (frame / 255.0).astype(np.float32)
+                frames.append(frame)
+
             frames = np.transpose(np.array(frames), (0, 3, 1, 2))
-            frames = (frames / 255.0).astype(np.float32)
             frames = torch.from_numpy(frames).unsqueeze(dim=0).to(device)
 
+            pred_st = time.time()
+
             output = model(frames)
-
+            output = F.softmax(output, dim=1)
             prob, pred = torch.max(output, dim=1)
+
+            pred_time += time.time() - pred_st
+
             pred_class = "Normal" if pred == 0 else "Shoplifting"
-            print(f"class: {pred_class:<11} | probability: {prob.item():.4f}")
+            print(f"class: {pred_class:>11} | probability: {prob.item():.4f} | time: {time.time() - init_st:.2f}s")
 
-            for _ in range(frame_per_sec):
-                frame_queue.get()
+            with threading.Lock():
+                del buffer[:frame_per_sec]
+
+            total_time += time.time() - total_st
+            cnt += 1
+            if cnt % 50 == 0:
+                print(f"({cnt} iter) total inference time per iter: {total_time / cnt}")
+                print(f"({cnt} iter) just prediction time per iter: { pred_time / cnt}")
 
 
-def main(video_source):
-    global stop_flag
+def inference(video_source, capture_interval=0.1, frame_per_sec=10, total_sec=3):
+    buffer = []
+    stop_flag = StopFlag() 
+
+    # define model
+    model = ...
 
     capture_thread = threading.Thread(
-        target=capture_frames, args=(video_source,)
+        target=capture_frames, args=(video_source, buffer, stop_flag, capture_interval)
     )
-    inference_thread = threading.Thread(target=inference)
+    total_timehread = threading.Thread(
+        target=predict, args=(model, buffer, stop_flag, frame_per_sec, total_sec))
 
     capture_thread.start()
-    inference_thread.start()
+    total_timehread.start()
 
     try:
         while True:
@@ -87,12 +111,12 @@ def main(video_source):
     except KeyboardInterrupt:
         print("Stopping...")
 
-        stop_flag = True
+        stop_flag.set(True)
         capture_thread.join()
-        inference_thread.join()
+        total_timehread.join()
 
 
 if __name__ == "__main__":
-    video_source = ""
+    video_source = "rtsp://10.28.224.201:30576/stream"
 
-    main(video_source)
+    inference(video_source)
