@@ -100,7 +100,8 @@ def inference(video_source, capture_interval=0.1, frame_per_sec=10, total_sec=3)
         target=capture_frames, args=(video_source, buffer, stop_flag, capture_interval)
     )
     total_timehread = threading.Thread(
-        target=predict, args=(model, buffer, stop_flag, frame_per_sec, total_sec))
+        target=predict, args=(model, buffer, stop_flag, frame_per_sec, total_sec)
+    )
 
     capture_thread.start()
     total_timehread.start()
