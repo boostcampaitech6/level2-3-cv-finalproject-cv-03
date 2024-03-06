@@ -91,7 +91,7 @@ def predict(model, buffer, stop_flag, frame_per_sec=10, total_sec=3):
                     f"({cnt} iter) total inference time per iter: {total_time / cnt}"
                 )
                 print(
-                    f"({cnt} iter) just prediction time per iter: { pred_time / cnt}"
+                    f"({cnt} iter) just prediction time per iter: {pred_time / cnt}"
                 )
 
 
@@ -108,13 +108,13 @@ def inference(
         target=capture_frames,
         args=(video_source, buffer, stop_flag, capture_interval),
     )
-    total_timehread = threading.Thread(
+    predict_thread = threading.Thread(
         target=predict,
         args=(model, buffer, stop_flag, frame_per_sec, total_sec),
     )
 
     capture_thread.start()
-    total_timehread.start()
+    predict_thread.start()
 
     try:
         while True:
@@ -124,7 +124,7 @@ def inference(
 
         stop_flag.set(True)
         capture_thread.join()
-        total_timehread.join()
+        predict_thread.join()
 
 
 if __name__ == "__main__":
