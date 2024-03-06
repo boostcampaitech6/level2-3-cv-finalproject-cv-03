@@ -58,7 +58,7 @@ def predict(model, buffer, stop_flag, frame_per_sec=10, total_sec=3):
 
             with threading.Lock():
                 _frames = [buffer[i] for i in range(frame_per_pred)]
-            
+
             frames = []
             for frame in _frames:
                 frame = A.Resize(224, 224)(image=frame)["image"]
@@ -77,7 +77,9 @@ def predict(model, buffer, stop_flag, frame_per_sec=10, total_sec=3):
             pred_time += time.time() - pred_st
 
             pred_class = "Normal" if pred == 0 else "Shoplifting"
-            print(f"class: {pred_class:>11} | probability: {prob.item():.4f} | time: {time.time() - init_st:.2f}s")
+            print(
+                f"class: {pred_class:>11} | probability: {prob.item():.4f} | time: {time.time() - init_st:.2f}s"
+            )
 
             with threading.Lock():
                 del buffer[:frame_per_sec]
@@ -85,22 +87,30 @@ def predict(model, buffer, stop_flag, frame_per_sec=10, total_sec=3):
             total_time += time.time() - total_st
             cnt += 1
             if cnt % 50 == 0:
-                print(f"({cnt} iter) total inference time per iter: {total_time / cnt}")
-                print(f"({cnt} iter) just prediction time per iter: { pred_time / cnt}")
+                print(
+                    f"({cnt} iter) total inference time per iter: {total_time / cnt}"
+                )
+                print(
+                    f"({cnt} iter) just prediction time per iter: { pred_time / cnt}"
+                )
 
 
-def inference(video_source, capture_interval=0.1, frame_per_sec=10, total_sec=3):
+def inference(
+    video_source, capture_interval=0.1, frame_per_sec=10, total_sec=3
+):
     buffer = []
-    stop_flag = StopFlag() 
+    stop_flag = StopFlag()
 
     # define model
     model = ...
 
     capture_thread = threading.Thread(
-        target=capture_frames, args=(video_source, buffer, stop_flag, capture_interval)
+        target=capture_frames,
+        args=(video_source, buffer, stop_flag, capture_interval),
     )
     total_timehread = threading.Thread(
-        target=predict, args=(model, buffer, stop_flag, frame_per_sec, total_sec)
+        target=predict,
+        args=(model, buffer, stop_flag, frame_per_sec, total_sec),
     )
 
     capture_thread.start()
