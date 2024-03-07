@@ -6,20 +6,34 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Tab1Screen from '../screens/Tab1/Tab1Screen';
 import Tab2Screen from '../screens/Tab2/Tab2Screen';
 import Tab3Screen from '../screens/Tab3/Tab3Screen';
+import LogDetailScreen from '../screens/Tab1/LogDetailScreen';
 import Profile from '../screens/Tab3/Profile';
 import ProfileEdit from '../screens/Tab3/ProfileEdit';
+import CctvSettingScreen from '../screens/Tab3/CctvSettingScreen';
+import AlarmSettingScreen from '../screens/Tab3/AlarmSettingScreen';
 
 
 const Tab = createBottomTabNavigator();
+const Tab1Stack = createStackNavigator();
 const Tab3Stack = createStackNavigator();
 
 
+function Tab1StackNavigator() {
+  return (
+    <Tab1Stack.Navigator screenOptions = {{ headerShown: false }}>
+      <Tab1Stack.Screen name="Tab1Screen" component={Tab1Screen} />
+      <Tab1Stack.Screen name="LogDetailScreen" component={LogDetailScreen} />
+    </Tab1Stack.Navigator>
+  );
+}
 function Tab3StackNavigator() {
   return (
     <Tab3Stack.Navigator screenOptions = {{ headerShown: false }}>
       <Tab3Stack.Screen name="Tab3Screen" component={Tab3Screen} />
       <Tab3Stack.Screen name="Profile" component={Profile} />
       <Tab3Stack.Screen name="ProfileEdit" component={ProfileEdit} />
+      <Tab3Stack.Screen name="CctvSettingScreen" component={CctvSettingScreen} />
+      <Tab3Stack.Screen name="AlarmSettingScreen" component={AlarmSettingScreen} />
     </Tab3Stack.Navigator>
   );
 }
@@ -40,7 +54,7 @@ export default function BottomTabNavigator() {
         headerShown: false,
       }}
       initialRouteName="Home"  >
-      <Tab.Screen name="기록" component={Tab1Screen} options={{
+      <Tab.Screen name="기록" component={Tab1StackNavigator} options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="document-sharp" size={18} color={color} style={{ marginTop: 15}}/>
           ),

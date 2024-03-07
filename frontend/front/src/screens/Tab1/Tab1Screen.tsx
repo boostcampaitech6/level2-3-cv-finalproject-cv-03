@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import { UserContext } from '../../UserContext';
+import { Block, Text, theme } from "galio-framework";
+import { Images, argonTheme } from "../../constants";
 
 interface AnomalyEvent {
   anomaly_create_time: string,
@@ -33,13 +35,13 @@ function formatDateTime(dateTimeString: string): string {
   return `${year}.${month}.${day} ${hours}:${minutes}:${seconds}`;
 }
 
-const member_id = 13
-
 export default function Tab1Screen(props: Tab1ScreenProps) {
   const { user } = useContext(UserContext);
   console.log(user)
   const { navigation } = props;
   const [anomalyEvents, setAnomalyEvents] = useState<AnomalyEvent[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<AnomalyEvent[]>([]);
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     const fetchAnomalyEvents = async () => {
@@ -67,6 +69,18 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
     fetchAnomalyEvents();
   }, []);
 
+  useEffect(() => {
+    filterEvents();
+  }, [searchText, anomalyEvents]);
+
+  const filterEvents = () => {
+    const filtered = anomalyEvents.filter(event => {
+      const formattedTime = formatDateTime(event.anomaly_create_time).toLowerCase();
+      return event.cctv_name.toLowerCase().includes(searchText.toLowerCase()) || formattedTime.includes(searchText.toLowerCase());
+    });
+    setFilteredEvents(filtered);
+  };
+
   const renderItem = ({ item }: { item: AnomalyEvent }) => (
     <TouchableOpacity 
       style={styles.item} 
@@ -89,17 +103,32 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
   );
 
   return (
-    <FlatList
-      data={anomalyEvents}
-      renderItem={renderItem}
-      keyExtractor={item => item.log_id.toString()}
-      style={{ flex: 1 }}
-    />
+    <View style={{ flex: 1 }}>
+      <TextInput
+        style={styles.searchInput}
+        onChangeText={setSearchText}
+        value={searchText}
+        placeholder="검색 (CCTV 이름 또는 날짜)"
+      />
+      <FlatList
+        data={filteredEvents}
+        renderItem={renderItem}
+        keyExtractor={item => item.log_id.toString()}
+        style={{ flex: 1 }}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  // 기존의 styles 정의...
+  searchInput: {
+    height: 40,
+    borderWidth: 1,
+    paddingLeft: 8,
+    margin: 10,
+    borderRadius: 10,
+    borderColor: '#CCCCCC',
+  },
   item: {
     backgroundColor: '#EEEEEE', // 회색 배경
     borderWidth: 1,
@@ -114,9 +143,11 @@ const styles = StyleSheet.create({
     fontSize: 24, // 제목 폰트 사이즈
     fontWeight: 'bold', // 글씨 두껍게
     marginBottom: 4, // 제목과 날짜/시간 사이의 여백
+      fontFamily: 'SG',
   },
   timestamp: {
     fontSize: 16, // 날짜/시간 폰트 사이즈
     color: '#555555', // 날짜/시간 색상
+    fontFamily: 'NGB',
   },
 });
