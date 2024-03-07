@@ -36,6 +36,8 @@ export default function App() {
     'SG': require('./assets/fonts/SEBANG Gothic.ttf'),
     'NGB': require('./assets/fonts/NanumGothicBold.otf'), 
     'SGB': require('./assets/fonts/SEBANG Gothic Bold.ttf'),
+    'KUD': require('./assets/fonts/KoddiUDOnGothic-Regular.ttf'),
+    'C24': require('./assets/fonts/Cafe24Ssurround-v2.0.ttf'),
   });
 
   if (!fontsLoaded) {

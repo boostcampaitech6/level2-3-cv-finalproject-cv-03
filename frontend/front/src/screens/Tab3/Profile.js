@@ -10,10 +10,13 @@ import {
 import { Block, Text, theme } from "galio-framework";
 import { useFocusEffect } from '@react-navigation/native';
 
-import { Button } from "../../components";
+import { Button, Input } from "../../components";
 import { Images, argonTheme } from "../../constants";
 import { HeaderHeight } from "../../constants/utils";
 import { UserContext } from '../../UserContext';
+import { Icon, Overlay } from 'react-native-elements';
+import { View } from 'react-native';
+
 
 
 const { width, height } = Dimensions.get("screen");
@@ -27,6 +30,16 @@ const Profile = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [store_name, setStore_name] = useState("");
+  const [npassword, setNpassword] = useState(password);
+  const [nstore_name, setNstore_name] = useState(store_name);
+  const [overlayVisible, setOverlayVisible] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [password2Visible, setPassword2Visible] = useState(false);
+  const [inpassword, setInpassword] = useState("");
+
+  useEffect(() => {
+    setNstore_name(store_name);
+  }, [store_name]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -65,7 +78,7 @@ const Profile = (props) => {
         >
           <ScrollView
             showsVerticalScrollIndicator={false}
-            style={{ width, marginTop: '15%' }}
+            style={{ width, marginTop: '30%' }}
           >
             <Block flex style={styles.profileCard}>
               <Block middle style={styles.avatarContainer}>
@@ -100,19 +113,78 @@ const Profile = (props) => {
                   <Text bold size={16} color="#525F7F" style={styles.text}>
                     PW
                   </Text>
-                  <Text bold size={16} color="#525F7F" style={styles.text2}>
-                    **********
-                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 8 }}>
+                    <Text bold size={16} color="#525F7F" style={styles.text2}>
+                      **********
+                    </Text>
+                    <Icon
+                      name='pencil'
+                      size={20}
+                      type='font-awesome'
+                      onPress={() => setPasswordVisible(true)}
+                    />
+                  </View>
                 </Block>
                 <Block middle style={{marginTop: 20}} row space="between">
                   <Text bold size={16} color="#525F7F" style={styles.text}>
                     매장명
                   </Text>
-                  <Text bold size={16} color="#525F7F" style={styles.text2}>
-                    {store_name}
-                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 8 }}>
+                    <Text bold size={16} color="#525F7F" style={styles.text2}>
+                      {store_name}
+                    </Text>
+                    <Icon
+                      name='pencil'
+                      size={20}
+                      type='font-awesome'
+                      onPress={() => setOverlayVisible(true)}
+                    />
+                  </View>
                 </Block>
-                <Block middle marginTop={50}>
+                <Overlay isVisible={overlayVisible} onBackdropPress={() => setOverlayVisible(false)}>
+                  <View style={{ alignItems: 'center', justifyContent: 'center', padding: 40 }}>
+                    <Text style={styles.poptitle}>매장명 수정</Text>
+                    <Input value={nstore_name} defaultValue={store_name} onChangeText={setNstore_name} placeholder={"새 매장명"}/>
+                    <Button style={{marginTop:20,}} color="primary" onPress={() => {
+                      setNpassword(nstore_name);
+                      setOverlayVisible(false);
+                    }} >
+                      <Text style={{ fontSize: 14, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}>
+                        저장하기
+                      </Text>
+                    </Button>
+                  </View>
+                </Overlay>
+                <Overlay isVisible={passwordVisible} onBackdropPress={() => setPasswordVisible(false)}>
+                  <View style={{ alignItems: 'center', justifyContent: 'center', padding: 40 }}>
+                    <Text style={styles.poptitle}>비밀번호 확인</Text>
+                    <Input value={inpassword} onChangeText={setInpassword} placeholder={"기존 비밀번호"}/>
+                    <Button style={{marginTop:20,}} color="primary" onPress={() => {
+                      setInpassword(inpassword);
+                      setPasswordVisible(false);
+                      setPassword2Visible(true);
+                    }} >
+                      <Text style={{ fontSize: 14, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}>
+                        다음
+                      </Text>
+                    </Button>
+                  </View>
+                </Overlay>
+                <Overlay isVisible={password2Visible} onBackdropPress={() => setPassword2Visible(false)}>
+                  <View style={{ alignItems: 'center', justifyContent: 'center', padding: 40 }}>
+                    <Text style={styles.poptitle}>새 비밀번호</Text>
+                    <Input value={npassword} onChangeText={setNpassword} placeholder={"새 비밀번호"}/>
+                    <Button style={{marginTop:20,}} color="primary" onPress={() => {
+                      setNpassword(npassword);
+                      setPassword2Visible(false);
+                    }} >
+                      <Text style={{ fontSize: 14, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}>
+                        저장하기
+                      </Text>
+                    </Button>
+                  </View>
+                </Overlay>
+                {/* <Block middle marginTop={50}>
                   <Button 
                     onPress={() => navigation.navigate('ProfileEdit', { email: email, password: password, store_name: store_name })}
                     color={ "primary" } 
@@ -121,7 +193,7 @@ const Profile = (props) => {
                   >
                     수정하기
                   </Button>
-                </Block>
+                </Block> */}
               </Block>
             </Block>
           </ScrollView>
@@ -192,7 +264,7 @@ const styles = StyleSheet.create({
     height: thumbMeasure
   },
   text: { 
-    fontFamily: 'SGB',
+    fontFamily: 'C24',
     marginStart: 10,
     color: '#172B4D',
     // fontColor: '#172B4D',
@@ -205,6 +277,11 @@ const styles = StyleSheet.create({
   textName: {
     fontFamily: 'SGB',
   },
+  poptitle: {
+    fontFamily: 'C24',
+    marginBottom: 30,
+    fontSize: 20,
+  }
 });
 
 export default Profile;
