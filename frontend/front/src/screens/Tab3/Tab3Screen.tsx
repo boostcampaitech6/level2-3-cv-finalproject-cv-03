@@ -20,7 +20,7 @@ export default function Tab2Screen(props: Tab2ScreenProps) {
 
       <TouchableOpacity 
         style={styles.button}
-        onPress={() => navigation.navigate('AlarmSettingScreen', {})}
+        onPress={() => navigation.navigate('Alarm', {})}
       >
         <Text style={styles.buttonText}>알림/동영상</Text>
       </TouchableOpacity>
