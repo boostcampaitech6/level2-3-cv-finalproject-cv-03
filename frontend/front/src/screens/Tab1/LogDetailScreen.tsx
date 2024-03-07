@@ -45,14 +45,7 @@ export default function CCTVDetailScreen({ route, navigation }: LogDetailScreenP
     useEffect(() => {
       // This will handle the hardware back press
       const backAction = () => {
-        Alert.alert('Hold on!', 'Are you sure you want to go back?', [
-          {
-            text: 'Cancel',
-            onPress: () => null,
-            style: 'cancel',
-          },
-          { text: 'YES', onPress: () => navigation.goBack() },
-        ]);
+        navigation.goBack();
         return true;
       };
   
