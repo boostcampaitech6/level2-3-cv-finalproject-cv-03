@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from app.schemas import *
+from app.schemas import Login
 from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.db import models
@@ -38,6 +38,7 @@ def register_member(
     member_name: str,
     store_name: str,
     cctv_url: str,
+    cctv_name: str,
     session: Session = Depends(get_db),
 ):
     def_return_dict = DEFAULT_RETURN_DICT.copy()
@@ -59,9 +60,11 @@ def register_member(
     )
 
     session.add(mem)
+    session.commit()
+    member = session.query(models.Member).filter_by(email=email).one()
 
     cctv = models.CCTV(
-        cctv_url=cctv_url, cctv_name="cctv", member_id=mem.member_id
+        cctv_url=cctv_url, cctv_name=cctv_name, member_id=member.member_id
     )
     session.add(cctv)
     session.commit()
@@ -84,15 +87,19 @@ def duplicate(email: str, session: Session = Depends(get_db)):
 
 
 @memberRouter.post("/login")
-def login(email: str, password: str, session: Session = Depends(get_db)):
+def login(login_info: Login, session: Session = Depends(get_db)):
     def_return_dict = DEFAULT_RETURN_DICT.copy()
     try:
-        member = session.query(models.Member).filter_by(email=email).one()
+        member = (
+            session.query(models.Member)
+            .filter_by(email=login_info.email)
+            .one()
+        )
     except NoResultFound:
         def_return_dict["isSuccess"] = False
         return def_return_dict
 
-    if verify_password(password, member.password):
+    if verify_password(login_info.password, member.password):
         def_return_dict["result"] = {"member_id": member.member_id}
     else:
         def_return_dict["isSuccess"] = False
@@ -165,6 +172,22 @@ def profile_edit(
     return def_return_dict
 
 
+@settingRouter.post("/password_edit")
+def password_edit(
+    member_id: int, password: str, session: Session = Depends(get_db)
+):
+    def_return_dict = DEFAULT_RETURN_DICT.copy()
+    member = session.query(models.Member).get(member_id)
+    if member:
+        member.password = hash_password(password)
+        session.commit()
+
+    else:
+        def_return_dict["isSuccess"] = False
+
+    return def_return_dict
+
+
 @settingRouter.get("/alarm_lookup")
 def alarm_lookup(member_id: int, session: Session = Depends(get_db)):
     def_return_dict = DEFAULT_RETURN_DICT.copy()
@@ -175,6 +198,26 @@ def alarm_lookup(member_id: int, session: Session = Depends(get_db)):
             "threshold": member.threshold,
             "save_time_length": member.save_time_length,
         }
+    else:
+        def_return_dict["isSuccess"] = False
+
+    return def_return_dict
+
+
+@settingRouter.post("/alarm_edit")
+def alarm_edit(
+    member_id: int,
+    threshold: float,
+    save_time_length: int,
+    session: Session = Depends(get_db),
+):
+    def_return_dict = DEFAULT_RETURN_DICT.copy()
+    member = session.query(models.Member).get(member_id)
+    if member:
+        member.threshold = threshold
+        member.save_time_length = save_time_length
+        session.commit()
+
     else:
         def_return_dict["isSuccess"] = False
 
@@ -399,3 +442,6 @@ def select_cctvlist(member_id: int, session: Session = Depends(get_db)):
     except Exception:
         def_return_dict["isSuccess"] = False
     return def_return_dict
+
+
+# API v 0.3.0
