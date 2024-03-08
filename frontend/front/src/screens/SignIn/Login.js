@@ -30,12 +30,13 @@ const Login = (props) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch(`http://10.28.224.142:30016/api/v0/members/login?email=${encodeURIComponent(email)}&password=${password}`, {
+      const response = await fetch(`http://10.28.224.142:30016/api/v0/members/login`, {
         method: "POST",
         headers: {
           "accept": "application/json",
+          'Content-Type': 'application/json'
         },
-        // body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
