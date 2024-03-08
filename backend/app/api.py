@@ -61,9 +61,10 @@ def register_member(
 
     session.add(mem)
     session.commit()
+    member = session.query(models.Member).filter_by(email=email).one()
 
     cctv = models.CCTV(
-        cctv_url=cctv_url, cctv_name=cctv_name, member_id=mem.member_id
+        cctv_url=cctv_url, cctv_name=cctv_name, member_id=member.member_id
     )
     session.add(cctv)
     session.commit()
