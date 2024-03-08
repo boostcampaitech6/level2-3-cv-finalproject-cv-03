@@ -8,6 +8,11 @@ class CustomBaseModel(BaseModel):
         orm_mode = True
 
 
+class Login(BaseModel):
+    email: str
+    password: str
+
+
 class MemberBase(CustomBaseModel):
     email: str
     password: str
