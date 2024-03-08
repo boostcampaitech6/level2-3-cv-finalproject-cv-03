@@ -204,7 +204,7 @@ def alarm_lookup(member_id: int, session: Session = Depends(get_db)):
 @settingRouter.post("/alarm_edit")
 def alarm_edit(
     member_id: int,
-    threshold: int,
+    threshold: float,
     save_time_length: int,
     session: Session = Depends(get_db),
 ):
