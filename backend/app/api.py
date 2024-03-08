@@ -38,6 +38,7 @@ def register_member(
     member_name: str,
     store_name: str,
     cctv_url: str,
+    cctv_name: str,
     session: Session = Depends(get_db),
 ):
     def_return_dict = DEFAULT_RETURN_DICT.copy()
@@ -59,9 +60,10 @@ def register_member(
     )
 
     session.add(mem)
+    session.commit()
 
     cctv = models.CCTV(
-        cctv_url=cctv_url, cctv_name="cctv", member_id=mem.member_id
+        cctv_url=cctv_url, cctv_name=cctv_name, member_id=mem.member_id
     )
     session.add(cctv)
     session.commit()
