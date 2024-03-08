@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, FlatList, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity, TextInput, Dimensions, ImageBackground } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import { UserContext } from '../../UserContext';
 import { Block, Text, theme } from "galio-framework";
@@ -17,6 +17,10 @@ interface AnomalyEvent {
   cctv_name: string,
   cctv_url: string
 }
+
+const { width, height } = Dimensions.get("screen");
+
+const thumbMeasure = (width - 48 - 32) / 3;
 
 interface Tab1ScreenProps {
   navigation: NavigationProp<any>;
@@ -37,7 +41,7 @@ function formatDateTime(dateTimeString: string): string {
 
 export default function Tab1Screen(props: Tab1ScreenProps) {
   const { user } = useContext(UserContext);
-  console.log(user)
+  // console.log(user)
   const { navigation } = props;
   const [anomalyEvents, setAnomalyEvents] = useState<AnomalyEvent[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<AnomalyEvent[]>([]);
@@ -103,20 +107,25 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
   );
 
   return (
-    <View style={{ flex: 1 }}>
-      <TextInput
-        style={styles.searchInput}
-        onChangeText={setSearchText}
-        value={searchText}
-        placeholder="검색 (CCTV 이름 또는 날짜)"
-      />
-      <FlatList
-        data={filteredEvents}
-        renderItem={renderItem}
-        keyExtractor={item => item.log_id.toString()}
-        style={{ flex: 1 }}
-      />
-    </View>
+    <ImageBackground
+        source={Images.Onboarding}
+        style={{ width, height, zIndex: 1 }}
+      >
+      <View style={{ flex: 1 }}>
+        <TextInput
+          style={{...styles.searchInput, backgroundColor: 'white', margin:15}}
+          onChangeText={setSearchText}
+          value={searchText}
+          placeholder="검색 (CCTV 이름 또는 날짜)"
+        />
+        <FlatList
+          data={filteredEvents}
+          renderItem={renderItem}
+          keyExtractor={item => item.log_id.toString()}
+          style={{ flex: 1 }}
+        />
+      </View>
+    </ImageBackground>
   );
 };
 
@@ -143,7 +152,7 @@ const styles = StyleSheet.create({
     fontSize: 24, // 제목 폰트 사이즈
     fontWeight: 'bold', // 글씨 두껍게
     marginBottom: 4, // 제목과 날짜/시간 사이의 여백
-      fontFamily: 'SG',
+      fontFamily: 'C24',
   },
   timestamp: {
     fontSize: 16, // 날짜/시간 폰트 사이즈

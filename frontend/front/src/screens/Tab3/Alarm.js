@@ -23,7 +23,7 @@ const { width, height } = Dimensions.get("screen");
 
 const thumbMeasure = (width - 48 - 32) / 3;
 
-const Profile = (props) => {
+const Alarm = (props) => {
   const { navigation } = props;
   const { user } = useContext(UserContext);
   // console.log(user)
@@ -284,4 +284,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Profile;
+export default Alarm;

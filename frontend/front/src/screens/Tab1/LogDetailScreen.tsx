@@ -43,8 +43,8 @@ export default function CCTVDetailScreen({ route, navigation }: LogDetailScreenP
         <View style={styles.header}>
           <Text style={styles.headerText}>{cctv_name}</Text>
           <Switch
-            trackColor={{ false: "#767577", true: "#81b0ff" }}
-            thumbColor={isHighAlert ? "#f5dd4b" : "#f4f3f4"}
+            trackColor={{ false: "#767577", true: "#610C9F" }}
+            thumbColor={isHighAlert ? "#DAD5F2" : "#f4f3f4"}
             onValueChange={toggleSwitch}
             value={isHighAlert}
           />
@@ -57,13 +57,13 @@ export default function CCTVDetailScreen({ route, navigation }: LogDetailScreenP
           <Text style={styles.detailText}>이상확률: {anomaly_score}</Text>
           <View style={styles.middle}>
             <TouchableOpacity style={styles.feedback_button}>
-              <Text style={styles.buttonText}>피드백 남기기</Text>
+              <Text style={styles.buttonText}>피드백{'\n'}남기기</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.download_button}>
-              <Text style={styles.buttonText}>영상 다운로드</Text>
+              <Text style={styles.buttonText}>영상{'\n'}다운로드</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.delete_button}>
-              <Text style={styles.buttonText}>기록 삭제하기</Text>
+              <Text style={styles.buttonText}>기록{'\n'}삭제하기</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -85,8 +85,8 @@ export default function CCTVDetailScreen({ route, navigation }: LogDetailScreenP
     },
     headerText: {
       fontSize: 20,
-      fontWeight: 'bold',
-      fontFamily: 'SG',
+      // fontWeight: 'bold',
+      fontFamily: 'C24',
     },
     cctvContainer: {
       flex: 1,
@@ -114,38 +114,30 @@ export default function CCTVDetailScreen({ route, navigation }: LogDetailScreenP
     },
     feedback_button: {
       padding: 10,
-      backgroundColor: argonTheme.COLORS.SUCCESS,
+      backgroundColor: "#610C9F",
       borderRadius: 5,
       flex: 1,
       marginHorizontal: 10,
     },
     download_button: {
       padding: 10,
-      backgroundColor: argonTheme.COLORS.GRADIENT_START,
+      backgroundColor: "#940B92",
       borderRadius: 5,
       flex: 1,
       marginHorizontal: 10,
     },  
     delete_button: {
       padding: 10,
-      backgroundColor: argonTheme.COLORS.LABEL,
+      backgroundColor: "#DA0C81",
       borderRadius: 5,
       flex: 1,
       marginHorizontal: 10,
     },    
-    back_button: {
-      padding: 10,
-      backgroundColor: argonTheme.COLORS.ACTIVE,
-      borderRadius: 5,
-      width: 120,
-      height: 40,
-      marginHorizontal: 20,
-    },
     buttonText: {
       color: '#fff',
       fontSize: 16,
       alignContent: 'center',
       textAlign: 'center',
-      fontFamily: 'NGB',
+      fontFamily: 'C24',
     },
   });
