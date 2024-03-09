@@ -1,17 +1,9 @@
-import os
 import json
 import pandas as pd
-from moviepy.editor import VideoFileClip
-
-
-def get_video_duration(path, video_name):
-    video_path = os.path.join(path["root_path"], video_name)
-    video = VideoFileClip(video_path)
-    return int(video.duration)
 
 
 def main(path, clip_len):
-    csv_data = pd.read_csv(path["video_csv_path"])
+    csv_data = pd.read_csv(path["labeling_csv_path"])
     file_name = [i.strip('[]"') for i in csv_data["file_list"]]
     remove_file_name = list(set(csv_data["file_list"]))
 
@@ -47,10 +39,7 @@ def main(path, clip_len):
         file_data = csv_data[csv_data["file_list"] == name]
         new_name = name.strip('[]"')
 
-        for _ in range(get_video_duration(path, new_name)):
-            if new_name not in label:
-                label[new_name] = []
-            label[new_name].append(0)
+        label[new_name] = [0 for _ in range(60)]
 
         for _, row in file_data.iterrows():
             if row["metadata"] == '{"Normal":"0"}':
@@ -58,13 +47,13 @@ def main(path, clip_len):
             elif row["metadata"] == '{"Abnormal":"0"}':
                 for i in range(
                     row["temporal_segment_start"],
-                    row["temporal_segment_end"] + 1,
+                    row["temporal_segment_end"],
                 ):
                     label[new_name][i] = 1
             elif row["metadata"] == '{"Abnormal":"1"}':
                 for i in range(
                     row["temporal_segment_start"],
-                    row["temporal_segment_end"] + 1,
+                    row["temporal_segment_end"],
                 ):
                     label[new_name][i] = 3
 
@@ -83,8 +72,8 @@ def main(path, clip_len):
 
     anno_df = pd.DataFrame(
         {
-            "file_name": label.keys(),
-            "label": [value for value in label.values()],
+            "file_name": list(label.keys()),
+            "label": list(label.values()),
         }
     )
 
@@ -96,10 +85,9 @@ if __name__ == "__main__":
     clip_len = 5
 
     path = {
-        "root_path": "/data/ephemeral/home/dataset",
-        "video_csv_path": "./dataset/anno_30.csv",
-        "meta_csv_path": f"./dataset//metadata_t{clip_len}.csv",
-        "anno_csv_path": "./dataset/annotation.csv",
+        "labeling_csv_path": "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/train/anno_30.csv",
+        "meta_csv_path": f"/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/train/metadata_t{clip_len}.csv",
+        "anno_csv_path": "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/train/annotation.csv",
     }
 
     main(path, clip_len)
