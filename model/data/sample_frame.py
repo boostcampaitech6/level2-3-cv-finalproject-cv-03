@@ -75,7 +75,7 @@ def main(params, paths):
         video.release()
 
     new_anno_df = pd.DataFrame(new_anno_dict)
-    new_anno_df.to_csv(paths["new_anno_path"])
+    new_anno_df.to_csv(paths["new_anno_path"], index=False)
 
 
 if __name__ == "__main__":
