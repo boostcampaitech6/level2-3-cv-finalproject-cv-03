@@ -7,8 +7,8 @@ import albumentations as A
 
 
 def main(params, paths):
-    anno_df = pd.read_csv(params["anno_path"])
-    meta_df = pd.read_csv(params["meta_path"])
+    anno_df = pd.read_csv(paths["anno_path"])
+    meta_df = pd.read_csv(paths["meta_path"])
     new_anno_dict = {"file_name": [], "class": []}
 
     for _, row in meta_df.iterrows():
