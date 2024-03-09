@@ -55,10 +55,8 @@ def main(params, paths):
                 frames,
             )
 
-            labels = np.array(
-                anno_df.loc[anno_df["file_name"] == file_name, "label"]
-            )
-            sample_labels = labels[indices]
+            labels = anno_df.loc[anno_df["file_name"] == file_name, "label"]
+            sample_labels = labels[t : t + params["clip_len"]]
 
             if sample_labels[-1] == 1:
                 clip_class = 1
