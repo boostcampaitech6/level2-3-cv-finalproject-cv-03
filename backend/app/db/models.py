@@ -51,3 +51,10 @@ class Log(Base):
     anomaly_save_path = Column(String)
     anomaly_feedback = Column(Integer, default=-1)
     anomaly_delete_yn = Column(Boolean, default=False)
+
+
+class EmailAuth(Base):
+    __tablename__ = "auth"
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
+    email = Column(String)
+    code = Column(String)
