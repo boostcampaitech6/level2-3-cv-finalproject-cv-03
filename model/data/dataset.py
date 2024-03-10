@@ -1,6 +1,7 @@
 import os
 import cv2
 import numpy as np
+import pandas as pd
 import torch
 from torch.utils.data import Dataset
 
@@ -92,18 +93,19 @@ class FrameTrainDataset(Dataset):
 
 
 class ClipTrainDataset(Dataset):
-    def __init__(self, frame_dir_path, transforms=None):
-        self.frame_paths = [
-            os.path.join(frame_dir_path, fname)
-            for fname in os.listdir(frame_dir_path)
-        ]
+    def __init__(self, frame_dir_path, anno_csv_path, transforms=None):
+        self.frame_dir_path = frame_dir_path
+        self.anno_df = pd.read_csv(anno_csv_path)
         self.transforms = transforms
 
     def __len__(self):
-        return len(self.frame_paths)
+        return len(self.anno_df)
 
     def __getitem__(self, item):
-        frames = np.load(self.frame_paths[item])
+        annotation = self.anno_df.iloc[item]
+        file_name = annotation["file_name"]
+
+        frames = np.load(os.path.join(self.frame_dir_path, file_name))
         frames = (frames / 255.0).astype(np.float32)
 
         if self.transforms is not None:
@@ -111,12 +113,34 @@ class ClipTrainDataset(Dataset):
 
         frames = torch.from_numpy(frames)
 
-        label = (
-            0
-            if os.path.basename(self.frame_paths[item]).split("_")[0]
-            == "Normal"
-            else 1
-        )
+        label = annotation["class"]
         label = torch.tensor(label, dtype=torch.long)
 
         return frames, label
+
+
+class ClipValidDataset(Dataset):
+    def __init__(self, frame_dir_path, anno_csv_path, transforms=None):
+        self.frame_dir_path = frame_dir_path
+        self.anno_df = pd.read_csv(anno_csv_path)
+        self.transforms = transforms
+
+    def __len__(self):
+        return len(self.anno_df)
+
+    def __getitem__(self, item):
+        annotation = self.anno_df.iloc[item]
+        file_name = annotation["file_name"]
+
+        frames = np.load(os.path.join(self.frame_dir_path, file_name))
+        frames = (frames / 255.0).astype(np.float32)
+
+        if self.transforms is not None:
+            frames = self.transforms(image=frames)["image"]
+
+        frames = torch.from_numpy(frames)
+
+        label = annotation["class"]
+        label = torch.tensor(label, dtype=torch.long)
+
+        return frames, label, file_name
