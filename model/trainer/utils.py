@@ -2,7 +2,6 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
     f1_score,
-    confusion_matrix,
 )
 
 
@@ -32,11 +31,12 @@ class MetricTracker:
 
     def result(self):
         scores = {
+            "true": self.true,
+            "pred": self.pred,
             "loss": None,
             "precision": None,
             "recall": None,
             "f1": None,
-            "confusion_matrix": None,
         }
 
         scores["loss"] = self.loss["total"] / self.loss["count"]
@@ -49,7 +49,6 @@ class MetricTracker:
         scores["f1"] = f1_score(
             self.true, self.pred, average=None, zero_division=0.0
         )
-        scores["confusion_matrix"] = confusion_matrix(self.true, self.pred)
 
         return scores
 
