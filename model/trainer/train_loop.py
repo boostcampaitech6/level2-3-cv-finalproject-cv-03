@@ -9,6 +9,8 @@ def train_loop(
     model.to(device)
     model.train()
 
+    metric_tracker.reset()
+
     for frames, labels in tqdm(
         train_loader, total=len(train_loader), desc=f"Epoch {epoch+1}"
     ):
