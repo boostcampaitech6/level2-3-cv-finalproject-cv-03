@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import cv2
 import albumentations as A
+import ast
 
 
 def main(params, paths):
@@ -11,7 +12,7 @@ def main(params, paths):
 
     for _, row in anno_df.iterrows():
         file_name = row["file_name"]
-        label = row["label"]
+        label = ast.literal_eval(row["label"])
 
         video_path = os.path.join(paths["video_dir_path"], file_name)
         video = cv2.VideoCapture(video_path)
@@ -55,9 +56,9 @@ def main(params, paths):
 
             if sample_labels[-1] == 1:
                 clip_class = 1
-            elif np.any(sample_labels == 1):
+            elif any(label == 1 for label in sample_labels):
                 clip_class = 2
-            elif np.any(sample_labels == 0):
+            elif any(label == 0 for label in sample_labels):
                 clip_class = 0
             else:
                 clip_class = 3
