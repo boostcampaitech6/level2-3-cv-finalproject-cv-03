@@ -22,6 +22,7 @@ const Register5 = (props) => {
   // console.log(email, password)
   const [fail, setFail] = useState(true);
   const [url, setUrl] = useState("");
+  const [name, setName] = useState("");
 
   useEffect(() => {
     if (url.length !== 0) {
@@ -57,8 +58,23 @@ const Register5 = (props) => {
                   behavior="padding"
                   enabled
                 >
-                  
                   <Block width={width * 0.8} marginTop={40}>
+                    <Input
+                      borderless
+                      placeholder="CCTV 이름"
+                      onChangeText={(text) => {setName(text)}}
+                      value={name}
+                      iconContent={
+                        <Icon
+                          size={16}
+                          color={argonTheme.COLORS.ICON}
+                          name="sticky-note"
+                          style={styles.inputIcons}
+                        />
+                      }
+                    />
+                  </Block>
+                  <Block width={width * 0.8} marginTop={0}>
                     <Input
                       borderless
                       placeholder="CCTV URL"
@@ -109,7 +125,7 @@ const Register5 = (props) => {
                   </Block> */}
                   <Block middle marginTop={40}>
                     <Button 
-                      onPress={() => navigation.navigate('Register6', { email: email, password: password, cctv_url: url })}
+                      onPress={() => navigation.navigate('Register6', { email: email, password: password, cctv_url: url, cctv_name: name })}
                       color={(fail) ? "muted" : "primary"} 
                       style={styles.createButton}
                       disabled={fail} // Button is disabled if either isChecked2 or isChecked3 is not checked

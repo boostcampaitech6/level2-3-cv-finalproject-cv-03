@@ -20,13 +20,14 @@ const Register6 = (props) => {
   const { email } = route.params;
   const { password } = route.params;
   const { cctv_url } = route.params;
-  const [name, setName] = useState("");
+  const { cctv_name } = route.params;
+  const [name, setName] = useState("기본값");
   const [fail, setFail] = useState(false);
 
   const handleRegister = async () => {
-    console.log(email, password, name, cctv_url)
+    console.log(email, password, name, cctv_url, cctv_name)
     try {
-      const response = await fetch(`http://10.28.224.142:30016/api/v0/members/register?email=${encodeURIComponent(email)}&password=${password}&member_name=${""}d&store_name=${name}&cctv_url=${cctv_url}`, {
+      const response = await fetch(`http://10.28.224.142:30016/api/v0/members/register?email=${encodeURIComponent(email)}&password=${password}&member_name=${""}d&store_name=${name}&cctv_url=${cctv_url}&cctv_name=${cctv_name}`, {
         method: 'POST',
         headers: {
           'accept': 'application/json',
@@ -136,7 +137,7 @@ const Register6 = (props) => {
                     >
                       제출
                     </Button>
-                    <Button 
+                    {/* <Button 
                       // onPress={() => navigation.navigate('Login')}
                       onPress={handleRegister}
                       color={"primary"} 
@@ -144,7 +145,7 @@ const Register6 = (props) => {
                       textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
                     >
                       건너뛰기
-                    </Button>
+                    </Button> */}
 
                     {fail && (
                       <Text style={styles.failText}>회원가입에 실패했습니다.</Text>
@@ -223,6 +224,11 @@ const styles = StyleSheet.create({
     fontFamily: 'NGB',
     fontSize: 14,
   },
+  failText: {
+    color: argonTheme.COLORS.ERROR,
+    fontFamily: 'NGB',
+    fontSize: 13,
+  }
 });
 
 export default Register6;

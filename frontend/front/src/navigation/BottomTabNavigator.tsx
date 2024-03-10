@@ -12,7 +12,7 @@ import ProfileEdit from '../screens/Tab3/ProfileEdit';
 import CctvSettingScreen from '../screens/Tab3/CctvSettingScreen';
 import AlarmSettingScreen from '../screens/Tab3/AlarmSettingScreen';
 import Alarm from '../screens/Tab3/Alarm';
-
+import AlarmEdit from '../screens/Tab3/AlarmEdit';
 
 const Tab = createBottomTabNavigator();
 const Tab1Stack = createStackNavigator();
@@ -33,6 +33,7 @@ function Tab3StackNavigator() {
       <Tab3Stack.Screen name="Tab3Screen" component={Tab3Screen} />
       <Tab3Stack.Screen name="Profile" component={Profile} />
       <Tab3Stack.Screen name="Alarm" component={Alarm} />
+      <Tab3Stack.Screen name="AlarmEdit" component={AlarmEdit} />
       <Tab3Stack.Screen name="ProfileEdit" component={ProfileEdit} />
       <Tab3Stack.Screen name="CctvSettingScreen" component={CctvSettingScreen} />
       <Tab3Stack.Screen name="AlarmSettingScreen" component={AlarmSettingScreen} />
