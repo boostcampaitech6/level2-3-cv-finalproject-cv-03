@@ -52,6 +52,7 @@ def visualization(args, model):
 
     for file_name in os.listdir(args["video_dir_path"]):
         file_df = anno_df[anno_df["video_name"] == file_name]
+        file_df = file_df.sort_values(by="pred_t")
 
         video_path = os.path.join(args["video_dir_path"], file_name)
         video = cv2.VideoCapture(video_path)
