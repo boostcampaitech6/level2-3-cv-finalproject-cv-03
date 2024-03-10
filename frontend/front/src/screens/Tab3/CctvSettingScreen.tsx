@@ -6,7 +6,8 @@ import {
   Modal,
   TouchableOpacity,
   TextInput,
-  Button,
+  ImageBackground,
+  Dimensions
 } from 'react-native'
 import { Text } from 'galio-framework'
 import { Images, argonTheme } from '../../constants'
@@ -19,6 +20,8 @@ interface Cctvlist {
   cctv_name: string
   cctv_url: string
 }
+
+const { width, height } = Dimensions.get("screen");
 
 type Props = {
   navigation: NavigationProp<RootStackParamList, 'CctvSettingScreen'>
@@ -267,11 +270,15 @@ export default function CctvSettingScreen({ navigation }: Props) {
   )
 
   return (
+    <ImageBackground
+    source={Images.Onboarding}
+    style={{ width, height, zIndex: 1 }}
+    >
     <View style={styles.container}>
       <FlatList
         ListHeaderComponent={
           <View style={styles.header}>
-            <Text style={styles.headerText}>CCTV 세팅</Text>
+            <Text style={[styles.headerText, {color: 'white'}]}>CCTV 세팅</Text>
             <TouchableOpacity
               style={styles.addButton}
               onPress={() => {
@@ -344,13 +351,13 @@ export default function CctvSettingScreen({ navigation }: Props) {
         style={{ flex: 1 }}
       />
     </View>
+    </ImageBackground>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f0f0',
   },
   header: {
     flexDirection: 'row',
