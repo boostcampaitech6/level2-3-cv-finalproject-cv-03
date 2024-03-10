@@ -95,6 +95,29 @@ export default function CCTVDetailScreen({ route, navigation }: LogDetailScreenP
       }
     };
 
+    const handleFeedback2 = async () => {
+      try {
+        const response = await fetch(`http://10.28.224.142:30016/api/v0/cctv/feedback?log_id=${1}&feedback=${1}`, {
+          method: 'PUT',
+          headers: {
+            'accept': 'application/json',
+          },
+          // body: JSON.stringify({ email }),
+        });
+        // console.log(email)
+        const data = await response.json();
+        console.log(data);
+        if (data.isSuccess) {
+          setFail(false)
+        }
+        else {
+          setFail(true)
+      }
+      } catch (error) {
+        console.error('Network error:', error);
+      }
+    };
+
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -140,6 +163,7 @@ export default function CCTVDetailScreen({ route, navigation }: LogDetailScreenP
                   </Text>
                 </Button>
                 <Button style={{marginTop:20, width:100,}} color="error" onPress={() => {
+                  handleFeedback2();
                   setSaveVisible(false);
                   setSave2Visible(true);
                 }} >
