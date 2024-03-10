@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import cv2
 import albumentations as A
+import ast
 
 
 def main(params, paths):
@@ -56,13 +57,14 @@ def main(params, paths):
             )
 
             labels = anno_df.loc[anno_df["file_name"] == file_name, "label"]
+            labels = ast.literal_eval(labels)
             sample_labels = labels[t : t + params["clip_len"]]
 
             if sample_labels[-1] == 1:
                 clip_class = 1
-            elif np.any(sample_labels == 1):
+            elif any(label == 1 for label in sample_labels):
                 clip_class = 2
-            elif np.any(sample_labels == 0):
+            elif any(label == 0 for label in sample_labels):
                 clip_class = 0
             else:
                 clip_class = 3
@@ -79,6 +81,8 @@ def main(params, paths):
 
 
 if __name__ == "__main__":
+    random.seed(0)
+
     params = {
         "clip_len": 5,
         "clip_frame": 16,
