@@ -8,7 +8,12 @@ import ast
 
 def main(params, paths):
     anno_df = pd.read_csv(paths["anno_path"])
-    new_anno_dict = {"file_name": [], "class": [], "pred_t": []}
+    new_anno_dict = {
+        "video_name": [],
+        "file_name": [],
+        "class": [],
+        "pred_t": [],
+    }
 
     for _, row in anno_df.iterrows():
         file_name = row["file_name"]
@@ -63,6 +68,7 @@ def main(params, paths):
             else:
                 clip_class = 3
 
+            new_anno_dict["video_name"].append(file_name)
             new_anno_dict["file_name"].append(
                 f"{os.path.splitext(file_name)[0]}_{t}.npy"
             )
