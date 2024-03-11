@@ -11,6 +11,7 @@ import smtplib
 import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import redis, json
 
 
 DEFAULT_RETURN_DICT = {"isSuccess": True, "result": None}
@@ -29,6 +30,8 @@ streamingRouter = APIRouter(prefix="/api/v0/streaming")
 settingRouter = APIRouter(prefix="/api/v0/settings")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+redis_server = redis.Redis(host="10.28.224.201", port=30575, db=0)
 
 
 def hash_password(password):
@@ -168,7 +171,7 @@ def register_member(
     )
     session.add(cctv)
     session.commit()
-
+    redis_server.lpush("start_inf", json.dumps({"cctv_id":cctv.cctv_id, "cctv_url":cctv.cctv_url, "threshold":member.threshold, "save_time_length":member.save_time_length}))
     return def_return_dict
 
 
@@ -318,6 +321,11 @@ def alarm_edit(
         member.save_time_length = save_time_length
         session.commit()
 
+        alarm_config = json.dumps({"threshold":threshold, "save_time_length":save_time_length})
+        cctv_ids = session.query(models.CCTV.cctv_id).filter(models.Member.member_id==member_id, models.CCTV.cctv_delete_yn == False)
+        for cctv_id in cctv_ids:
+            redis_server.lpush(f"{cctv_id[0]}_alarm", alarm_config)
+
     else:
         def_return_dict["isSuccess"] = False
 
@@ -367,6 +375,7 @@ def cctv_register(
             "cctv_id": cctv.cctv_id,
             "cctv_url": cctv_url,
         }
+        redis_server.lpush("start_inf", json.dumps({"cctv_id":cctv.cctv_id,"cctv_url":cctv.cctv_url,"threshold":member.threshold, "save_time_length":member.save_time_length}))
     else:
         def_return_dict["isSuccess"] = False
 
@@ -384,6 +393,9 @@ def cctv_delete(cctv_id: int, session: Session = Depends(get_db)):
         session.delete(cctv)
         session.commit()
 
+        flag_key = f"{cctv_id}_stop_inf"
+        redis_server.lpush(flag_key, '')
+
     return def_return_dict
 
 
@@ -400,28 +412,24 @@ def cctv_edit(
     if not cctv:
         def_return_dict["isSuccess"] = False
     else:
+        change_url = cctv.cctv_url != cctv_url
         cctv.cctv_name = cctv_name
         cctv.cctv_url = cctv_url
         session.commit()
+
+        if change_url:
+            threshold, save_time_length = session.query(models.Member.threshold, models.Member.save_time_length).filter(models.Member.member_id == cctv.member_id).first()
+            
+            flag_key = f"{cctv_id}_stop_inf"
+            redis_server.lpush(flag_key, '')
+            redis_server.lpush("start_inf", json.dumps({"cctv_id":cctv.cctv_id,"cctv_url":cctv.cctv_url,"threshold":threshold, "save_time_length":save_time_length}))
 
     return def_return_dict
 
 
 # ================ Hyunwoo ================
-
-
-"""
-GET /api/v0/cctv/loglist_lookup
-GET /api/v0/cctv/log_lookup
-POST /api/v0/cctv/feedback
-DELETE /api/v0/cctv/log_delete
-GET /api/v0/streaming/list_lookup
-"""
-
-
 @cctvRouter.get("/loglist_lookup")
 def select_loglist_lookup(member_id: int, session: Session = Depends(get_db)):
-    # ex) http://10.28.224.142:30016/api/v0/cctv/loglist_lookup?member_id=13
     def_return_dict = DEFAULT_RETURN_DICT.copy()
     try:
         tmp_list = []
@@ -454,7 +462,6 @@ def select_loglist_lookup(member_id: int, session: Session = Depends(get_db)):
 
 @cctvRouter.get("/log_lookup")
 def select_log_lookup(log_id: int, session: Session = Depends(get_db)):
-    # ex) http://10.28.224.142:30016/api/v0/cctv/log_lookup?log_id=1
     def_return_dict = DEFAULT_RETURN_DICT.copy()
     try:
         log_info = (
@@ -476,11 +483,6 @@ def select_log_lookup(log_id: int, session: Session = Depends(get_db)):
 def update_log_feedback(
     log_id: int, feedback: int, session: Session = Depends(get_db)
 ):
-    """
-    curl -X 'PUT' \
-    'http://10.28.224.142:30016/api/v0/cctv/feedback?log_id=1&feedback=0' \
-    -H 'accept: application/json'
-    """
     def_return_dict = DEFAULT_RETURN_DICT.copy()
     try:
         log_info = (
@@ -501,11 +503,6 @@ def update_log_feedback(
 
 @cctvRouter.delete("/log_delete")
 def delete_log(log_id: int, session: Session = Depends(get_db)):
-    """
-    curl -X 'DELETE' \
-    'http://10.28.224.142:30016/api/v0/cctv/log_delete?log_id=3' \
-    -H 'accept: application/json'
-    """
     def_return_dict = DEFAULT_RETURN_DICT.copy()
     try:
         log_info = (
@@ -526,7 +523,6 @@ def delete_log(log_id: int, session: Session = Depends(get_db)):
 
 @streamingRouter.get("/list_lookup")
 def select_cctvlist(member_id: int, session: Session = Depends(get_db)):
-    # ex) http://10.28.224.142:30016/api/v0/streaming/list_lookup?member_id=1
     def_return_dict = DEFAULT_RETURN_DICT.copy()
     try:
         cctv_list = (
