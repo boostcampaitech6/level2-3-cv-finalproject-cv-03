@@ -24,6 +24,7 @@ const Register2 = (props) => {
   const [fail2, setFail2] = useState(false);
   const [dup, setDup] = useState(true);
   const [dup2, setDup2] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     // console.log("Updated fail2:", fail2);
@@ -47,11 +48,13 @@ const Register2 = (props) => {
       if (data.isSuccess) {
         setDup(false);
         setDup2(false);
+        setSuccess(true);
       }
       else {
         // 이메일이 중복되는 경우
         setDup(true);
         setDup2(true);
+        setSuccess(false);
     }
     } catch (error) {
       console.error('Network error:', error);
@@ -157,6 +160,9 @@ const Register2 = (props) => {
                     )}
                     {dup2 && (
                     <Text style={styles.text2} marginStart={5} color={argonTheme.COLORS.ERROR}>중복된 이메일입니다.</Text>
+                    )}
+                    {success && (
+                    <Text style={styles.text2} marginStart={5} color={argonTheme.COLORS.SUCCESS}>중복체크에 성공했습니다.</Text>
                     )}
                   
                   

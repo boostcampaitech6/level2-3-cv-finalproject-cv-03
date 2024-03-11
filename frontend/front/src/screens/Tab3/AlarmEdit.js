@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import { Block, Text, theme } from "galio-framework";
 import { useFocusEffect } from '@react-navigation/native';
+import DropDownPicker from 'react-native-dropdown-picker';
+import { Picker } from '@react-native-picker/picker';
 
 import { Button, Input } from "../../components";
 import { Images, argonTheme } from "../../constants";
@@ -23,8 +25,8 @@ const { width, height } = Dimensions.get("screen");
 
 const thumbMeasure = (width - 48 - 32) / 3;
 
-const Alarm = (props) => {
-  const { navigation } = props;
+const AlarmEdit = (props) => {
+  const { navigation, route } = props;
   const { user } = useContext(UserContext);
   // console.log(user)
   const [email, setEmail] = useState("");
@@ -37,38 +39,47 @@ const Alarm = (props) => {
   const [password2Visible, setPassword2Visible] = useState(false);
   const [inpassword, setInpassword] = useState("");
 
-  const [threshold, setThreshold] = useState(0);
-  const [save_time_length, setSave_time_length] = useState(0);
+  const { threshold } = route.params;
+  const { save_time_length } = route.params;
+  const [nthreshold, setNthreshold] = useState(threshold);
+  const [nsave_time_length, setNsave_time_length] = useState(save_time_length);
+
+
+  const options = [
+    { label: '0', value: 0 },
+    { label: '0.2', value: 0.2 },
+    { label: '0.4', value: 0.4 },
+    { label: '0.6', value: 0.6 },
+    { label: '0.8', value: 0.8 },
+    { label: '1', value: 1 },
+  ];
+
+  const handleSave = async () => {
+    setPasswordVisible(true);
+  }
+  const handleEdit = async () => {
+    try {
+      const response = await fetch(`http://10.28.224.142:30016/api/v0/settings/alarm_edit?member_id=82&threshold=${nthreshold}&save_time_length=${nsave_time_length}`, {
+        method: "POST",
+        headers: { 'accept': 'application/json' },
+      });
+      const data = await response.json();
+      // console.log(data);
+      if (data.isSuccess) {
+        navigation.navigate("Alarm");
+      }
+      else {
+        console.error('No information:', error);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+    }
+  };
 
   useEffect(() => {
     setNstore_name(store_name);
   }, [store_name]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const fetchData = async () => {
-        try {
-          const response = await fetch(`http://10.28.224.142:30016/api/v0/settings/alarm_lookup?member_id=${user}`, {
-            method: "GET",
-            headers: { 'accept': 'application/json' },
-          });
-          const data = await response.json();
-          // console.log(data);
-          if (data.isSuccess) {
-            setThreshold(data.result.threshold);
-            setSave_time_length(data.result.save_time_length);
-          }
-          else {
-            console.error('No information:', error);
-          }
-        } catch (error) {
-          console.error('Network error:', error);
-        }
-      }
-  
-      fetchData();
-    }, [user])
-  );
 
   return (
     <Block flex style={styles.profile}>
@@ -80,6 +91,7 @@ const Alarm = (props) => {
           <ScrollView
             showsVerticalScrollIndicator={false}
             style={{ width, marginTop: '20%' }}
+            nestedEnabled={true}
           >
             <Block flex style={styles.profileCard}>
               <Block flex>
@@ -93,9 +105,35 @@ const Alarm = (props) => {
                   <Text bold size={16} color="#525F7F" style={styles.text}>
                     임계값
                   </Text>
-                  <Text bold size={16} color="#525F7F" style={styles.text2}>
+                  {/* <Text bold size={16} color="#525F7F" style={styles.text2}>
                     {threshold}
-                  </Text>
+                  </Text> */}
+                  <Input
+                    // style={styles.textInput}
+                    defaultValue={threshold.toString()}
+                    onChangeText={text => setNthreshold(text)}
+                  />
+                  {/* <View style={{flex: 1, height: '100%'}}>
+                  <DropDownPicker
+                    items={[
+                      { label: '0', value: 0 },
+                      { label: '0.2', value: 0.2 },
+                      { label: '0.4', value: 0.4 },
+                      { label: '0.6', value: 0.6 },
+                      { label: '0.8', value: 0.8 },
+                      { label: '1', value: 1 },
+                    ]}
+                    defaultValue={threshold}
+                    containerStyle={{height: 40}}
+                    style={{backgroundColor: '#fafafa'}}
+                    itemStyle={{
+                      justifyContent: 'flex-start'
+                    }}
+                    dropDownStyle={{backgroundColor: '#fafafa'}}
+                    onChangeItem={item => setNthreshold(item.value)}
+                  />
+                </View> */}
+
                 </Block>
                 <Text bold  color="#525F7F" style={styles.textTitle}>
                   저장 동영상
@@ -104,65 +142,59 @@ const Alarm = (props) => {
                   <Block style={styles.divider} />
                 </Block>
                 <Block middle style={{marginTop: 20}} row space="between">
+                  
                   <Text bold size={16} color="#525F7F" style={styles.text}>
                     시간
                   </Text>
-                  <Text bold size={16} color="#525F7F" style={styles.text2}>
+                  {/* <Text bold size={16} color="#525F7F" style={styles.text2}>
                     {save_time_length}
-                  </Text>
+                  </Text> */}
+                  <Input
+                    // style={styles.textInput}
+                    defaultValue={save_time_length.toString()}
+                    onChangeText={text => setNsave_time_length(text)}
+                  />
                 </Block>
                 
-                <Overlay isVisible={overlayVisible} onBackdropPress={() => setOverlayVisible(false)}>
-                  <View style={{ alignItems: 'center', justifyContent: 'center', padding: 40 }}>
-                    <Text style={styles.poptitle}>매장명 수정</Text>
-                    <Input value={nstore_name} defaultValue={store_name} onChangeText={setNstore_name} placeholder={"새 매장명"}/>
-                    <Button style={{marginTop:20,}} color="primary" onPress={() => {
-                      setNpassword(nstore_name);
-                      setOverlayVisible(false);
-                    }} >
-                      <Text style={{ fontSize: 14, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}>
-                        저장하기
-                      </Text>
-                    </Button>
-                  </View>
-                </Overlay>
                 <Overlay isVisible={passwordVisible} onBackdropPress={() => setPasswordVisible(false)}>
                   <View style={{ alignItems: 'center', justifyContent: 'center', padding: 40 }}>
-                    <Text style={styles.poptitle}>비밀번호 확인</Text>
-                    <Input value={inpassword} onChangeText={setInpassword} placeholder={"기존 비밀번호"}/>
-                    <Button style={{marginTop:20,}} color="primary" onPress={() => {
-                      setInpassword(inpassword);
-                      setPasswordVisible(false);
-                      setPassword2Visible(true);
-                    }} >
-                      <Text style={{ fontSize: 14, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}>
-                        다음
-                      </Text>
-                    </Button>
+                    <Text style={styles.poptitle}>저장하시겠습니까?</Text>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                      <Button style={{marginTop:20, width:100,}} color="success" onPress={() => {
+                        setPasswordVisible(false);
+                        setPassword2Visible(true);
+                        handleEdit();
+                      }} >
+                        <Text style={{ fontSize: 14, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}>
+                          예
+                        </Text>
+                      </Button>
+                      <Button style={{marginTop:20, width:100,}} color="error" onPress={() => {
+                        setPasswordVisible(false);
+                        setPassword2Visible(false);
+                      }} >
+                        <Text style={{ fontSize: 14, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}>
+                          아니오
+                        </Text>
+                      </Button>
+                    </View>
                   </View>
                 </Overlay>
+
                 <Overlay isVisible={password2Visible} onBackdropPress={() => setPassword2Visible(false)}>
                   <View style={{ alignItems: 'center', justifyContent: 'center', padding: 40 }}>
-                    <Text style={styles.poptitle}>새 비밀번호</Text>
-                    <Input value={npassword} onChangeText={setNpassword} placeholder={"새 비밀번호"}/>
-                    <Button style={{marginTop:20,}} color="primary" onPress={() => {
-                      setNpassword(npassword);
-                      setPassword2Visible(false);
-                    }} >
-                      <Text style={{ fontSize: 14, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}>
-                        저장하기
-                      </Text>
-                    </Button>
+                    <Text style={styles.poptitle}>저장되었습니다.</Text>                    
                   </View>
                 </Overlay>
-                <Block middle marginTop={30}>
+
+                <Block middle marginTop={50}>
                   <Button 
-                    onPress={() => navigation.navigate('AlarmEdit', { threshold: threshold, save_time_length: save_time_length})}
+                    onPress={handleSave}
                     color={ "primary" } 
                     style={styles.createButton}
                     textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
                   >
-                    수정하기
+                    저장하기
                   </Button>
                 </Block>
               </Block>
@@ -229,6 +261,7 @@ const styles = StyleSheet.create({
     marginStart: 10,
     marginBottom: 30,
     color: '#172B4D',
+    marginTop: 20,
   },
   text2: {
     fontFamily: 'NGB',
@@ -248,7 +281,27 @@ const styles = StyleSheet.create({
     marginStart: 5,
     fontSize: 25,
     color: '#172B4D',
+  },
+  textInput: {
+    width: 100,
+    height: 40,
+    backgroundColor: "#fff",
+    shadowColor: argonTheme.COLORS.BLACK,
+    shadowOffset: {
+      width: 0,
+      height: 3
+    },
+    shadowColor: argonTheme.COLORS.BLACK,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 2,
+    shadowOpacity: 0.05,
+    elevation: 2,
+    borderRadius: 4,
+    borderColor: argonTheme.COLORS.BORDER,
+    height: 44,
+    backgroundColor: '#FFFFFF',
+    margin: 0,
   }
 });
 
-export default Alarm;
+export default AlarmEdit;
