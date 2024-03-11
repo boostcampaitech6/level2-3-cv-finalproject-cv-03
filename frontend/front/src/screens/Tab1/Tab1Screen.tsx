@@ -127,6 +127,7 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
           renderItem={renderItem}
           keyExtractor={item => item.log_id.toString()}
           style={{ flex: 1 }}
+          contentContainerStyle={{ paddingBottom: 300 }}
         />
       </View>
     </ImageBackground>

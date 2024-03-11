@@ -349,6 +349,7 @@ export default function CctvSettingScreen({ navigation }: Props) {
         renderItem={renderItem}
         keyExtractor={(item) => item.cctv_id.toString()}
         style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 300 }}
       />
     </View>
     </ImageBackground>
