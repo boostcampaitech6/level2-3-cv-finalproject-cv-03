@@ -6,16 +6,15 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-
-
-from arch import YOLO, GRU, ClipModel, rnn_input_sizes
-from data import ClipTrainDataset
-from trainer import MetricTracker, train_loop, valid_loop
-
 import wandb
 
+from arch import *
+from data import *
+from trainer import *
+from utils import *
 
-def set_seed(seed):
+
+def set_seed(seed=0):
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
@@ -23,25 +22,26 @@ def set_seed(seed):
     torch.backends.cudnn.benchmark = False
     np.random.seed(seed)
     random.seed(seed)
+    os.environ["PYTHONHASHSEED"] = str(seed)
 
 
 def main():
     set_seed(seed=2024)
 
     train_dataset = ClipTrainDataset(
-        frame_dir_path="/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/train/frames/folder_name",
-        anno_csv_path="/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/train/anno_name.csv",
+        clip_dir_path="/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/train/clips/...",
+        anno_clip_path="/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/train/anno_clip_.csv",
     )
     valid_dataset = ClipTrainDataset(
-        frame_dir_path="/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/frames/folder_name",
-        anno_csv_path="/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/anno_name.csv",
+        clip_dir_path="/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/clips/...",
+        anno_clip_path="/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/anno_clip_val_.csv",
     )
 
     train_loader = DataLoader(
         train_dataset, batch_size=8, shuffle=True, num_workers=8
     )
     valid_loader = DataLoader(
-        valid_dataset, batch_size=1, shuffle=False, num_workers=1
+        valid_dataset, batch_size=1, shuffle=False, num_workers=8
     )
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -49,11 +49,14 @@ def main():
     cnn = YOLO(
         cfg="/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/arch/yolo_yaml/yolov8n-cls.yaml"
     )
-    input_size = rnn_input_sizes[str(cnn)]
+    input_size = RNN_INPUT_SIZE[str(cnn)]
     rnn = GRU(input_size=input_size, hidden_size=512, num_layers=1)
 
     model = ClipModel(cnn, rnn)
-    save_dir = "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/save_dir"
+    save_dir = "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/save"
+
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
 
     optimizer = optim.Adam(model.parameters(), lr=1e-4)
     criterion = nn.CrossEntropyLoss()
@@ -65,7 +68,7 @@ def main():
 
     wandb.init(project="WatchDUCK!!", entity="gusdn00751")
 
-    for epoch in range(epochs):
+    for epoch in range(1, epochs + 1):
         train_scores = train_loop(
             model,
             train_loader,
@@ -76,19 +79,17 @@ def main():
             epoch,
         )
         valid_scores = valid_loop(
-            model, valid_loader, criterion, metric_tracker, device
+            model, valid_loader, criterion, metric_tracker, device, epoch
         )
-
-        classes = ["Normal", "Shoplifting", "Doubt", "Background"]
 
         # --wandb--
         log_data = {
-            "Epoch": epoch + 1,
+            "Epoch": epoch,
             "train_loss": train_scores["loss"],
             "valid_loss": valid_scores["loss"],
         }
 
-        for i, class_name in enumerate(classes[:-1]):
+        for i, class_name in enumerate(CLASSES[:-1]):
             log_data.update(
                 {
                     f"train_{class_name}_f1_score": train_scores["f1"][i],
@@ -106,10 +107,10 @@ def main():
 
         wandb.log(log_data)
         wandb.sklearn.plot_confusion_matrix(
-            train_scores["true"], train_scores["pred"], labels=classes
+            train_scores["true"], train_scores["pred"], labels=CLASSES
         )
         wandb.sklearn.plot_confusion_matrix(
-            valid_scores["true"], valid_scores["pred"], labels=classes
+            valid_scores["true"], valid_scores["pred"], labels=CLASSES
         )
 
         # --save model--
@@ -121,7 +122,7 @@ def main():
             model_path = tmp.name
             torch.save(model.state_dict(), model_path)
 
-        artifact = wandb.Artifact(f"Epoch_{epoch+1}", type="model")
+        artifact = wandb.Artifact(f"Epoch_{epoch}", type="model")
         artifact.add_file(model_path)
         wandb.log_artifact(artifact)
 
@@ -134,7 +135,7 @@ def main():
             torch.save(model.state_dict(), best_model_path)
 
         print(
-            f"Epoch {epoch+1}\n"
+            f"Epoch {epoch}\n"
             f"Train | f1 score: {train_scores['f1']} | precision: {train_scores['precision']} | recall: {train_scores['recall']} | loss: {train_scores['loss']}\n"
             f"Valid | f1 score: {valid_scores['f1']} | precision: {valid_scores['precision']} | recall: {valid_scores['recall']} | loss: {valid_scores['loss']}"
         )

@@ -1,16 +1,17 @@
 import pandas as pd
+from tqdm import tqdm
 
 
-def main(labeling_csv_path, new_anno_path):
-    labeling_df = pd.read_csv(labeling_csv_path)
-    file_names = list(set(labeling_df["file_list"]))
+def main(labeling_path, save_anno_path):
+    labeling_df = pd.read_csv(labeling_path)
+    video_names = list(set(labeling_df["file_list"]))
     labels = {}
 
-    for file_name in file_names:
-        file_df = labeling_df.loc[labeling_df["file_list"] == file_name]
-        file_name = file_name.strip('[]"')
+    for video_name in tqdm(video_names, desc="[Create anno_video_val.csv]"):
+        file_df = labeling_df.loc[labeling_df["file_list"] == video_name]
+        video_name = video_name.strip('[]"')
 
-        labels[file_name] = [0 for _ in range(60)]
+        labels[video_name] = [0 for _ in range(60)]
 
         for _, row in file_df.iterrows():
             if row["metadata"] == '{"Abnormal":"0"}':
@@ -18,25 +19,25 @@ def main(labeling_csv_path, new_anno_path):
                     row["temporal_segment_start"],
                     row["temporal_segment_end"],
                 ):
-                    labels[file_name][i] = 1
+                    labels[video_name][i] = 1
             elif row["metadata"] == '{"Abnormal":"1"}':
                 for i in range(
                     row["temporal_segment_start"],
                     row["temporal_segment_end"],
                 ):
-                    labels[file_name][i] = 3
+                    labels[video_name][i] = 3
 
-    new_anno_df = pd.DataFrame(
+    anno_df = pd.DataFrame(
         {
-            "file_name": list(labels.keys()),
-            "label": list(labels.values()),
+            "video_name": list(labels.keys()),
+            "labels": list(labels.values()),
         }
     )
-    new_anno_df.to_csv(new_anno_path, index=False)
+    anno_df.to_csv(save_anno_path, index=False)
 
 
 if __name__ == "__main__":
-    labeling_path = "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/aihub_labeling_valid.csv"
-    new_anno_path = "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/annotation.csv"
+    labeling_path = "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/aihub_labeling_val.csv"
+    save_anno_path = "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/anno_video_val.csv"
 
-    main(labeling_path, new_anno_path)
+    main(labeling_path, save_anno_path)

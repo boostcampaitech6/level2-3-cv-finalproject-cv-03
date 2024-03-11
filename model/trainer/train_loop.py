@@ -11,9 +11,7 @@ def train_loop(
 
     metric_tracker.reset()
 
-    for frames, labels in tqdm(
-        train_loader, total=len(train_loader), desc=f"Epoch {epoch+1}"
-    ):
+    for frames, labels in tqdm(train_loader, desc=f"[Epoch {epoch} (Train)]"):
         frames, labels = frames.to(device), labels.to(device)
 
         if isinstance(model, FrameModel):

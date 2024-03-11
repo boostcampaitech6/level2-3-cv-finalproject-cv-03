@@ -23,7 +23,7 @@ class YOLO(nn.Module):
     def __init__(self, cfg="./yolo_yaml/yolov8n-cls.yaml"):
         super(YOLO, self).__init__()
         self.cfg = cfg
-        self.yolo = ClassificationModel(cfg=self.cfg, ch=3, nc=2)
+        self.yolo = ClassificationModel(cfg=self.cfg, ch=3, nc=4)
 
     def __str__(self):
         model_name = os.path.basename(self.cfg).split(".")[0].split("-")[0]

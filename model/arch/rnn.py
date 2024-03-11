@@ -2,7 +2,7 @@ import torch.nn as nn
 
 
 class GRU(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers):
+    def __init__(self, input_size, hidden_size=512, num_layers=1):
         super(GRU, self).__init__()
         self.gru = nn.GRU(
             input_size,
@@ -21,7 +21,7 @@ class GRU(nn.Module):
 
 
 class LSTM(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers):
+    def __init__(self, input_size, hidden_size=512, num_layers=1):
         super(LSTM, self).__init__()
         self.lstm = nn.LSTM(
             input_size,

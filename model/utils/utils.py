@@ -4,6 +4,21 @@ from sklearn.metrics import (
     f1_score,
 )
 
+CLASSES = ["Normal", "Shoplifting", "Doubt", "Background"]
+
+RNN_INPUT_SIZE = {
+    "yolov8n": 256,
+    "yolov8s": 512,
+    "yolov8m": 768,
+    "yolov8l": 1024,
+    "yolov8x": 1280,
+    "ResNet32": 512,
+    "ResNet50": 2048,
+    "MobileNet": 1280,
+    "ResNeXt": 2048,
+    "VGG16": 25088,
+}
+
 
 class MetricTracker:
     def __init__(self):
@@ -62,9 +77,9 @@ class LabelTracker:
     def reset(self):
         self.labels = {}
 
-    def update(self, file_names, labels):
-        for file_name, label in zip(file_names, labels):
-            self.labels[file_name] = label
+    def update(self, clip_names, labels):
+        for clip_name, label in zip(clip_names, labels):
+            self.labels[clip_name] = label
 
     def result(self):
         return self.labels

@@ -3,23 +3,28 @@ import numpy as np
 import pandas as pd
 import cv2
 import albumentations as A
+from tqdm import tqdm
 import ast
 
 
 def main(params, paths):
     anno_df = pd.read_csv(paths["anno_path"])
-    new_anno_dict = {
+    anno_clip = {
         "video_name": [],
-        "file_name": [],
+        "clip_name": [],
         "class": [],
         "pred_t": [],
     }
 
-    for _, row in anno_df.iterrows():
-        file_name = row["file_name"]
+    for _, row in tqdm(
+        anno_df.iterrows(),
+        total=len(anno_df),
+        desc="[Create anno_clip_val.csv]",
+    ):
+        video_name = row["video_name"]
         label = ast.literal_eval(row["label"])
 
-        video_path = os.path.join(paths["video_dir_path"], file_name)
+        video_path = os.path.join(paths["video_dir_path"], video_name)
         video = cv2.VideoCapture(video_path)
 
         fps = int(video.get(cv2.CAP_PROP_FPS))
@@ -49,11 +54,10 @@ def main(params, paths):
                 frames.append(frame)
 
             frames = np.transpose(np.array(frames), (0, 3, 1, 2))
+
+            clip_name = f"{os.path.splitext(video_name)[0]}_{t}.npy"
             np.save(
-                os.path.join(
-                    paths["save_dir_path"],
-                    f"{os.path.splitext(file_name)[0]}_{t}.npy",
-                ),
+                os.path.join(paths["save_dir_path"], clip_name),
                 frames,
             )
 
@@ -68,17 +72,14 @@ def main(params, paths):
             else:
                 clip_class = 3
 
-            new_anno_dict["video_name"].append(file_name)
-            new_anno_dict["file_name"].append(
-                f"{os.path.splitext(file_name)[0]}_{t}.npy"
-            )
-            new_anno_dict["class"].append(clip_class)
-            new_anno_dict["pred_t"].append(t + params["clip_len"])
+            anno_clip["video_name"].append(video_name)
+            anno_clip["video_name"].append(clip_name)
+            anno_clip["class"].append(clip_class)
+            anno_clip["pred_t"].append(t + params["clip_len"])
 
         video.release()
 
-    new_anno_df = pd.DataFrame(new_anno_dict)
-    new_anno_df.to_csv(paths["new_anno_path"], index=False)
+    pd.DataFrame(anno_clip).to_csv(paths["save_anno_path"], index=False)
 
 
 if __name__ == "__main__":
@@ -88,10 +89,10 @@ if __name__ == "__main__":
         "frame_size": 224,
     }
     paths = {
-        "anno_path": "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/annotation.csv",
+        "anno_path": "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/anno_video_val.csv",
         "video_dir_path": "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/videos",
-        "save_dir_path": f"/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/frames/T{params['clip_len']}_F{params['clip_frame']}_S{params['frame_size']}",
-        "new_anno_path": f"/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/annotation_t{params['clip_len']}_f{params['clip_frame']}_s{params['frame_size']}.csv",
+        "save_dir_path": f"/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/clips/T{params['clip_len']}_F{params['clip_frame']}_S{params['frame_size']}",
+        "save_anno_path": f"/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/anno_clip_val_t{params['clip_len']}_f{params['clip_frame']}_s{params['frame_size']}.csv",
     }
 
     if not os.path.exists(paths["save_dir_path"]):

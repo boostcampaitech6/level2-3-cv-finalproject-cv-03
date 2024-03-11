@@ -2,7 +2,7 @@ import torch.nn as nn
 
 
 class FrameModel(nn.Module):
-    def __init__(self, cnn, rnn, hidden=512, nc=2):
+    def __init__(self, cnn, rnn, hidden=512, nc=4):
         super(FrameModel, self).__init__()
         self.cnn = cnn
         self.rnn = rnn
@@ -24,7 +24,7 @@ class FrameModel(nn.Module):
 
 
 class ClipModel(nn.Module):
-    def __init__(self, cnn, rnn, hidden=512, nc=2):
+    def __init__(self, cnn, rnn, hidden=512, nc=4):
         super(ClipModel, self).__init__()
         self.cnn = cnn
         self.rnn = rnn
