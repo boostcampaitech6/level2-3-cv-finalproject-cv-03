@@ -5,8 +5,21 @@ from app.db.database import get_db
 from app.db import models
 from sqlalchemy.orm.exc import NoResultFound
 from passlib.context import CryptContext
+import random
+import string
+import smtplib
+import ssl
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 
 DEFAULT_RETURN_DICT = {"isSuccess": True, "result": None}
+
+SMTP_SSL_PORT = 465  # SSL connection
+SMTP_SERVER = "smtp.gmail.com"
+
+SENDER_EMAIL = "gusdn00751@gmail.com"
+SENDER_PASSWORD = "wcrcavozgdpcehwd"
 
 
 router = APIRouter()
@@ -29,6 +42,93 @@ def verify_password(plain_password, hashed_password):
 @router.get("/")
 def read_root():
     return {"Hello": "World!"}
+
+
+def generate_verification_code():
+    characters = string.ascii_letters + string.digits
+    code = "".join(random.choice(characters) for i in range(8))
+    return code
+
+
+@memberRouter.get("/send_auth")
+def send_auth(email: str, session: Session = Depends(get_db)):
+    def_return_dict = DEFAULT_RETURN_DICT.copy()
+
+    code = generate_verification_code()
+    auth = models.EmailAuth(
+        email=email,
+        code=code,
+    )
+
+    context = ssl.create_default_context()
+
+    msg = MIMEMultipart()
+    msg["From"] = SENDER_EMAIL
+    msg["To"] = email
+    msg["Subject"] = "와치덕 인증번호입니다."
+
+    email_content = """
+    <html>
+        <body>
+            <p>안녕하세요.<br>
+            인증코드는 {code}입니다.<br>
+            감사합니다.
+            </p>
+        </body>
+    </html>
+    """.format(
+        code=code
+    )
+
+    msg.attach(MIMEText(email_content, "html"))
+
+    try:
+        with smtplib.SMTP_SSL(
+            SMTP_SERVER, SMTP_SSL_PORT, context=context
+        ) as server:
+            server.login(SENDER_EMAIL, SENDER_PASSWORD)
+            server.sendmail(SENDER_EMAIL, email, msg.as_string())
+    except Exception:
+        def_return_dict["isSuccess"] = False
+        return def_return_dict
+    temp = (
+        session.query(models.EmailAuth)
+        .filter(models.EmailAuth.email == email)
+        .first()
+    )
+
+    if temp:
+        temp.code = code
+
+    else:
+        session.add(auth)
+
+    session.commit()
+
+    return def_return_dict
+
+
+@memberRouter.get("/confirm_auth")
+def confirm_auth(email: str, code: str, session: Session = Depends(get_db)):
+    def_return_dict = DEFAULT_RETURN_DICT.copy()
+
+    temp = (
+        session.query(models.EmailAuth)
+        .filter(models.EmailAuth.email == email)
+        .first()
+    )
+
+    if temp:
+        if temp.code == code:
+            session.delete(temp)
+            session.commit()
+            return def_return_dict
+        else:
+            def_return_dict["isSuccess"] = False
+            return def_return_dict
+    else:
+        def_return_dict["isSuccess"] = False
+        return def_return_dict
 
 
 @memberRouter.post("/register")
