@@ -1,0 +1,5 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+npm test
+cd frontend/front && echo 'front check..' && npx lint-staged && cd ../..
