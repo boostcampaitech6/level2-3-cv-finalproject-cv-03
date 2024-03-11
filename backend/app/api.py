@@ -11,7 +11,8 @@ import smtplib
 import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import redis, json
+import redis
+import json
 
 
 DEFAULT_RETURN_DICT = {"isSuccess": True, "result": None}
@@ -171,7 +172,17 @@ def register_member(
     )
     session.add(cctv)
     session.commit()
-    redis_server.lpush("start_inf", json.dumps({"cctv_id":cctv.cctv_id, "cctv_url":cctv.cctv_url, "threshold":member.threshold, "save_time_length":member.save_time_length}))
+    redis_server.lpush(
+        "start_inf",
+        json.dumps(
+            {
+                "cctv_id": cctv.cctv_id,
+                "cctv_url": cctv.cctv_url,
+                "threshold": member.threshold,
+                "save_time_length": member.save_time_length,
+            }
+        ),
+    )
     return def_return_dict
 
 
@@ -321,8 +332,13 @@ def alarm_edit(
         member.save_time_length = save_time_length
         session.commit()
 
-        alarm_config = json.dumps({"threshold":threshold, "save_time_length":save_time_length})
-        cctv_ids = session.query(models.CCTV.cctv_id).filter(models.Member.member_id==member_id, models.CCTV.cctv_delete_yn == False)
+        alarm_config = json.dumps(
+            {"threshold": threshold, "save_time_length": save_time_length}
+        )
+        cctv_ids = session.query(models.CCTV.cctv_id).filter(
+            models.Member.member_id == member_id,
+            models.CCTV.cctv_delete_yn == False,  # noqa: E712
+        )
         for cctv_id in cctv_ids:
             redis_server.lpush(f"{cctv_id[0]}_alarm", alarm_config)
 
@@ -375,7 +391,17 @@ def cctv_register(
             "cctv_id": cctv.cctv_id,
             "cctv_url": cctv_url,
         }
-        redis_server.lpush("start_inf", json.dumps({"cctv_id":cctv.cctv_id,"cctv_url":cctv.cctv_url,"threshold":member.threshold, "save_time_length":member.save_time_length}))
+        redis_server.lpush(
+            "start_inf",
+            json.dumps(
+                {
+                    "cctv_id": cctv.cctv_id,
+                    "cctv_url": cctv.cctv_url,
+                    "threshold": member.threshold,
+                    "save_time_length": member.save_time_length,
+                }
+            ),
+        )
     else:
         def_return_dict["isSuccess"] = False
 
@@ -394,7 +420,7 @@ def cctv_delete(cctv_id: int, session: Session = Depends(get_db)):
         session.commit()
 
         flag_key = f"{cctv_id}_stop_inf"
-        redis_server.lpush(flag_key, '')
+        redis_server.lpush(flag_key, "")
 
     return def_return_dict
 
@@ -418,11 +444,27 @@ def cctv_edit(
         session.commit()
 
         if change_url:
-            threshold, save_time_length = session.query(models.Member.threshold, models.Member.save_time_length).filter(models.Member.member_id == cctv.member_id).first()
-            
+            threshold, save_time_length = (
+                session.query(
+                    models.Member.threshold, models.Member.save_time_length
+                )
+                .filter(models.Member.member_id == cctv.member_id)
+                .first()
+            )
+
             flag_key = f"{cctv_id}_stop_inf"
-            redis_server.lpush(flag_key, '')
-            redis_server.lpush("start_inf", json.dumps({"cctv_id":cctv.cctv_id,"cctv_url":cctv.cctv_url,"threshold":threshold, "save_time_length":save_time_length}))
+            redis_server.lpush(flag_key, "")
+            redis_server.lpush(
+                "start_inf",
+                json.dumps(
+                    {
+                        "cctv_id": cctv.cctv_id,
+                        "cctv_url": cctv.cctv_url,
+                        "threshold": threshold,
+                        "save_time_length": save_time_length,
+                    }
+                ),
+            )
 
     return def_return_dict
 

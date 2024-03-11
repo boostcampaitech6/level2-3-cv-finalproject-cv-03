@@ -37,7 +37,7 @@ class CCTV(Base):
     cctv_name = Column(String)
     cctv_url = Column(String)
     cctv_delete_yn = Column(Boolean, default=False)
-    
+
     member = relationship("Member", back_populates="cctv")
 
 
