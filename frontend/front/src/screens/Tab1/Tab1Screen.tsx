@@ -4,6 +4,8 @@ import { NavigationProp } from '@react-navigation/native';
 import { UserContext } from '../../UserContext';
 import { Block, Text, theme } from "galio-framework";
 import { Images, argonTheme } from "../../constants";
+import { useFocusEffect } from '@react-navigation/native';
+
 
 interface AnomalyEvent {
   anomaly_create_time: string,
@@ -47,31 +49,33 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
   const [filteredEvents, setFilteredEvents] = useState<AnomalyEvent[]>([]);
   const [searchText, setSearchText] = useState('');
 
-  useEffect(() => {
-    const fetchAnomalyEvents = async () => {
-      try {
-        const response = await fetch(`http://10.28.224.142:30016/api/v0/cctv/loglist_lookup?member_id=${user}`, {
-          method: "GET",
-          headers: { 'accept': 'application/json' },
-          });
-        console.log('receving data...');
-        const data = await response.json();
-        console.log(response.ok)
-  
-        if (response.ok) {
-          console.log(data.isSuccess);
-          console.log(data.result);
-          setAnomalyEvents(data.result);
-        } else {
-          console.error('API 호출에 실패했습니다:', data);
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchAnomalyEvents = async () => {
+        try {
+          const response = await fetch(`http://10.28.224.142:30016/api/v0/cctv/loglist_lookup?member_id=${user}`, {
+            method: "GET",
+            headers: { 'accept': 'application/json' },
+            });
+          console.log('receving data...');
+          const data = await response.json();
+          console.log(response.ok)
+    
+          if (response.ok) {
+            console.log(data.isSuccess);
+            console.log(data.result);
+            setAnomalyEvents(data.result);
+          } else {
+            console.error('API 호출에 실패했습니다:', data);
+          }
+        } catch (error) {
+          console.error('API 호출 중 예외가 발생했습니다:', error);
         }
-      } catch (error) {
-        console.error('API 호출 중 예외가 발생했습니다:', error);
-      }
-    };
-  
-    fetchAnomalyEvents();
-  }, []);
+      };
+    
+      fetchAnomalyEvents();
+    }, [user])
+  );
 
   useEffect(() => {
     filterEvents();

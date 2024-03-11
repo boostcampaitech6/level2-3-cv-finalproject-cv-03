@@ -250,7 +250,7 @@ const Profile = (props) => {
                 <Overlay isVisible={passwordVisible} onBackdropPress={() => setPasswordVisible(false)}>
                   <View style={{ alignItems: 'center', justifyContent: 'center', padding: 40 }}>
                     <Text style={styles.poptitle}>비밀번호 확인</Text>
-                    <Input value={inpassword} onChangeText={setInpassword} placeholder={"기존 비밀번호"}/>
+                    <Input password onChangeText={(text) => {setInpassword(text)}} placeholder={"기존 비밀번호"}/>
                     <Button style={{marginTop:20,}} color="primary" onPress={() => {
                       setInpassword(inpassword);
                       handleCheck();
@@ -267,7 +267,7 @@ const Profile = (props) => {
                 <Overlay isVisible={password2Visible} onBackdropPress={() => setPassword2Visible(false)}>
                   <View style={{ alignItems: 'center', justifyContent: 'center', padding: 40 }}>
                     <Text style={styles.poptitle}>새 비밀번호</Text>
-                    <Input value={npassword} onChangeText={setNpassword} placeholder={"새 비밀번호"}/>
+                    <Input password onChangeText={(text) => {setNpassword(text)}} placeholder={"새 비밀번호"}/>
                     <Button style={{marginTop:20,}} color="primary" onPress={() => {
                       setNpassword(npassword);
                       setPassword2Visible(false);

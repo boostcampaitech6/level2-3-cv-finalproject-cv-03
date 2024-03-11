@@ -16,44 +16,67 @@ import { View } from 'react-native';
 const { width, height } = Dimensions.get("screen");
 
 const Register2 = (props) => {
-  const { navigation } = props;
+  const { navigation, route } = props;
+  const { email } = route.params;
   const [isChecked2, setIsChecked2] = useState(false);
   const [isChecked3, setIsChecked3] = useState(false);
   const [auth, setAuth] = useState(false);
+  const [sent, setSent] = useState(false); // 인증번호를 전송했습니다.
+  const [fail, setFail] = useState(false); // 실패했습니다.
+  const [success, setSuccess] = useState(false); // 이메일 인증에 성공
+  const [token, setToken] = useState("");
 
   const handleAuth = async () => {
-    setAuth(true);
-    // try {
-    //   const response = await fetch('http://34.64.33.83:3000/dup', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({ email }),
-    //   });
+    try {
+      const response = await fetch(`http://10.28.224.142:30016/api/v0/members/confirm_auth?email=${email}&code=${token}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log(email, token)
   
-    //   const data = await response.json();
-    //   console.log(data);
-    //   if (response.ok) {
-    //     if (data.isDuplicate) {
-    //       // 이메일이 이미 중복되는 경우
-    //       setDup(true);
-    //       setDup2(true);
-    //     } else {
-    //       // 이메일이 중복되지 않는 경우
-    //       setDup(false);
-    //       setDup2(false);
-    //     }
-    //   } else {
-    //     console.log('Failed to check email duplication');
-    //   }
-    // } catch (error) {
-    //   console.error('Network error:', error);
-    // }
+      const data = await response.json();
+      console.log(data);
+
+      if (data.isSuccess) {
+        setSuccess(true)
+        setAuth(true)
+        setFail(false)
+      }
+      else {
+        setSuccess(false)
+        setAuth(false)
+        setFail(true)
+    }
+    } catch (error) {
+      console.error('Network error:', error);
+    }
   };
 
   const handleSendAuth = async () => {
+    try {
+      const response = await fetch(`http://10.28.224.142:30016/api/v0/members/send_auth?email=${email}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      const data = await response.json();
+      console.log(data);
 
+      if (data.isSuccess) {
+        setSent(true)
+        setFail(false)
+      }
+      else {
+        setSent(false)
+        setFail(true)
+    }
+    } catch (error) {
+      console.error('Network error:', error);
+    }
   };
 
   return (
@@ -123,9 +146,10 @@ const Register2 = (props) => {
 
                     <View marginTop={30} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Block width={width * 0.55} >
-                        <Input
+                        {/* <Input
                           borderless
                           placeholder="Email"
+                          defaultValue={email}
                           iconContent={
                             <Icon
                               size={16}
@@ -134,7 +158,10 @@ const Register2 = (props) => {
                               style={styles.inputIcons}
                             />
                           }
-                        />
+                        /> */}
+                        <Text style={styles.text3}>
+                          {email}
+                        </Text>
                       </Block>
                       <Button 
                         onPress={handleSendAuth}
@@ -145,11 +172,16 @@ const Register2 = (props) => {
                         전송
                       </Button>
                     </View>
+                    {sent && (
+                    <Text style={styles.text2} marginStart={5} color={argonTheme.COLORS.SUCCESS}>전송했습니다.</Text>
+                    )}
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Block width={width * 0.55} >
                         <Input
                           borderless
                           placeholder="인증번호"
+                          value={token}
+                          onChangeText={(text) => setToken(text)}
                           iconContent={
                             <Icon
                               size={16}
@@ -169,11 +201,16 @@ const Register2 = (props) => {
                         제출
                       </Button>
                     </View>
-                  
+                    {success && (
+                    <Text style={styles.text2} marginStart={5} color={argonTheme.COLORS.SUCCESS}>인증되었습니다.</Text>
+                    )}
+                    {fail && (
+                    <Text style={styles.text2} marginStart={5} color={argonTheme.COLORS.ERROR}>실패했습니다.</Text>
+                    )}
                   
                   <Block middle marginTop={30}>
                     <Button 
-                      onPress={() => navigation.navigate('Register4')}
+                      onPress={() => navigation.navigate('Register4', { email: email })}
                       color={auth ? "primary" : "muted" } 
                       style={styles.createButton}
                       disabled={!auth} // Button is disabled if either isChecked2 or isChecked3 is not checked
@@ -252,9 +289,15 @@ const styles = StyleSheet.create({
     fontFamily: 'NGB',
     fontSize: 10,
   },
+  text2: {
+    fontFamily: 'NGB',
+    fontSize: 13,
+    marginBottom: 10,
+  },
   text3: {
     fontFamily: 'NGB',
     fontSize: 12,
+    marginStart: 5,
   },
 });
 
