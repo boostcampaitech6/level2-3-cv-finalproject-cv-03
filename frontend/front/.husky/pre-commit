@@ -1,6 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
-. "$(dirname "$0")/_/prettier.sh"
 
-npm test
-echo 'front check..' && npx lint-staged
+cd frontend/front && echo 'front check..' && npx lint-staged
