@@ -42,10 +42,12 @@ const Register2 = (props) => {
       if (data.isSuccess) {
         setSuccess(true)
         setAuth(true)
+        setFail(false)
       }
       else {
-        setSuccess(true)
+        setSuccess(false)
         setAuth(false)
+        setFail(true)
     }
     } catch (error) {
       console.error('Network error:', error);
@@ -170,6 +172,9 @@ const Register2 = (props) => {
                         전송
                       </Button>
                     </View>
+                    {sent && (
+                    <Text style={styles.text2} marginStart={5} color={argonTheme.COLORS.SUCCESS}>전송했습니다.</Text>
+                    )}
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Block width={width * 0.55} >
                         <Input
@@ -196,7 +201,12 @@ const Register2 = (props) => {
                         제출
                       </Button>
                     </View>
-                  
+                    {success && (
+                    <Text style={styles.text2} marginStart={5} color={argonTheme.COLORS.SUCCESS}>인증되었습니다.</Text>
+                    )}
+                    {fail && (
+                    <Text style={styles.text2} marginStart={5} color={argonTheme.COLORS.ERROR}>실패했습니다.</Text>
+                    )}
                   
                   <Block middle marginTop={30}>
                     <Button 
@@ -278,6 +288,11 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: 'NGB',
     fontSize: 10,
+  },
+  text2: {
+    fontFamily: 'NGB',
+    fontSize: 13,
+    marginBottom: 10,
   },
   text3: {
     fontFamily: 'NGB',
