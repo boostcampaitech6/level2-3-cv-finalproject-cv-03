@@ -168,7 +168,7 @@ const Register2 = (props) => {
                   
                   <Block middle marginTop={50}>
                     <Button 
-                      onPress={() => navigation.navigate('Register4', { email: email })}
+                      onPress={() => navigation.navigate('Register3', { email: email })}
                       color={!(dup || dup2) ? "primary" : "muted" } 
                       style={styles.createButton}
                       disabled={dup || dup2} // Button is disabled if either isChecked2 or isChecked3 is not checked
