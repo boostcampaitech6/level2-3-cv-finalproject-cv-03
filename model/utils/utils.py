@@ -4,7 +4,7 @@ from sklearn.metrics import (
     f1_score,
 )
 
-CLASSES = ["Normal", "Shoplifting", "Doubt", "Background"]
+CLASSES = ["Normal", "Shoplifting", "Doubt"]
 
 RNN_INPUT_SIZE = {
     "yolov8n": 256,
@@ -71,15 +71,18 @@ class MetricTracker:
 class LabelTracker:
     def __init__(self):
         self.labels = None
+        self.probs = None
 
         self.reset()
 
     def reset(self):
         self.labels = {}
+        self.probs = {}
 
-    def update(self, clip_names, labels):
-        for clip_name, label in zip(clip_names, labels):
+    def update(self, clip_names, labels, probs):
+        for clip_name, label, prob in zip(clip_names, labels, probs):
             self.labels[clip_name] = label
+            self.probs[clip_name] = prob
 
     def result(self):
-        return self.labels
+        return self.labels, self.probs
