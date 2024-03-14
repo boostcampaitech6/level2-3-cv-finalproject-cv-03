@@ -121,7 +121,7 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
         })
       }
     >
-      <Text style={styles.title}>{item.cctv_name}</Text>
+      <Text style={{ fontSize: 24, fontFamily: 'C24', marginBottom: 5 }}>{item.cctv_name}</Text>
       <Text style={styles.timestamp}>
         {formatDateTime(item.anomaly_create_time)}
       </Text>
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     borderColor: "#CCCCCC",
   },
   item: {
-    backgroundColor: "#EEEEEE", // 회색 배경
+    backgroundColor: "#FFFFFF", // 회색 배경
     borderWidth: 1,
     borderColor: "#CCCCCC", // 테두리 색상
     borderRadius: 10, // 모서리 둥글게

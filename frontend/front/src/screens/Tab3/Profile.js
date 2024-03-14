@@ -182,7 +182,7 @@ const Profile = (props) => {
               </Block>
               <Block flex>
                 <Block middle style={styles.nameInfo}>
-                  <Text bold size={28} color="#32325D" style={styles.textName}>
+                  <Text style={{ fontFamily: "C24", fontSize: 28, color: "#32325D"}}>
                     홍길동
                   </Text>
                   <Text size={16} color="#32325D" style={{ ...styles.sajang, marginTop: 10 }} >

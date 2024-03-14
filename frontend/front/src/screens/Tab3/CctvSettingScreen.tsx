@@ -280,7 +280,7 @@ export default function CctvSettingScreen({ navigation }: Props) {
         <FlatList
           ListHeaderComponent={
             <View style={styles.header}>
-              <Text style={[styles.headerText, { color: "white" }]}>
+              <Text style={{ color: "white", fontFamily: "C24", fontSize: 25, marginStart: 8, marginTop: 10, }}>
                 CCTV 세팅
               </Text>
               <TouchableOpacity
@@ -443,11 +443,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   item: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#ffffff",
     borderWidth: 1,
     borderColor: "#CCCCCC",
     borderRadius: 10,
-    padding: 10,
+    padding: 3,
     marginVertical: 10,
     marginHorizontal: 20,
     alignItems: "center",
