@@ -95,7 +95,7 @@ const AlarmEdit = (props) => {
           >
             <Block flex style={styles.profileCard}>
               <Block flex>
-                <Text bold  color="#525F7F" style={styles.textTitle}>
+                <Text style={{ fontFamily: "C24", fontSize: 25, marginStart: 8, marginTop: 10, marginBottom: 5, color: "#172B4D"}}>
                   알림
                 </Text>
                 <Block middle style={{ marginTop: 3, marginBottom: 3 }}>
@@ -135,7 +135,7 @@ const AlarmEdit = (props) => {
                 </View> */}
 
                 </Block>
-                <Text bold  color="#525F7F" style={styles.textTitle}>
+                <Text style={{ fontFamily: "C24", fontSize: 25, marginStart: 8, marginTop: 10, marginBottom: 5, color: "#172B4D"}}>
                   저장 동영상
                 </Text>
                 <Block middle style={{ marginTop: 3, marginBottom: 3 }}>

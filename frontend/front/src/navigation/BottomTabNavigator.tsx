@@ -53,24 +53,25 @@ export default function BottomTabNavigator() {
         tabBarLabelStyle: {
           fontSize: 12, // Replace with your size
           fontFamily: 'SGB', // Replace with your font family
+          marginBottom: 5,
         },
         headerShown: false,
       }}
       initialRouteName="Home"  >
       <Tab.Screen name="기록" component={Tab1StackNavigator} options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="document-sharp" size={18} color={color} style={{ marginTop: 15}}/>
+            <Ionicons name="document-sharp" size={18} color={color} style={{ marginTop: 0}}/>
           ),
         }}/>
       <Tab.Screen name="스트리밍" component={Tab2Screen}  options={({ route }) => ({
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="videocam-sharp" size={18} color={color} style={{ marginTop: 15 }}/>
+            <Ionicons name="videocam-sharp" size={18} color={color} style={{ marginTop: 0 }}/>
           ),
         })}
         />
       <Tab.Screen name="설정" component={Tab3StackNavigator} options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings-sharp" size={18} color={color} style={{ marginTop: 15 }}/>
+            <Ionicons name="settings-sharp" size={18} color={color} style={{ marginTop: 0 }}/>
           ),
         }}/>
 

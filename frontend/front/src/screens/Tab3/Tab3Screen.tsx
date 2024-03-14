@@ -30,27 +30,27 @@ export default function Tab2Screen(props: Tab2ScreenProps) {
   return (
     <ImageBackground
       source={Images.Onboarding}
-      style={{ width, height, zIndex: 1 }}
+      style={{ flex: 1, width, height, zIndex: 1 }}
     >
       <View style={styles.container}>
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate("CctvSettingScreen", {})}
         >
-          <Text style={styles.buttonText}>CCTV</Text>
+          <Text style={{ fontSize: 24, textAlign: "center", fontFamily: 'C24',}}>CCTV</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate("Alarm", {})}
         >
-          <Text style={styles.buttonText}>알림/동영상</Text>
+          <Text style={{ fontSize: 24, textAlign: "center", fontFamily: 'C24',}}>알림/동영상</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate("Profile", {})}
         >
-          <Text style={styles.buttonText}>개인 정보</Text>
+          <Text style={{ fontSize: 24, textAlign: "center", fontFamily: 'C24',}}>개인 정보</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>
