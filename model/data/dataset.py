@@ -59,6 +59,19 @@ class ClipValidDataset(Dataset):
         return frames, label, clip_name
 
 
+class GradCAMDataset(Dataset):
+    def __init__(self, frames):
+        frames = np.transpose(np.array(frames), (0, 3, 1, 2))
+        frames = (frames / 255.0).astype(np.float32)
+        self.frames = torch.from_numpy(frames)
+
+    def __len__(self):
+        return len(self.frames)
+
+    def __getitem__(self, idx):
+        return self.frames[idx].unsqueeze(0)
+
+
 class FrameTrainDataset(Dataset):
     def __init__(self, clip_dir_path, transforms=None):
         self.frame_paths = [

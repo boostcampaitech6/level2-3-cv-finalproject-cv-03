@@ -25,4 +25,4 @@ repos:
     rev: 'v0.2.2'
     hooks:
     -   id: ruff
-        args: [--ignore, "F403,F405"]
+        args: [--ignore, "F403,F405,E402"]
