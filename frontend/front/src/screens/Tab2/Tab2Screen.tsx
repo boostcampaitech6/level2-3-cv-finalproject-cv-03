@@ -1,55 +1,127 @@
-import React, { useState, useEffect } from "react";
-import { Dimensions, View, Text, StyleSheet } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  View,
+  FlatList,
+  TouchableOpacity,
+  Modal,
+  StyleSheet,
+  Dimensions,
+  Text,
+} from "react-native";
 import { Video } from "expo-av";
-// import Constants from 'expo-constants';
-// import { UserContext } from '../../UserContext'
 
 const Tab2Screen = () => {
-  // const { user } = useContext(UserContext)
-  const [hlsUrl, setHlsUrl] = useState("");
-  const videoWidth = Dimensions.get("window").width;
-  const videoHeight = (videoWidth / 11) * 9;
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const playbackStatusRef = useRef({});
 
-  const hlsuri = async () => {
-    try {
-      const response = await fetch(
-        `http://10.28.224.201:30573/api/v0/streaming/list_lookup?member_id=${105}`,
-        // `http://10.28.224.201:30573/api/v0/streaming/list_lookup?member_id=${user}`,
-        {
-          method: "GET",
-          headers: { accept: "application/json" },
-        },
-      );
-      const data = await response.json();
-      if (response.ok) {
-        setHlsUrl(data.result[0].hls_url);
-        console.log("hihihihihi");
-        console.log(hlsUrl);
-      } else {
-        console.error("API 호출에 실패했습니다:", data);
-      }
-    } catch (error) {
-      console.error("API 호출 중 예외가 발생했습니다:", error);
+  const videos = [
+    {
+      cctv_id: 292,
+      cctv_name: "Video 1",
+      hls_url:
+        "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
+    },
+    {
+      cctv_id: 300,
+      cctv_name: "Video 2",
+      hls_url:
+        "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
+    },
+    {
+      cctv_id: 304,
+      cctv_name: "Video 3",
+      hls_url:
+        "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
+    },
+    {
+      cctv_id: 500,
+      cctv_name: "Video 4",
+      hls_url:
+        "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
+    },
+  ];
+  const renderVideoItem = ({ item }) => {
+    return (
+      <View>
+        <TouchableOpacity
+          style={styles.videoItem}
+          onPress={() => handleVideoSelect(item)}
+        >
+          <Video
+            source={{ uri: item.hls_url }}
+            style={styles.video}
+            resizeMode="cover"
+            isMuted={true} // 비디오를 자동 재생하지 않고, 필요에 따라 소리를 켤 수 있습니다.
+            shouldPlay={true}
+            isLooping
+            onPlaybackStatusUpdate={onPlaybackStatusUpdate(item.cctv_id)}
+          />
+        </TouchableOpacity>
+        <Text style={styles.videoTitle}>{item.cctv_name}</Text>
+      </View>
+    );
+  };
+
+  const handleVideoSelect = (video) => {
+    if (isFullScreen && selectedVideo?.cctv_id === video.cctv_id) {
+      setIsFullScreen(false);
+    } else {
+      setSelectedVideo(video);
+      setIsFullScreen(true);
     }
   };
+
   useEffect(() => {
-    hlsuri();
-  }, []);
+    if (!isFullScreen) {
+      setSelectedVideo(null); // 전체 화면이 아닐 때 선택된 비디오를 초기화합니다.
+    }
+  }, [isFullScreen]);
+
+  const onPlaybackStatusUpdate = (videoId) => (status) => {
+    if (status.isLoaded) {
+      playbackStatusRef.current[videoId] = {
+        positionMillis: status.positionMillis,
+        shouldPlay: status.shouldPlay,
+      };
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <Text>스트리밍 테스트 진행</Text>
-      <Video
-        source={{
-          uri: "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
-        }}
-        rate={1.0}
-        volume={1.0}
-        isMuted={true}
-        resizeMode="cover"
-        shouldPlay
-        style={{ width: videoWidth, height: videoHeight }}
+      <FlatList
+        data={videos}
+        renderItem={renderVideoItem}
+        keyExtractor={(item) => item.cctv_id.toString()}
+        numColumns={2}
+        contentContainerStyle={styles.gridContentContainer}
       />
+
+      {selectedVideo && isFullScreen && (
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={isFullScreen}
+          onRequestClose={() => setIsFullScreen(false)}
+        >
+          <TouchableOpacity
+            style={styles.fullScreenContainer}
+            onPress={() => setIsFullScreen(false)}
+          >
+            <Video
+              source={{ uri: selectedVideo.hls_url }}
+              style={styles.fullScreenVideo}
+              resizeMode="contain"
+              shouldPlay={true}
+              positionMillis={
+                playbackStatusRef.current[selectedVideo.cctv_id]
+                  ?.positionMillis || 0
+              }
+              isMuted={true}
+            />
+          </TouchableOpacity>
+        </Modal>
+      )}
     </View>
   );
 };
@@ -57,91 +129,45 @@ const Tab2Screen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    backgroundColor: "#ecf0f1",
   },
-  video: {
-    alignSelf: "center",
-    width: 320,
-    height: 200,
-  },
-  buttons: {
+  gridContainer: {
     flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  gridContentContainer: {
+    flexGrow: 1, // FlatList가 전체 공간을 채우도록 함
+    justifyContent: "center", // 아이템들을 수직 방향으로 중앙에 배치
+    alignItems: "center", // 아이템들을 수평 방향으로 중앙에 배치
+  },
+  videoItem: {
+    width: Dimensions.get("window").width / 2, // 2열 그리드로 조정
+    height: Dimensions.get("window").width / 2, // 정사각형으로 설정
     justifyContent: "center",
     alignItems: "center",
+    alignContent: "center",
+  },
+  video: {
+    width: "100%",
+    height: "100%",
+  },
+  fullScreenContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "black",
+  },
+  fullScreenVideo: {
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
+  },
+  videoTitle: {
+    fontSize: 14, // 텍스트 크기
+    color: "white", // 텍스트 색상
+    textAlign: "center", // 텍스트를 중앙 정렬
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // 텍스트 배경색을 반투명 검정색으로 설정
+    width: "100%", // 컨테이너 너비에 맞춤
+    padding: 5, // 텍스트 내부 여백
   },
 });
 
 export default Tab2Screen;
-
-// const Tab2Screen = () => {
-//   const video = React.useRef(null);
-//   const [status, setStatus] = React.useState({});
-//   return (
-//     <View style={styles.container}>
-//       <Text>스트리밍 테스트 진행</Text>
-//       <Video
-//         ref={video}
-//         style={styles.video}
-//         source={{
-//           uri: 'http://10.28.224.201:30573/hls/index.m3u8',
-//         }}
-//         useNativeControls
-//         resizeMode={ResizeMode.CONTAIN}
-//         isLooping
-//         onPlaybackStatusUpdate={status => setStatus(() => status)}
-//       />
-//       <View style={styles.buttons}>
-//         <Button
-//           title={status.isPlaying ? 'Pause' : 'Play'}
-//           onPress={() =>
-//             status.isPlaying ? video.current.pauseAsync() : video.current.playAsync()
-//           }
-//         />
-//       </View>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     backgroundColor: '#ecf0f1',
-//   },
-//   video: {
-//     alignSelf: 'center',
-//     width: 320,
-//     height: 200,
-//   },
-//   buttons: {
-//     flexDirection: 'row',
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-// });
-
-// export default Tab2Screen;
-
-// const Tab2Screen = () => {
-//   const video = React.useRef(null);
-//   const [status, setStatus] = React.useState({});
-//   return (
-//     <View style={styles.container}>
-//       <Text>스트리밍 테스트 진행</Text>
-//       <WebView
-//         style={styles.container}
-//         source={{ uri: 'https://74vod-adaptive.akamaized.net/exp=1710260769~acl=%2F286dea48-7f58-450f-bbad-bbc6b0a611b9%2F%2A~hmac=39c47bc536a1191ba348463f04fb3791e47560ced4e62f7a0ba1ad0aef958c71/286dea48-7f58-450f-bbad-bbc6b0a611b9/sep/video/5ae098b4,7fe452b2,8dbe8e5c,a0b50797,ea5fe2fc/audio/bc6fb25a,dc1a4a6e,e1c6cec8/master.json?base64_init=1&query_string_ranges=1' }}
-//       />
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     marginTop: Constants.statusBarHeight,
-//   },
-// });
-
-// export default Tab2Screen;
