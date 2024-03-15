@@ -10,8 +10,8 @@ import {
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { UserContext } from "../../UserContext";
-import { Block, Text, theme } from "galio-framework";
-import { Images, argonTheme } from "../../constants";
+import { Text } from "galio-framework";
+import { Images } from "../../constants";
 import { useFocusEffect } from "@react-navigation/native";
 
 interface AnomalyEvent {
@@ -29,10 +29,24 @@ interface AnomalyEvent {
 
 const { width, height } = Dimensions.get("screen");
 
-const thumbMeasure = (width - 48 - 32) / 3;
+type Tab1ParamList = {
+  Tab1Screen: undefined;
+  LogDetailScreen: {
+    anomaly_create_time: string;
+    cctv_id: number;
+    anomaly_save_path: string;
+    anomaly_delete_yn: boolean;
+    log_id: number;
+    anomaly_score: number;
+    anomaly_feedback: boolean;
+    member_id: number;
+    cctv_name: string;
+    cctv_url: string;
+  };
+};
 
 interface Tab1ScreenProps {
-  navigation: NavigationProp<any>;
+  navigation: NavigationProp<Tab1ParamList, "Tab1Screen">;
 }
 
 function formatDateTime(dateTimeString: string): string {
@@ -54,6 +68,15 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
   const [anomalyEvents, setAnomalyEvents] = useState<AnomalyEvent[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<AnomalyEvent[]>([]);
   const [searchText, setSearchText] = useState("");
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchResults, setSearchResults] = useState<AnomalyEvent[]>([]);
+  const itemsPerPage = 4;
+  const [performSearch, setPerformSearch] = useState(false);
+
+  const onSearch = () => {
+    setPerformSearch((prev) => !prev); // 검색 수행 트리거
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -74,6 +97,7 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
             console.log(data.isSuccess);
             console.log(data.result);
             setAnomalyEvents(data.result);
+            setTotalPages(Math.ceil(data.result.length / itemsPerPage));
           } else {
             console.error("API 호출에 실패했습니다:", data);
           }
@@ -85,12 +109,14 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
       fetchAnomalyEvents();
     }, [user]),
   );
-
   useEffect(() => {
-    filterEvents();
-  }, [searchText, anomalyEvents]);
+    setCurrentPage(1);
+    setTotalPages(Math.ceil(searchResults.length / itemsPerPage));
+    setSearchText("");
+  }, [searchResults]);
 
-  const filterEvents = () => {
+  // 검색 로직
+  useEffect(() => {
     const filtered = anomalyEvents.filter((event) => {
       const formattedTime = formatDateTime(
         event.anomaly_create_time,
@@ -100,8 +126,17 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
         formattedTime.includes(searchText.toLowerCase())
       );
     });
-    setFilteredEvents(filtered);
-  };
+
+    setSearchResults(filtered); // 검색된 결과를 저장
+    setCurrentPage(1); // 페이지를 첫 페이지로 설정
+  }, [anomalyEvents, performSearch]);
+
+  // 페이지 변경 로직
+  useEffect(() => {
+    const endIndex = currentPage * itemsPerPage;
+    const startIndex = endIndex - itemsPerPage;
+    setFilteredEvents(searchResults.slice(startIndex, endIndex));
+  }, [currentPage, searchResults, itemsPerPage]);
 
   const renderItem = ({ item }: { item: AnomalyEvent }) => (
     <TouchableOpacity
@@ -121,12 +156,44 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
         })
       }
     >
-      <Text style={{ fontSize: 24, fontFamily: 'C24', marginBottom: 5 }}>{item.cctv_name}</Text>
+      <Text style={{ fontSize: 24, fontFamily: "C24", marginBottom: 5 }}>
+        {item.cctv_name}
+      </Text>
       <Text style={styles.timestamp}>
         {formatDateTime(item.anomaly_create_time)}
       </Text>
     </TouchableOpacity>
   );
+
+  function controlPage() {
+    return (
+      <View style={styles.pageContainer}>
+        {totalPages > 1 && (
+          <>
+            {currentPage > 1 ? (
+              <TouchableOpacity onPress={() => setCurrentPage(currentPage - 1)}>
+                <Text style={styles.pageItem}>‹</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={() => setCurrentPage(totalPages)}>
+                <Text style={styles.pageItem}>‹</Text>
+              </TouchableOpacity>
+            )}
+            <Text style={{ margin: 8 }}>{`${currentPage}/${totalPages}`}</Text>
+            {currentPage < totalPages ? (
+              <TouchableOpacity onPress={() => setCurrentPage(currentPage + 1)}>
+                <Text style={styles.pageItem}>›</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={() => setCurrentPage(1)}>
+                <Text style={styles.pageItem}>›</Text>
+              </TouchableOpacity>
+            )}
+          </>
+        )}
+      </View>
+    );
+  }
 
   return (
     <ImageBackground
@@ -134,37 +201,36 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
       style={{ width, height, zIndex: 1 }}
     >
       <View style={{ flex: 1 }}>
-        <TextInput
-          style={{
-            ...styles.searchInput,
-            backgroundColor: "white",
-            margin: 15,
-          }}
-          onChangeText={setSearchText}
-          value={searchText}
-          placeholder="검색 (CCTV 이름 또는 날짜)"
-        />
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={{
+              ...styles.searchInput,
+              backgroundColor: "white",
+              margin: 15,
+            }}
+            onChangeText={setSearchText}
+            value={searchText}
+            placeholder="검색 (CCTV 이름 또는 날짜)"
+          />
+          <TouchableOpacity onPress={onSearch} style={styles.searchButton}>
+            <Text>검색</Text>
+          </TouchableOpacity>
+        </View>
         <FlatList
           data={filteredEvents}
           renderItem={renderItem}
           keyExtractor={(item) => item.log_id.toString()}
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: 300 }}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          scrollEnabled={false}
         />
+        <View style={{ flex: 0.6 }}>{totalPages > 0 && controlPage()}</View>
       </View>
     </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  searchInput: {
-    height: 40,
-    borderWidth: 1,
-    paddingLeft: 8,
-    margin: 10,
-    borderRadius: 10,
-    borderColor: "#CCCCCC",
-  },
   item: {
     backgroundColor: "#FFFFFF", // 회색 배경
     borderWidth: 1,
@@ -185,5 +251,43 @@ const styles = StyleSheet.create({
     fontSize: 16, // 날짜/시간 폰트 사이즈
     color: "#555555", // 날짜/시간 색상
     fontFamily: "NGB",
+  },
+  pageContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    padding: 10,
+    position: "absolute", // 페이지네이션을 화면 하단에 고정
+    bottom: 180, // 화면 하단에서부터의 위치
+    left: 0,
+    right: 0,
+    backgroundColor: "transparent", // 배경색은 필요에 따라 조정
+  },
+  pageItem: {
+    margin: 8,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: "black",
+  },
+  pageItemActive: {
+    backgroundColor: "red",
+  },
+  searchContainer: {
+    flexDirection: "row", // 자식 요소들을 수평으로 나란히 배치
+    alignItems: "center", // 자식 요소들을 세로 방향으로 가운데 정렬
+    margin: 15,
+  },
+  searchInput: {
+    height: 40,
+    borderWidth: 1,
+    paddingLeft: 8,
+    flex: 1, // 남은 공간을 모두 차지하도록 함
+    borderRadius: 10,
+    borderColor: "#CCCCCC",
+    marginRight: 8, // 검색 버튼과의 간격을 주기 위함
+  },
+  searchButton: {
+    padding: 10,
+    backgroundColor: "#ddd", // 버튼의 배경색, 필요에 따라 조정
+    borderRadius: 10, // 버튼의 모서리를 둥글게
   },
 });
