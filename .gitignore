@@ -142,5 +142,5 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-watchduck-2fe6d-376326c91946.json
+# watchduck-2fe6d-376326c91946.json
 # google-services.json
