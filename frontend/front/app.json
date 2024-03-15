@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "front",
-    "slug": "front",
+    "slug": "watchduck",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,13 +21,27 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.watchduck.android",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "e7ef4eab-ba8e-4ca6-8dba-6d4deff6ec75"
+      }
+    },
+    "owner": "jelly9999",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/e7ef4eab-ba8e-4ca6-8dba-6d4deff6ec75"
+    }
   }
 }
