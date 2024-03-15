@@ -34,6 +34,7 @@ class CCTVBase(CustomBaseModel):
     member_id: int
     cctv_name: str
     cctv_url: str
+    cctv_delete_yn: bool
 
 
 class LogBase(CustomBaseModel):
