@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import {
   View,
   FlatList,
@@ -13,6 +13,17 @@ import { UserContext } from "../../UserContext";
 import { Text } from "galio-framework";
 import { Images } from "../../constants";
 import { useFocusEffect } from "@react-navigation/native";
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+
 
 interface AnomalyEvent {
   anomaly_create_time: string;
@@ -73,6 +84,32 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
   const [searchResults, setSearchResults] = useState<AnomalyEvent[]>([]);
   const itemsPerPage = 4;
   const [performSearch, setPerformSearch] = useState(false);
+
+  // const [previousResult, setPreviousResult] = useState(0);
+  // let previousResult: number | null = null;
+  const previousResultRef = useRef<number | null>(null);
+
+
+  setInterval(async () => {
+    const response = await fetch(`http://10.28.224.201:30576/api/v0/cctv/log_count?member_id=${user}`);
+    const result = await response.json();
+
+    console.log(result.result);
+
+    if (previousResultRef.current !== null && result.result !== previousResultRef.current) {
+      Notifications.scheduleNotificationAsync({
+        content: {
+          title: "도난 의심 행위 발생",
+          body: '확인 바랍니다.',
+        },
+        trigger: {
+          seconds: 1,
+        },
+      });
+
+      previousResultRef.current = result.result
+    }
+  }, 5000);
 
   const onSearch = () => {
     setPerformSearch((prev) => !prev); // 검색 수행 트리거

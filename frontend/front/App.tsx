@@ -7,6 +7,7 @@ import { StyleSheet } from 'react-native'; // StyleSheet를 임포트합니다.
 import { ThemeProvider, Button, createTheme } from '@rneui/themed';
 import { UserContext } from './src/UserContext';
 
+
 const theme = createTheme({
   lightColors: {
     primary: '#FFA000'
