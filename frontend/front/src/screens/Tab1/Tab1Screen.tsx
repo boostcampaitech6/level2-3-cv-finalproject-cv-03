@@ -96,7 +96,7 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
 
     console.log(result.result);
 
-    if (previousResultRef.current !== null && result.result !== previousResultRef.current) {
+    if (previousResultRef.current !== null && result.result > previousResultRef.current) {
       Notifications.scheduleNotificationAsync({
         content: {
           title: "도난 의심 행위 발생",
