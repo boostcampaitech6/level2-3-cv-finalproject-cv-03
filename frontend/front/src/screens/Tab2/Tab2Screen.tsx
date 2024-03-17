@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   View,
   FlatList,
@@ -9,43 +9,62 @@ import {
   Text,
 } from "react-native";
 import { Video } from "expo-av";
+import { UserContext } from "../../UserContext";
 
 const Tab2Screen = () => {
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const playbackStatusRef = useRef({});
+  const [videos, setVideos] = useState([]);
+  const { user } = useContext(UserContext);
 
-  const videos = [
-    {
-      cctv_id: 292,
-      cctv_name: "Video 1",
-      hls_url:
-        "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
-    },
-    {
-      cctv_id: 300,
-      cctv_name: "Video 2",
-      hls_url:
-        "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
-    },
-    {
-      cctv_id: 304,
-      cctv_name: "Video 3",
-      hls_url:
-        "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
-    },
-    {
-      cctv_id: 500,
-      cctv_name: "Video 4",
-      hls_url:
-        "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
-    },
-  ];
+  const fetchVideos = async () => {
+    try {
+      const response = await fetch(
+        `http://10.28.224.201:30576/api/v0/streaming/list_lookup?member_id=${user}`,
+        {
+          method: "GET",
+          headers: { accept: "application/json" },
+        },
+      );
+      const data = await response.json();
+      if (response.ok) {
+        setVideos(data.result);
+      } else {
+        console.error("API 호출에 실패했습니다:", data);
+      }
+    } catch (error) {
+      console.error("API 호출 중 예외가 발생했습니다:", error);
+    }
+  };
+  useEffect(() => {
+    fetchVideos();
+  }, []);
+
+  // const videos = [
+  //   {
+  //     cctv_id: 292,
+  //     cctv_name: "Video 1",
+  //     hls_url:
+  //       "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
+  //   },
+  //   {
+  //     cctv_id: 300,
+  //     cctv_name: "Video 2",
+  //     hls_url:
+  //       "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
+  //   },
+  // ];
+
+  const numColumns = videos.length > 9 ? 4 : videos.length > 6 ? 3 : 2;
+  const videoWidth = Dimensions.get("window").width / numColumns;
+
   const renderVideoItem = ({ item }) => {
     return (
-      <View>
+      <View style={{ width: videoWidth }}>
         <TouchableOpacity
-          style={styles.videoItem}
+          style={[styles.videoItem, { height: videoWidth }]}
+          // style={styles.videoItem}
           onPress={() => handleVideoSelect(item)}
         >
           <Video
@@ -93,7 +112,7 @@ const Tab2Screen = () => {
         data={videos}
         renderItem={renderVideoItem}
         keyExtractor={(item) => item.cctv_id.toString()}
-        numColumns={2}
+        numColumns={numColumns}
         contentContainerStyle={styles.gridContentContainer}
       />
 
@@ -140,8 +159,6 @@ const styles = StyleSheet.create({
     alignItems: "center", // 아이템들을 수평 방향으로 중앙에 배치
   },
   videoItem: {
-    width: Dimensions.get("window").width / 2, // 2열 그리드로 조정
-    height: Dimensions.get("window").width / 2, // 정사각형으로 설정
     justifyContent: "center",
     alignItems: "center",
     alignContent: "center",
