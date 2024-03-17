@@ -178,12 +178,12 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height,
   },
   videoTitle: {
-    fontSize: 14, // 텍스트 크기
-    color: "white", // 텍스트 색상
-    textAlign: "center", // 텍스트를 중앙 정렬
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // 텍스트 배경색을 반투명 검정색으로 설정
-    width: "100%", // 컨테이너 너비에 맞춤
-    padding: 5, // 텍스트 내부 여백
+    fontSize: 14,
+    color: "white",
+    textAlign: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    width: "100%",
+    padding: 5,
   },
 });
 
