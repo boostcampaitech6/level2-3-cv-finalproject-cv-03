@@ -248,7 +248,7 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
             placeholder="검색 (CCTV 이름 또는 날짜)"
           />
           <TouchableOpacity onPress={onSearch} style={styles.searchButton}>
-            <Text>검색</Text>
+            <Text style={{ fontFamily: "C24" }}>검색</Text>
           </TouchableOpacity>
         </View>
         <FlatList
@@ -309,6 +309,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: "row", // 자식 요소들을 수평으로 나란히 배치
     alignItems: "center", // 자식 요소들을 세로 방향으로 가운데 정렬
+    alignContent: "center", // 자식 요소들을 수평 방향으로 가운데 정렬
     margin: 15,
   },
   searchInput: {

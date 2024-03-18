@@ -15,7 +15,12 @@ import Alarm from '../screens/Tab3/Alarm';
 import AlarmEdit from '../screens/Tab3/AlarmEdit';
 import { UserContext } from "../UserContext";
 
+import { useLastNotificationResponse } from 'expo-notifications';
+import { useNavigation } from '@react-navigation/native';
+
 import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -23,6 +28,7 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
+
 
 const Tab = createBottomTabNavigator();
 const Tab1Stack = createStackNavigator();
@@ -53,6 +59,27 @@ function Tab3StackNavigator() {
 
 export default function BottomTabNavigator() {
   const { user } = useContext(UserContext);
+  const navigation = useNavigation();
+  const notificationResponse = useLastNotificationResponse();
+
+  // console.log(user)
+
+  useEffect(() => {
+    const requestPermissions = async () => {
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status !== 'granted') {
+        alert('No notification permissions. You might want to enable notifications for this app.');
+      }
+    };
+
+    requestPermissions();
+  }, []);
+
+  useEffect(() => {
+    if (notificationResponse) {
+      navigation.navigate('기록', { screen: 'Tab1Screen' });
+    }
+  }, [notificationResponse]);
 
   const previousResultRef = React.useRef<number | null>(null);
 
@@ -62,8 +89,13 @@ export default function BottomTabNavigator() {
       const result = await response.json();
       console.log("bottom tab navigator")
       console.log(result.result);
+      console.log(previousResultRef.current)
 
-      if (previousResultRef.current !== null && result.result > previousResultRef.current) {
+      // previousResultRef.current = result.result;
+      if (previousResultRef.current === null) {
+        previousResultRef.current = result.result;
+      }
+      else if (previousResultRef.current !== null && result.result > previousResultRef.current) {
         Notifications.scheduleNotificationAsync({
           content: {
             title: "도난 의심 행위 발생",
