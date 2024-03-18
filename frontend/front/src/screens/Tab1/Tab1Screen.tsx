@@ -85,33 +85,29 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
 
   // const [previousResult, setPreviousResult] = useState(0);
   // let previousResult: number | null = null;
-  const previousResultRef = useRef<number | null>(null);
+  // const previousResultRef = useRef<number | null>(null);
 
-  setInterval(async () => {
-    const response = await fetch(
-      `http://10.28.224.201:30576/api/v0/cctv/log_count?member_id=${user}`,
-    );
-    const result = await response.json();
 
-    console.log(result.result);
+  // setInterval(async () => {
+  //   const response = await fetch(`http://10.28.224.201:30576/api/v0/cctv/log_count?member_id=${user}`);
+  //   const result = await response.json();
+  //   console.log(result.result);
 
-    if (
-      previousResultRef.current !== null &&
-      result.result > previousResultRef.current
-    ) {
-      Notifications.scheduleNotificationAsync({
-        content: {
-          title: "도난 의심 행위 발생",
-          body: "확인 바랍니다.",
-        },
-        trigger: {
-          seconds: 1,
-        },
-      });
 
-      previousResultRef.current = result.result;
-    }
-  }, 5000);
+  //   if (previousResultRef.current !== null && result.result > previousResultRef.current) {
+  //     Notifications.scheduleNotificationAsync({
+  //       content: {
+  //         title: "도난 의심 행위 발생",
+  //         body: '확인 바랍니다.',
+  //       },
+  //       trigger: {
+  //         seconds: 1,
+  //       },
+  //     });
+
+  //     previousResultRef.current = result.result
+  //   }
+  // }, 5000);
 
   const onSearch = () => {
     setPerformSearch((prev) => !prev); // 검색 수행 트리거

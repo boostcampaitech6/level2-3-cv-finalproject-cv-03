@@ -1,5 +1,5 @@
 // src/navigation/BottomTabNavigator.tsx
-import * as React from 'react';
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -13,6 +13,16 @@ import CctvSettingScreen from '../screens/Tab3/CctvSettingScreen';
 import AlarmSettingScreen from '../screens/Tab3/AlarmSettingScreen';
 import Alarm from '../screens/Tab3/Alarm';
 import AlarmEdit from '../screens/Tab3/AlarmEdit';
+import { UserContext } from "../UserContext";
+
+import * as Notifications from 'expo-notifications';
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 const Tab = createBottomTabNavigator();
 const Tab1Stack = createStackNavigator();
@@ -42,6 +52,35 @@ function Tab3StackNavigator() {
 }
 
 export default function BottomTabNavigator() {
+  const { user } = useContext(UserContext);
+
+  const previousResultRef = React.useRef<number | null>(null);
+
+  React.useEffect(() => {
+    const intervalId = setInterval(async () => {
+      const response = await fetch(`http://10.28.224.201:30576/api/v0/cctv/log_count?member_id=${user}`);
+      const result = await response.json();
+      console.log("bottom tab navigator")
+      console.log(result.result);
+
+      if (previousResultRef.current !== null && result.result > previousResultRef.current) {
+        Notifications.scheduleNotificationAsync({
+          content: {
+            title: "도난 의심 행위 발생",
+            body: '확인 바랍니다.',
+          },
+          trigger: {
+            seconds: 1,
+          },
+        });
+
+        previousResultRef.current = result.result;
+      }
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
   return (
     <Tab.Navigator 
       screenOptions={{
