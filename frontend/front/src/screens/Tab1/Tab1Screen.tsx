@@ -95,7 +95,7 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
 
           if (response.ok) {
             console.log(data.isSuccess);
-            console.log(data.result);
+            // console.log(data.result);
             setAnomalyEvents(data.result);
             setTotalPages(Math.ceil(data.result.length / itemsPerPage));
           } else {
