@@ -8,6 +8,8 @@ import { NavigationProp } from "@react-navigation/native";
 import { Overlay } from "react-native-elements";
 import { Button } from "../../components";
 import { Video, ResizeMode } from "expo-av";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
 
 type LogDetailScreenRouteProp = RouteProp<
   RootStackParamList,
@@ -89,6 +91,34 @@ export default function CCTVDetailScreen({
     }
   };
 
+  const downloadVideo = async () => {
+    const filename = "anomaly.mp4";
+    try {
+      const result = await FileSystem.downloadAsync(
+        "http://10.28.224.201:30576/video.mp4",
+        // "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
+        FileSystem.documentDirectory + filename,
+      );
+      console.log(result);
+      console.log("Download successful:", result);
+      save(result.uri);
+    } catch (error) {
+      console.error("Download error :", error);
+    }
+  };
+  const save = async (uri) => {
+    try {
+      const isAvailable = await Sharing.isAvailableAsync();
+      if (isAvailable) {
+        await Sharing.shareAsync(uri);
+      } else {
+        console.log("Sharing is not available on this device.");
+      }
+    } catch (error) {
+      console.error("Error sharing file:", error);
+    }
+  };
+
   const handleFeedback2 = async () => {
     try {
       const response = await fetch(
@@ -130,7 +160,7 @@ export default function CCTVDetailScreen({
           ref={video}
           style={styles.video}
           source={{
-            uri: "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
+            uri: "http://10.28.224.201:30576/video.mp4",
             // uri: `${cctv_url}`,
           }}
           useNativeControls
@@ -149,7 +179,10 @@ export default function CCTVDetailScreen({
           >
             <Text style={styles.buttonText}>피드백{"\n"}남기기</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.download_button}>
+          <TouchableOpacity
+            style={styles.download_button}
+            onPress={() => downloadVideo()}
+          >
             <Text style={styles.buttonText}>영상{"\n"}다운로드</Text>
           </TouchableOpacity>
           <TouchableOpacity
