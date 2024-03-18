@@ -93,15 +93,17 @@ export default function CCTVDetailScreen({
 
   const downloadVideo = async () => {
     const filename = "anomaly.mp4";
+    const fileUri = FileSystem.documentDirectory + filename;
     try {
       const result = await FileSystem.downloadAsync(
         "http://10.28.224.201:30576/video.mp4",
         // "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
-        FileSystem.documentDirectory + filename,
+        fileUri,
       );
       console.log(result);
       console.log("Download successful:", result);
       save(result.uri);
+      deleteFile(fileUri);
     } catch (error) {
       console.error("Download error :", error);
     }
@@ -116,6 +118,14 @@ export default function CCTVDetailScreen({
       }
     } catch (error) {
       console.error("Error sharing file:", error);
+    }
+  };
+  const deleteFile = async (fileUri) => {
+    try {
+      await FileSystem.deleteAsync(fileUri);
+      console.log("File deleted successfully");
+    } catch (error) {
+      console.error("Error deleting file:", error);
     }
   };
 
