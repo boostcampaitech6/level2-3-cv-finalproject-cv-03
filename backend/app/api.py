@@ -44,8 +44,10 @@ redis_server = redis.Redis(host="10.28.224.201", port=30575, db=0)
 def hash_password(password):
     return pwd_context.hash(password)
 
+
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
+
 
 def generate_verification_code():
     characters = string.ascii_letters + string.digits
@@ -172,7 +174,9 @@ def register_member(
     session.add(cctv)
     session.commit()
 
-    cctv.hls_url = f"http://10.28.224.201:30576/hls/cctv_stream/{cctv.cctv_id}/index.m3u8"
+    cctv.hls_url = (
+        f"http://10.28.224.201:30576/hls/cctv_stream/{cctv.cctv_id}/index.m3u8"
+    )
     session.commit()
 
     redis_server.lpush(
@@ -366,13 +370,18 @@ def alarm_edit(
 def cctv_list_lookup(member_id: int, session: Session = Depends(get_db)):
     def_return_dict = DEFAULT_RETURN_DICT.copy()
 
-    cctvs = session.query(models.CCTV).filter_by(member_id=member_id).order_by(models.CCTV.cctv_id.desc()).all()
+    cctvs = (
+        session.query(models.CCTV)
+        .filter_by(member_id=member_id)
+        .order_by(models.CCTV.cctv_id.desc())
+        .all()
+    )
     data = [
         {
             "cctv_id": cctv.cctv_id,
             "cctv_name": cctv.cctv_name,
             "cctv_url": cctv.cctv_url,
-            "hls_url": cctv.hls_url
+            "hls_url": cctv.hls_url,
         }
         for cctv in cctvs
     ]
@@ -423,12 +432,7 @@ def cctv_register(
         )
         redis_server.lpush(
             "start_hls_stream",
-            json.dumps(
-                {
-                    "cctv_id": cctv.cctv_id,
-                    "cctv_url": cctv.cctv_url
-                }
-            ),
+            json.dumps({"cctv_id": cctv.cctv_id, "cctv_url": cctv.cctv_url}),
         )
     else:
         def_return_dict["isSuccess"] = False
@@ -449,7 +453,7 @@ def cctv_delete(cctv_id: int, session: Session = Depends(get_db)):
 
         flag_key = f"{cctv_id}_stop_inf"
         redis_server.lpush(flag_key, "")
-        redis_server.lpush("stop_hls_stream",cctv_id)
+        redis_server.lpush("stop_hls_stream", cctv_id)
 
     return def_return_dict
 
@@ -494,14 +498,11 @@ def cctv_edit(
                     }
                 ),
             )
-            redis_server.lpush("stop_hls_stream",cctv.cctv_id)
+            redis_server.lpush("stop_hls_stream", cctv.cctv_id)
             redis_server.lpush(
                 "start_hls_stream",
                 json.dumps(
-                    {
-                        "cctv_id": cctv.cctv_id,
-                        "cctv_url": cctv.cctv_url
-                    }
+                    {"cctv_id": cctv.cctv_id, "cctv_url": cctv.cctv_url}
                 ),
             )
 
@@ -540,6 +541,7 @@ def select_loglist_lookup(member_id: int, session: Session = Depends(get_db)):
         def_return_dict["isSuccess"] = False
     return def_return_dict
 
+
 @cctvRouter.put("/feedback")
 def update_log_feedback(
     log_id: int, feedback: int, session: Session = Depends(get_db)
@@ -561,8 +563,16 @@ def update_log_feedback(
         def_return_dict["isSuccess"] = False
     return def_return_dict
 
+
 @cctvRouter.post("/log_register")
-def register_log(cctv_id: int, anomaly_create_time: str, anomaly_score: float, anomaly_save_path: str, video_file: UploadFile = File(...), session: Session = Depends(get_db)):
+def register_log(
+    cctv_id: int,
+    anomaly_create_time: str,
+    anomaly_score: float,
+    anomaly_save_path: str,
+    video_file: UploadFile = File(...),
+    session: Session = Depends(get_db),
+):
     def_return_dict = DEFAULT_RETURN_DICT.copy()
     try:
         video_dir = os.path.dirname(video_file.filename)
@@ -576,7 +586,7 @@ def register_log(cctv_id: int, anomaly_create_time: str, anomaly_score: float, a
             cctv_id=cctv_id,
             anomaly_create_time=anomaly_create_time,
             anomaly_score=anomaly_score,
-            anomaly_save_path=anomaly_save_path
+            anomaly_save_path=anomaly_save_path,
         )
         session.add(log)
         session.commit()
@@ -632,7 +642,9 @@ def select_log_count(member_id: int, session: Session = Depends(get_db)):
         log_count = (
             session.query(models.Log.log_id)
             .join(models.CCTV, models.CCTV.cctv_id == models.Log.cctv_id)
-            .join(models.Member, models.Member.member_id == models.CCTV.member_id)
+            .join(
+                models.Member, models.Member.member_id == models.CCTV.member_id
+            )
             .filter(
                 models.CCTV.member_id == member_id,
             )
@@ -647,8 +659,10 @@ def select_log_count(member_id: int, session: Session = Depends(get_db)):
         def_return_dict["isSuccess"] = False
     return def_return_dict
 
+
 @cctvRouter.get("/{log_id}/video.mp4")
 async def get_video(video_path: str, log_id: int):
     return FileResponse(video_path)
+
 
 # API v 0.3.0

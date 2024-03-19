@@ -24,7 +24,7 @@ class Member(Base):
     create_time = Column(DateTime(timezone=True), server_default=func.now())
     update_time = Column(DateTime(timezone=True), onupdate=func.now())
     threshold = Column(Float, default=0.8)
-    save_time_length = Column(Integer, default=5)
+    save_time_length = Column(Integer, default=1)
     cctv_info_yn = Column(Boolean, default=False)
 
     cctv = relationship("CCTV", back_populates="member")

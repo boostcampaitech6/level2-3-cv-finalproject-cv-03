@@ -15,6 +15,7 @@ from app.db.models import *
 from app.middleware import TimeHeaderMiddleware
 from fastapi.staticfiles import StaticFiles
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # 데이터베이스 테이블 생성
@@ -22,6 +23,7 @@ async def lifespan(app: FastAPI):
     # logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
     Base.metadata.create_all(bind=engine)
     yield
+
 
 def get_application():
     _app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
