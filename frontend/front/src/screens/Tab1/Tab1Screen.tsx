@@ -113,34 +113,33 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
     setPerformSearch((prev) => !prev); // 검색 수행 트리거
   };
 
+  const fetchAnomalyEvents = async () => {
+    try {
+      const response = await fetch(
+        `http://10.28.224.142:30016/api/v0/cctv/loglist_lookup?member_id=${user}`,
+        {
+          method: "GET",
+          headers: { accept: "application/json" },
+        },
+      );
+      console.log("receving data...");
+      const data = await response.json();
+      console.log(response.ok);
+
+      if (response.ok) {
+        console.log(data.isSuccess);
+        // console.log(data.result);
+        setAnomalyEvents(data.result);
+        setTotalPages(Math.ceil(data.result.length / itemsPerPage));
+      } else {
+        console.error("API 호출에 실패했습니다:", data);
+      }
+    } catch (error) {
+      console.error("API 호출 중 예외가 발생했습니다:", error);
+    }
+  };
   useFocusEffect(
     React.useCallback(() => {
-      const fetchAnomalyEvents = async () => {
-        try {
-          const response = await fetch(
-            `http://10.28.224.142:30016/api/v0/cctv/loglist_lookup?member_id=${user}`,
-            {
-              method: "GET",
-              headers: { accept: "application/json" },
-            },
-          );
-          console.log("receving data...");
-          const data = await response.json();
-          console.log(response.ok);
-
-          if (response.ok) {
-            console.log(data.isSuccess);
-            // console.log(data.result);
-            setAnomalyEvents(data.result);
-            setTotalPages(Math.ceil(data.result.length / itemsPerPage));
-          } else {
-            console.error("API 호출에 실패했습니다:", data);
-          }
-        } catch (error) {
-          console.error("API 호출 중 예외가 발생했습니다:", error);
-        }
-      };
-
       fetchAnomalyEvents();
     }, [user]),
   );
@@ -202,30 +201,51 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
 
   function controlPage() {
     return (
-      <View style={styles.pageContainer}>
-        {totalPages > 1 && (
-          <>
-            {currentPage > 1 ? (
-              <TouchableOpacity onPress={() => setCurrentPage(currentPage - 1)}>
-                <Text style={styles.pageItem}>‹</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity onPress={() => setCurrentPage(totalPages)}>
-                <Text style={styles.pageItem}>‹</Text>
-              </TouchableOpacity>
-            )}
-            <Text style={{ margin: 8 }}>{`${currentPage}/${totalPages}`}</Text>
-            {currentPage < totalPages ? (
-              <TouchableOpacity onPress={() => setCurrentPage(currentPage + 1)}>
-                <Text style={styles.pageItem}>›</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity onPress={() => setCurrentPage(1)}>
-                <Text style={styles.pageItem}>›</Text>
-              </TouchableOpacity>
-            )}
-          </>
-        )}
+      <View style={styles.bottomControl}>
+        <View style={styles.pageControl}>
+          {totalPages > 1 && (
+            <>
+              {currentPage > 1 ? (
+                <TouchableOpacity
+                  onPress={() => setCurrentPage(currentPage - 1)}
+                >
+                  <Text style={styles.pageItem}>‹</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={() => setCurrentPage(totalPages)}>
+                  <Text style={styles.pageItem}>‹</Text>
+                </TouchableOpacity>
+              )}
+              <Text
+                style={{
+                  margin: 8,
+                  padding: 8,
+                  minWidth: 50,
+                  textAlign: "center",
+                }}
+              >{`${currentPage}/${totalPages}`}</Text>
+              {currentPage < totalPages ? (
+                <TouchableOpacity
+                  onPress={() => setCurrentPage(currentPage + 1)}
+                >
+                  <Text style={styles.pageItem}>›</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={() => setCurrentPage(1)}>
+                  <Text style={styles.pageItem}>›</Text>
+                </TouchableOpacity>
+              )}
+            </>
+          )}
+        </View>
+        <View style={{ flex: 1, alignItems: "flex-end" }}>
+          <TouchableOpacity
+            style={styles.refreshButton}
+            onPress={() => fetchAnomalyEvents()}
+          >
+            <Text style={styles.refreshButtonText}>🔃</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -259,7 +279,7 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
           contentContainerStyle={{ paddingBottom: 100 }}
           scrollEnabled={false}
         />
-        <View style={{ flex: 0.6 }}>{totalPages > 0 && controlPage()}</View>
+        <View style={{ flex: 0.6 }}>{controlPage()}</View>
       </View>
     </ImageBackground>
   );
@@ -287,20 +307,27 @@ const styles = StyleSheet.create({
     color: "#555555", // 날짜/시간 색상
     fontFamily: "NGB",
   },
-  pageContainer: {
+  bottomControl: {
     flexDirection: "row",
     justifyContent: "center",
+    alignItems: "center",
     padding: 10,
-    position: "absolute", // 페이지네이션을 화면 하단에 고정
-    bottom: 180, // 화면 하단에서부터의 위치
+    position: "absolute",
+    bottom: 180,
     left: 0,
     right: 0,
-    backgroundColor: "transparent", // 배경색은 필요에 따라 조정
+    backgroundColor: "transparent",
+  },
+  pageControl: {
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
   },
   pageItem: {
     margin: 8,
     padding: 8,
-    borderWidth: 1,
+    borderWidth: 0,
     borderColor: "black",
   },
   pageItemActive: {
@@ -325,5 +352,14 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#ddd", // 버튼의 배경색, 필요에 따라 조정
     borderRadius: 10, // 버튼의 모서리를 둥글게
+  },
+  refreshButton: {
+    marginLeft: 10, // 페이지네이션 버튼과의 간격
+    padding: 10,
+    borderRadius: 10, // 버튼 모서리 둥글게
+  },
+  refreshButtonText: {
+    color: "#000", // 텍스트 색상
+    fontSize: 20,
   },
 });
