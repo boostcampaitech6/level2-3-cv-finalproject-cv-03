@@ -13,7 +13,7 @@ from app.api import (
 )
 from app.db.models import *
 from app.middleware import TimeHeaderMiddleware
-
+from fastapi.staticfiles import StaticFiles
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -22,7 +22,6 @@ async def lifespan(app: FastAPI):
     # logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
     Base.metadata.create_all(bind=engine)
     yield
-
 
 def get_application():
     _app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
@@ -42,6 +41,8 @@ def get_application():
     _app.include_router(streamingRouter)
     _app.include_router(settingRouter)
     _app.add_middleware(TimeHeaderMiddleware)
+
+    _app.mount("/hls", StaticFiles(directory="hls"), name="hls")
 
     return _app
 
