@@ -113,6 +113,7 @@ const Tab2Screen = () => {
         renderItem={renderVideoItem}
         keyExtractor={(item) => item.cctv_id.toString()}
         numColumns={numColumns}
+        key={numColumns}
         contentContainerStyle={styles.gridContentContainer}
       />
 
