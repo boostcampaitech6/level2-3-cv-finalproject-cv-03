@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Switch, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../navigation/RootStackNavigator";
 import { Text } from "galio-framework";
@@ -28,12 +28,15 @@ export default function CCTVDetailScreen({
   route,
   navigation,
 }: LogDetailScreenProps) {
-  const { anomaly_create_time, log_id, anomaly_score, cctv_name, cctv_url } =
-    route.params;
+  const {
+    anomaly_create_time,
+    anomaly_save_path,
+    log_id,
+    anomaly_score,
+    cctv_name,
+  } = route.params;
 
   const video = React.useRef(null);
-  const [isHighAlert, setIsHighAlert] = React.useState(false);
-  const toggleSwitch = () => setIsHighAlert((previousState) => !previousState);
   const [fail, setFail] = React.useState(false);
   const [saveVisible, setSaveVisible] = useState(false);
   const [save2Visible, setSave2Visible] = useState(false);
@@ -96,14 +99,14 @@ export default function CCTVDetailScreen({
     const fileUri = FileSystem.documentDirectory + filename;
     try {
       const result = await FileSystem.downloadAsync(
-        "http://10.28.224.201:30576/video.mp4",
+        `http://10.28.224.201:30576/api/v0/cctv/${log_id}/video.mp4?video_path=${anomaly_save_path}`,
         // "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
         fileUri,
       );
       console.log(result);
       console.log("Download successful:", result);
-      save(result.uri);
-      deleteFile(fileUri);
+      await save(result.uri);
+      await deleteFile(fileUri);
     } catch (error) {
       console.error("Download error :", error);
     }
@@ -138,10 +141,8 @@ export default function CCTVDetailScreen({
           headers: {
             accept: "application/json",
           },
-          // body: JSON.stringify({ email }),
         },
       );
-      // console.log(email)
       const data = await response.json();
       console.log(data);
       if (data.isSuccess) {
@@ -158,30 +159,24 @@ export default function CCTVDetailScreen({
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>{cctv_name}</Text>
-        <Switch
-          trackColor={{ false: "#767577", true: "#610C9F" }}
-          thumbColor={isHighAlert ? "#DAD5F2" : "#f4f3f4"}
-          onValueChange={toggleSwitch}
-          value={isHighAlert}
-        />
       </View>
       <View style={styles.cctvContainer}>
         <Video
           ref={video}
           style={styles.video}
           source={{
-            uri: "http://10.28.224.201:30576/video.mp4",
-            // uri: `${cctv_url}`,
+            uri: `http://10.28.224.201:30576/api/v0/cctv/${log_id}/video.mp4?video_path=${anomaly_save_path}`,
           }}
           useNativeControls
           resizeMode={ResizeMode.CONTAIN}
           isLooping
         />
       </View>
-      <Text>{cctv_url}</Text>
       <View style={styles.details}>
         <Text style={styles.detailText}>일시: {anomaly_create_time}</Text>
-        <Text style={styles.detailText}>이상확률: {anomaly_score}</Text>
+        <Text style={styles.detailText}>
+          이상확률: {(anomaly_score * 100).toFixed(2)}%
+        </Text>
         <View style={styles.middle}>
           <TouchableOpacity
             style={styles.feedback_button}
@@ -364,7 +359,6 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 20,
-    // fontWeight: 'bold',
     fontFamily: "C24",
   },
   cctvContainer: {

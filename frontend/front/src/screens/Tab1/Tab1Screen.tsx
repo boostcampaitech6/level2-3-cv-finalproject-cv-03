@@ -72,7 +72,6 @@ function formatDateTime(dateTimeString: string): string {
 
 export default function Tab1Screen(props: Tab1ScreenProps) {
   const { user } = useContext(UserContext);
-  // console.log(user)
   const { navigation } = props;
   const [anomalyEvents, setAnomalyEvents] = useState<AnomalyEvent[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<AnomalyEvent[]>([]);
@@ -110,7 +109,7 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
   // }, 5000);
 
   const onSearch = () => {
-    setPerformSearch((prev) => !prev); // 검색 수행 트리거
+    setPerformSearch((prev) => !prev);
   };
 
   const fetchAnomalyEvents = async () => {

@@ -178,12 +178,14 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height,
   },
   videoTitle: {
-    fontSize: 14,
+    fontSize: 16,
     color: "white",
     textAlign: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     width: "100%",
     padding: 5,
+    fontFamily: "C24",
+    justifyContent: "center",
   },
 });
 
