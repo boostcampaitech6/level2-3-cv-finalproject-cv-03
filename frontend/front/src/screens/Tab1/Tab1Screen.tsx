@@ -244,7 +244,7 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
           contentContainerStyle={{ paddingBottom: 100 }}
           scrollEnabled={false}
         />
-        <View style={{ flex: 0.6 }}>{totalPages > 0 && controlPage()}</View>
+        <View style={{ flex: 0.6 }}>{controlPage()}</View>
       </View>
     </ImageBackground>
   );
