@@ -26,6 +26,7 @@ class StopFlag:
     def get(self):
         return self.flag
 
+
 def get_model():
     class MobileNet(nn.Module):
         def __init__(self):
@@ -40,64 +41,74 @@ def get_model():
             x = self.features(x)
             x = self.avgpool(x)
             return x
-        
+
     cnn = MobileNet()
     input_size = RNN_INPUT_SIZE[str(cnn)]
     rnn = GRU(input_size=input_size, hidden_size=256, num_layers=1)
     model = ClipModel(cnn, rnn, hidden=256, nc=3)
     return model
 
+
 def save_anomaly_log(cctv_id, anomaly_score):
     global fps, save_time_length, save_image_dir, save_hls_log_video_dir
 
-    current_time = time.strftime('%Y%m%d_%H%M%S')
+    current_time = time.strftime("%Y%m%d_%H%M%S")
     anomaly_save_path = f"{save_hls_log_video_dir}/{current_time}.mp4"
     anomaly_txt_save_path = f"{save_hls_log_video_dir}/{current_time}.txt"
 
-    save_image_cnt = int(fps*save_time_length*60)
+    save_image_cnt = int(fps * save_time_length * 60)
     save_image_paths = sorted(glob.glob(f"{save_image_dir}/*"))
     save_image_paths = save_image_paths[-save_image_cnt:]
-    print('save_image_paths :', len(save_image_paths))
-    
-    with open(anomaly_txt_save_path, 'w') as w:
+    print("save_image_paths :", len(save_image_paths))
+
+    with open(anomaly_txt_save_path, "w") as w:
         for save_image_path in save_image_paths:
-            if save_image_path.endswith('.png'):
+            if save_image_path.endswith(".png"):
                 w.write(f"file {save_image_path}\n")
-    
+
     # test_path = os.path.join("/data/ephemeral/home/level2-3-cv-finalproject-cv-03/backend/hls/log_videos/test2",os.path.basename(anomaly_save_path))
     command = [
-        'ffmpeg',
-        '-f', 'concat',
-        '-safe', '0',
-        '-i', anomaly_txt_save_path,
-        '-c:v', 'libx264',
+        "ffmpeg",
+        "-f",
+        "concat",
+        "-safe",
+        "0",
+        "-i",
+        anomaly_txt_save_path,
+        "-c:v",
+        "libx264",
         # '-r', '10',
-        anomaly_save_path
+        anomaly_save_path,
         # test_path
     ]
     subprocess.run(command, check=True)
-    with open(anomaly_save_path, 'rb') as video_file:
-        files = {'video_file': (anomaly_save_path, video_file)}
-        response = requests.post(f"http://10.28.224.201:30576/api/v0/cctv/log_register?cctv_id={cctv_id}&anomaly_create_time={current_time}&anomaly_score={anomaly_score}&anomaly_save_path={anomaly_save_path}", files=files)
+    with open(anomaly_save_path, "rb") as video_file:
+        files = {"video_file": (anomaly_save_path, video_file)}
+        response = requests.post(
+            f"http://10.28.224.201:30576/api/v0/cctv/log_register?cctv_id={cctv_id}&anomaly_create_time={current_time}&anomaly_score={anomaly_score}&anomaly_save_path={anomaly_save_path}",
+            files=files,
+        )
     # with open(test_path, 'rb') as video_file:
     #     files = {'video_file': (test_path, video_file)}
     #     response = requests.post(f"http://10.28.224.201:30576/api/v0/cctv/log_register?cctv_id={cctv_id}&anomaly_create_time={current_time}&anomaly_score={anomaly_score}&anomaly_save_path={test_path}", files=files)
+
 
 def save_video(image_paths):
     global fps, save_video_dir
     frame = cv2.imread(image_paths[0])
     height, width = frame.shape[:2]
-    video_name = os.path.basename(image_paths[0]).split('.')[0]+'.mp4'
+    video_name = os.path.basename(image_paths[0]).split(".")[0] + ".mp4"
     video_path = os.path.join(save_video_dir, video_name)
 
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
     # video = cv2.VideoWriter(video_path, fourcc, fps, (width,height))
-    video = cv2.VideoWriter(video_path, fourcc, 10, (width,height))
+    video = cv2.VideoWriter(video_path, fourcc, 10, (width, height))
 
     for image_path in image_paths:
         video.write(cv2.imread(image_path))
         os.remove(image_path)
     video.release()
+
 
 def capture_frames(
     cctv_info,
@@ -121,7 +132,6 @@ def capture_frames(
     start_time = time.time()
     next_time = start_time + interval
     save_time = start_time + save_interval + max_save_time
-    
 
     while not stop_flag.get() and video.isOpened():
         success, frame = video.read()
@@ -133,11 +143,14 @@ def capture_frames(
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             resize_frame = A.Resize(224, 224)(image=frame)["image"]
             norm_frame = (resize_frame / 255.0).astype(np.float32)
-            
+
             image_path = os.path.join(
-                save_image_dir, f"{datetime.now().strftime('%Y%m%d_%H%M%S.%f')}.png"
+                save_image_dir,
+                f"{datetime.now().strftime('%Y%m%d_%H%M%S.%f')}.png",
             )
-            cv2.imwrite(image_path, cv2.cvtColor(resize_frame, cv2.COLOR_RGB2BGR))
+            cv2.imwrite(
+                image_path, cv2.cvtColor(resize_frame, cv2.COLOR_RGB2BGR)
+            )
             buffer.append(norm_frame)
             next_time += interval
 
@@ -146,7 +159,10 @@ def capture_frames(
             image_paths = sorted(glob.glob(f"{save_image_dir}/*.png"))
             image_paths = image_paths[:-max_frames]
             # redis로 2시간 스케줄링 진행
-            redis_server.lpush(f"{cctv_info['cctv_id']}_save_video", json.dumps({"image_paths":image_paths}))
+            redis_server.lpush(
+                f"{cctv_info['cctv_id']}_save_video",
+                json.dumps({"image_paths": image_paths}),
+            )
 
     video.release()
 
@@ -154,7 +170,7 @@ def capture_frames(
 def predict(cctv_id, model, buffer, stop_flag, frame_per_sec=10, total_sec=3):
     total_time, pred_time, cnt = 0, 0, 0
     sleep_time, sleep_cnt, sleep_flag = 5, 0, False
-    
+
     global threshold, save_time_length
     init_st = time.time()
 
@@ -201,7 +217,7 @@ def predict(cctv_id, model, buffer, stop_flag, frame_per_sec=10, total_sec=3):
             print(
                 f"class: {pred_class:>11} | probability: {prob:.4f} | time: {time.time() - init_st:.2f}s | threshold: {threshold} | save_time_length: {save_time_length}"
             )
-                
+
             if pred and prob > threshold:
                 sleep_flag = True
                 anomaly_score = float(prob)
@@ -251,10 +267,12 @@ def inference(cctv_info, capture_interval=0.1, frame_per_sec=10, total_sec=3):
         cctv_info["save_time_length"],
     )
 
-    save_hls_log_video_dir = f"/data/saved/saved_log_videos/{cctv_info['cctv_id']}"
+    save_hls_log_video_dir = (
+        f"/data/saved/saved_log_videos/{cctv_info['cctv_id']}"
+    )
     save_image_dir = f"/data/saved/saved_images/{cctv_info['cctv_id']}"
     save_video_dir = f"/data/saved/saved_videos/{cctv_info['cctv_id']}"
-    
+
     os.makedirs(save_hls_log_video_dir, exist_ok=True)
     os.makedirs(save_image_dir, exist_ok=True)
     os.makedirs(save_video_dir, exist_ok=True)
@@ -265,7 +283,8 @@ def inference(cctv_info, capture_interval=0.1, frame_per_sec=10, total_sec=3):
     save_video_key = f"{cctv_info['cctv_id']}_save_video"
     while True:
         k, v = redis_server.brpop(
-            keys=[flag_key, alarm_key, anomaly_key, save_video_key], timeout=None
+            keys=[flag_key, alarm_key, anomaly_key, save_video_key],
+            timeout=None,
         )
         k, v = k.decode("utf-8"), v.decode("utf-8")
         if k == flag_key:
@@ -273,18 +292,22 @@ def inference(cctv_info, capture_interval=0.1, frame_per_sec=10, total_sec=3):
             break
         elif k == alarm_key:
             alarm_config = json.loads(v)
-            print(f'change threshold : {threshold} -> {alarm_config["threshold"]}')
-            print(f'change save_time_length : {save_time_length} -> {alarm_config["save_time_length"]}')
+            print(
+                f'change threshold : {threshold} -> {alarm_config["threshold"]}'
+            )
+            print(
+                f'change save_time_length : {save_time_length} -> {alarm_config["save_time_length"]}'
+            )
             threshold = alarm_config["threshold"]
             save_time_length = alarm_config["save_time_length"]
         elif k == save_video_key:
             print("saving video..")
-            image_paths = json.loads(v)['image_paths']
+            image_paths = json.loads(v)["image_paths"]
             save_video(image_paths)
         elif k == anomaly_key:
             print("anomaly detected..")
             anomaly_score = v
-            save_anomaly_log(cctv_info['cctv_id'], anomaly_score)
+            save_anomaly_log(cctv_info["cctv_id"], anomaly_score)
 
     stop_flag.set(True)
     capture_thread.join()
