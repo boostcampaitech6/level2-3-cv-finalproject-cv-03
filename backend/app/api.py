@@ -1,19 +1,25 @@
-from fastapi import APIRouter, Depends
-from app.schemas import Login
-from sqlalchemy.orm import Session
-from app.db.database import get_db
-from app.db import models
-from sqlalchemy.orm.exc import NoResultFound
-from passlib.context import CryptContext
+import os
+import ssl
+import json
+import redis
 import random
+import shutil
 import string
 import smtplib
-import ssl
+
+from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi.responses import FileResponse
+
+from sqlalchemy.orm import Session
+from sqlalchemy.orm.exc import NoResultFound
+
+from app.db.database import get_db
+from app.schemas import Login
+from app.db import models
+
+from passlib.context import CryptContext
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import redis
-import json
-
 
 DEFAULT_RETURN_DICT = {"isSuccess": True, "result": None}
 
@@ -41,11 +47,6 @@ def hash_password(password):
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
-
-
-@router.get("/")
-def read_root():
-    return {"Hello": "World!"}
 
 
 def generate_verification_code():
@@ -172,8 +173,25 @@ def register_member(
     )
     session.add(cctv)
     session.commit()
+
+    cctv.hls_url = (
+        f"http://10.28.224.201:30576/hls/cctv_stream/{cctv.cctv_id}/index.m3u8"
+    )
+    session.commit()
+
     redis_server.lpush(
         "start_inf",
+        json.dumps(
+            {
+                "cctv_id": cctv.cctv_id,
+                "cctv_url": cctv.cctv_url,
+                "threshold": member.threshold,
+                "save_time_length": member.save_time_length,
+            }
+        ),
+    )
+    redis_server.lpush(
+        "start_hls_stream",
         json.dumps(
             {
                 "cctv_id": cctv.cctv_id,
@@ -352,12 +370,18 @@ def alarm_edit(
 def cctv_list_lookup(member_id: int, session: Session = Depends(get_db)):
     def_return_dict = DEFAULT_RETURN_DICT.copy()
 
-    cctvs = session.query(models.CCTV).filter_by(member_id=member_id).all()
+    cctvs = (
+        session.query(models.CCTV)
+        .filter_by(member_id=member_id)
+        .order_by(models.CCTV.cctv_id.desc())
+        .all()
+    )
     data = [
         {
             "cctv_id": cctv.cctv_id,
             "cctv_name": cctv.cctv_name,
             "cctv_url": cctv.cctv_url,
+            "hls_url": cctv.hls_url,
         }
         for cctv in cctvs
     ]
@@ -386,6 +410,10 @@ def cctv_register(
         )
         session.add(cctv)
         session.commit()
+
+        cctv.hls_url = f"http://10.28.224.201:30576/hls/cctv_stream/{cctv.cctv_id}/index.m3u8"
+        session.commit()
+
         def_return_dict["result"] = {
             "cctv_name": cctv.cctv_name,
             "cctv_id": cctv.cctv_id,
@@ -401,6 +429,10 @@ def cctv_register(
                     "save_time_length": member.save_time_length,
                 }
             ),
+        )
+        redis_server.lpush(
+            "start_hls_stream",
+            json.dumps({"cctv_id": cctv.cctv_id, "cctv_url": cctv.cctv_url}),
         )
     else:
         def_return_dict["isSuccess"] = False
@@ -421,6 +453,7 @@ def cctv_delete(cctv_id: int, session: Session = Depends(get_db)):
 
         flag_key = f"{cctv_id}_stop_inf"
         redis_server.lpush(flag_key, "")
+        redis_server.lpush("stop_hls_stream", cctv_id)
 
     return def_return_dict
 
@@ -465,6 +498,13 @@ def cctv_edit(
                     }
                 ),
             )
+            redis_server.lpush("stop_hls_stream", cctv.cctv_id)
+            redis_server.lpush(
+                "start_hls_stream",
+                json.dumps(
+                    {"cctv_id": cctv.cctv_id, "cctv_url": cctv.cctv_url}
+                ),
+            )
 
     return def_return_dict
 
@@ -502,25 +542,6 @@ def select_loglist_lookup(member_id: int, session: Session = Depends(get_db)):
     return def_return_dict
 
 
-@cctvRouter.get("/log_lookup")
-def select_log_lookup(log_id: int, session: Session = Depends(get_db)):
-    def_return_dict = DEFAULT_RETURN_DICT.copy()
-    try:
-        log_info = (
-            session.query(models.Log)
-            .filter(models.Log.log_id == log_id)
-            .first()
-        )
-
-        if log_info is None:
-            raise Exception()
-
-        def_return_dict["result"] = log_info
-    except Exception:
-        def_return_dict["isSuccess"] = False
-    return def_return_dict
-
-
 @cctvRouter.put("/feedback")
 def update_log_feedback(
     log_id: int, feedback: int, session: Session = Depends(get_db)
@@ -538,6 +559,38 @@ def update_log_feedback(
 
         log_info.anomaly_feedback = feedback
         session.commit()
+    except Exception:
+        def_return_dict["isSuccess"] = False
+    return def_return_dict
+
+
+@cctvRouter.post("/log_register")
+def register_log(
+    cctv_id: int,
+    anomaly_create_time: str,
+    anomaly_score: float,
+    anomaly_save_path: str,
+    video_file: UploadFile = File(...),
+    session: Session = Depends(get_db),
+):
+    def_return_dict = DEFAULT_RETURN_DICT.copy()
+    try:
+        video_dir = os.path.dirname(video_file.filename)
+        if not os.path.isdir(video_dir):
+            os.makedirs(video_dir, exist_ok=True)
+
+        with open(f"{video_file.filename}", "wb") as buffer:
+            shutil.copyfileobj(video_file.file, buffer)
+
+        log = models.Log(
+            cctv_id=cctv_id,
+            anomaly_create_time=anomaly_create_time,
+            anomaly_score=anomaly_score,
+            anomaly_save_path=anomaly_save_path,
+        )
+        session.add(log)
+        session.commit()
+
     except Exception:
         def_return_dict["isSuccess"] = False
     return def_return_dict
@@ -580,6 +633,36 @@ def select_cctvlist(member_id: int, session: Session = Depends(get_db)):
     except Exception:
         def_return_dict["isSuccess"] = False
     return def_return_dict
+
+
+@cctvRouter.get("/log_count")
+def select_log_count(member_id: int, session: Session = Depends(get_db)):
+    def_return_dict = DEFAULT_RETURN_DICT.copy()
+    try:
+        log_count = (
+            session.query(models.Log.log_id)
+            .join(models.CCTV, models.CCTV.cctv_id == models.Log.cctv_id)
+            .join(
+                models.Member, models.Member.member_id == models.CCTV.member_id
+            )
+            .filter(
+                models.CCTV.member_id == member_id,
+            )
+            .count()
+        )
+
+        if log_count is None:
+            raise Exception()
+
+        def_return_dict["result"] = log_count
+    except Exception:
+        def_return_dict["isSuccess"] = False
+    return def_return_dict
+
+
+@cctvRouter.get("/{log_id}/video.mp4")
+async def get_video(video_path: str, log_id: int):
+    return FileResponse(video_path)
 
 
 # API v 0.3.0

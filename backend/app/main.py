@@ -13,6 +13,7 @@ from app.api import (
 )
 from app.db.models import *
 from app.middleware import TimeHeaderMiddleware
+from fastapi.staticfiles import StaticFiles
 
 
 @asynccontextmanager
@@ -42,6 +43,8 @@ def get_application():
     _app.include_router(streamingRouter)
     _app.include_router(settingRouter)
     _app.add_middleware(TimeHeaderMiddleware)
+
+    _app.mount("/hls", StaticFiles(directory="hls"), name="hls")
 
     return _app
 
