@@ -84,7 +84,7 @@ def save_anomaly_log(cctv_id, anomaly_score):
     subprocess.run(command, check=True)
     with open(anomaly_save_path, "rb") as video_file:
         files = {"video_file": (anomaly_save_path, video_file)}
-        response = requests.post(
+        requests.post(
             f"http://10.28.224.201:30576/api/v0/cctv/log_register?cctv_id={cctv_id}&anomaly_create_time={current_time}&anomaly_score={anomaly_score}&anomaly_save_path={anomaly_save_path}",
             files=files,
         )
@@ -220,7 +220,7 @@ def predict(cctv_id, model, buffer, stop_flag, frame_per_sec=10, total_sec=3):
 
             if pred and prob > threshold:
                 sleep_flag = True
-                anomaly_score = float(prob)
+                anomaly_score = float(prob)  # noqa: F841
 
             total_time += time.time() - total_st
             cnt += 1
