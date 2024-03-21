@@ -99,7 +99,7 @@ const Profile = (props) => {
         {
           method: "POST",
           headers: {
-            "accept": "application/json",
+            accept: "application/json",
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ email: email, password: inpassword }),
@@ -137,7 +137,7 @@ const Profile = (props) => {
             `http://10.28.224.142:30576/api/v0/settings/profile_lookup?member_id=${user}`,
             {
               method: "GET",
-              headers: { "accept": "application/json" },
+              headers: { accept: "application/json" },
             },
           );
           const data = await response.json();

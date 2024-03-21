@@ -60,7 +60,7 @@ const Register5 = (props) => {
                   paddingBottom={20}
                   style={styles.text}
                 >
-                  1. 약관 동의 {'>'} 2. 이메일 인증 {'>'} 3. 비밀번호 입력 {'>'}{" "}
+                  1. 약관 동의 {">"} 2. 이메일 인증 {">"} 3. 비밀번호 입력 {">"}{" "}
                 </Text>
                 <Text
                   color="black"

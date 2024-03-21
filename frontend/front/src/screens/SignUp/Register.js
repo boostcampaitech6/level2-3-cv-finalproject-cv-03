@@ -141,7 +141,7 @@ const Register = (props) => {
                   paddingBottom={20}
                   style={styles.text}
                 >
-                  {'>'} 2. 이메일 인증 {'>'} 3. 비밀번호 입력 {'>'} 4. URL 등록
+                  {">"} 2. 이메일 인증 {">"} 3. 비밀번호 입력 {">"} 4. URL 등록
                 </Text>
               </View>
               <Block flex center>

@@ -21,18 +21,22 @@ const Register6 = (props) => {
   const { cctv_url } = route.params;
   const { cctv_name } = route.params;
   const [name, setName] = useState("default");
+  // eslint-disable-next-line
   const [member_name, setMember_name] = useState("hong");
   const [fail, setFail] = useState(false);
 
   const handleRegister = async () => {
     console.log(email, password, name, cctv_url, cctv_name);
     try {
-      const response = await fetch(`http://10.28.224.201:30576/api/v0/members/register?email=${encodeURIComponent(email)}&password=${password}&member_name=${member_name}d&store_name=${name}&cctv_url=${cctv_url}&cctv_name=${cctv_name}`, {
-        method: 'POST',
-        headers: {
-          'accept': 'application/json',
+      const response = await fetch(
+        `http://10.28.224.201:30576/api/v0/members/register?email=${encodeURIComponent(email)}&password=${password}&member_name=${member_name}d&store_name=${name}&cctv_url=${cctv_url}&cctv_name=${cctv_name}`,
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+          },
         },
-      });
+      );
       const data = await response.json();
       console.log(data);
       if (data.isSuccess) {

@@ -6,7 +6,7 @@ import {
   StatusBar,
   KeyboardAvoidingView,
 } from "react-native";
-import { Block, Checkbox, Text, theme } from "galio-framework";
+import { Block, Text } from "galio-framework";
 
 import { Button, Input } from "../../components";
 import { Images, argonTheme } from "../../constants";
@@ -64,7 +64,7 @@ const Register4 = (props) => {
                   paddingBottom={20}
                   style={styles.text}
                 >
-                  1. 약관 동의 {'>'} 2. 이메일 인증 {'>'}{" "}
+                  1. 약관 동의 {">"} 2. 이메일 인증 {">"}{" "}
                 </Text>
                 <Text
                   color="black"
@@ -80,7 +80,7 @@ const Register4 = (props) => {
                   paddingBottom={20}
                   style={styles.text}
                 >
-                  {'>'} 4. URL 등록
+                  {">"} 4. URL 등록
                 </Text>
               </View>
               <Block flex center>

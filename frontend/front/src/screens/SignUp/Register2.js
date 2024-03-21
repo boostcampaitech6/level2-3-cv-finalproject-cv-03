@@ -6,7 +6,7 @@ import {
   StatusBar,
   KeyboardAvoidingView,
 } from "react-native";
-import { Block, Checkbox, Text, theme } from "galio-framework";
+import { Block, Text } from "galio-framework";
 
 import { Button, Input } from "../../components";
 import { Images, argonTheme } from "../../constants";
@@ -17,10 +17,8 @@ const { width, height } = Dimensions.get("screen");
 
 const Register2 = (props) => {
   const { navigation } = props;
-  const [isChecked2, setIsChecked2] = useState(false);
-  const [isChecked3, setIsChecked3] = useState(false);
   const [email, setEmail] = useState("");
-  const [fail, setFail] = useState(false);
+  // eslint-disable-next-line
   const [fail2, setFail2] = useState(false);
   const [dup, setDup] = useState(true);
   const [dup2, setDup2] = useState(false);
@@ -35,12 +33,15 @@ const Register2 = (props) => {
     setDup(false);
     setDup2(false);
     try {
-      const response = await fetch(`http://10.28.224.201:30576/api/v0/members/duplicate?email=${encodeURIComponent(email)}`, {
-        method: 'POST',
-        headers: {
-          'accept': 'application/json',
+      const response = await fetch(
+        `http://10.28.224.201:30576/api/v0/members/duplicate?email=${encodeURIComponent(email)}`,
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+          },
         },
-    });
+      );
       const data = await response.json();
       console.log(data);
       if (data.isSuccess) {
@@ -120,7 +121,7 @@ const Register2 = (props) => {
                   paddingBottom={10}
                   style={styles.text}
                 >
-                  1. 약관 동의 {'>'} {""}
+                  1. 약관 동의 {">"} {""}
                 </Text>
                 <Text
                   color="black"
@@ -136,7 +137,7 @@ const Register2 = (props) => {
                   paddingBottom={10}
                   style={styles.text}
                 >
-                  {'>'} 3. 비밀번호 입력 {'>'} 4. URL 등록
+                  {">"} 3. 비밀번호 입력 {">"} 4. URL 등록
                 </Text>
               </View>
               <Block flex center>

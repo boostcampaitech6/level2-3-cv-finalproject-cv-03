@@ -21,20 +21,24 @@ const Login = (props) => {
   const [password, setPassword] = useState("");
   const [fail, setFail] = useState(false);
   const [fail2, setFail2] = useState(false);
+  // eslint-disable-next-line
   const { user, setUser } = useContext(UserContext);
 
   const { navigation } = props;
 
   const handleLogin = async () => {
     try {
-      const response = await fetch(`http://10.28.224.201:30576/api/v0/members/login`, {
-        method: "POST",
-        headers: {
-          "accept": "application/json",
-          'Content-Type': 'application/json'
+      const response = await fetch(
+        `http://10.28.224.201:30576/api/v0/members/login`,
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
         },
-        body: JSON.stringify({ email, password }),
-      });
+      );
 
       const data = await response.json();
       console.log(data.isSuccess);

@@ -156,7 +156,7 @@ export default function BottomTabNavigator() {
       <Tab.Screen
         name="스트리밍"
         component={Tab2Screen}
-        options={({ }) => ({
+        options={() => ({
           tabBarIcon: ({ color }) => (
             <Ionicons
               name="videocam-sharp"

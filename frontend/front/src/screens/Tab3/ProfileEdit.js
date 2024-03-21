@@ -31,12 +31,15 @@ const ProfileEdit = (props) => {
 
   const handleEdit = async () => {
     try {
-      const response = await fetch(`http://10.28.224.201:30576/api/v0/settings/profile_edit?member_id=${user}&email=${email}&password=${npassword}&store_name=${nstore_name}`, {
-        method: 'POST',
-        headers: {
-          'accept': 'application/json',
+      const response = await fetch(
+        `http://10.28.224.201:30576/api/v0/settings/profile_edit?member_id=${user}&email=${email}&password=${npassword}&store_name=${nstore_name}`,
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+          },
         },
-      });
+      );
       const data = await response.json();
       if (data.isSuccess) {
         navigation.navigate("Profile");
