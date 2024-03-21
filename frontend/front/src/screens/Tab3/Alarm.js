@@ -49,6 +49,7 @@ const Alarm = (props) => {
       const fetchData = async () => {
         try {
           const response = await fetch(`http://10.28.224.201:30435/api/v0/settings/alarm_lookup?member_id=${user}`, {
+
             method: "GET",
             headers: { 'accept': 'application/json' },
           });

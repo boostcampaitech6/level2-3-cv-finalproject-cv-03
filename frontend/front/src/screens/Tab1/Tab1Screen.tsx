@@ -116,6 +116,7 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
     try {
       const response = await fetch(
         `http://10.28.224.201:30435/api/v0/cctv/loglist_lookup?member_id=${user}`,
+
         {
           method: "GET",
           headers: { accept: "application/json" },

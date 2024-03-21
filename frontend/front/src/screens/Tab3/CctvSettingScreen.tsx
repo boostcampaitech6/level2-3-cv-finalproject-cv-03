@@ -41,6 +41,7 @@ export default function CctvSettingScreen({ navigation }: Props) {
     try {
       const response = await fetch(
         `http://10.28.224.201:30435/api/v0/settings/cctv_list_lookup?member_id=${user}`,
+
         {
           method: "GET",
           headers: { accept: "application/json" },
@@ -64,6 +65,7 @@ export default function CctvSettingScreen({ navigation }: Props) {
     try {
       const response = await fetch(
         `http://10.28.224.201:30435/api/v0/settings/cctv_register?member_id=${user}&cctv_name=${newCctvName}&cctv_url=${newCctvUrl}`,
+
         {
           method: "POST",
           headers: { accept: "application/json" },
@@ -86,6 +88,7 @@ export default function CctvSettingScreen({ navigation }: Props) {
     try {
       const response = await fetch(
         `http://10.28.224.201:30435/api/v0/settings/cctv_edit?cctv_id=${cctvId}&cctv_name=${newCctvName}&cctv_url=${newCctvUrl}`,
+
         {
           method: "POST",
           headers: { accept: "application/json" },
@@ -111,6 +114,7 @@ export default function CctvSettingScreen({ navigation }: Props) {
     try {
       const response = await fetch(
         `http://10.28.224.201:30435/api/v0/settings/cctv_delete?cctv_id=${cctvId}`,
+
         {
           method: "DELETE",
           headers: { accept: "application/json" },

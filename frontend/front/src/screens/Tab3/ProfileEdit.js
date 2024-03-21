@@ -34,6 +34,7 @@ const ProfileEdit = (props) => {
   const handleEdit = async () => {
     try {
       const response = await fetch(`http://10.28.224.201:30435/api/v0/settings/profile_edit?member_id=${user}&email=${email}&password=${npassword}&store_name=${nstore_name}`, {
+
         method: 'POST',
         headers: {
           'accept': 'application/json',

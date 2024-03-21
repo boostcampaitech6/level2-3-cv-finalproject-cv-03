@@ -29,6 +29,7 @@ const Register2 = (props) => {
   const handleAuth = async () => {
     try {
       const response = await fetch(`http://10.28.224.201:30435/api/v0/members/confirm_auth?email=${email}&code=${token}`, {
+
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -57,6 +58,7 @@ const Register2 = (props) => {
   const handleSendAuth = async () => {
     try {
       const response = await fetch(`http://10.28.224.201:30435/api/v0/members/send_auth?email=${email}`, {
+
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

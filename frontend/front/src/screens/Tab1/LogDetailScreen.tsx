@@ -47,6 +47,7 @@ export default function CCTVDetailScreen({
     try {
       const response = await fetch(
         `http://10.28.224.201:30435/api/v0/cctv/log_delete?log_id=${log_id}`,
+
         {
           method: "DELETE",
           headers: {
@@ -73,6 +74,7 @@ export default function CCTVDetailScreen({
     try {
       const response = await fetch(
         `http://10.28.224.201:30435/api/v0/cctv/feedback?log_id=${log_id}&feedback=${1}`,
+
         {
           method: "PUT",
           headers: {
@@ -136,6 +138,7 @@ export default function CCTVDetailScreen({
     try {
       const response = await fetch(
         `http://10.28.224.201:30435/api/v0/cctv/feedback?log_id=${log_id}&feedback=${0}`,
+
         {
           method: "PUT",
           headers: {
