@@ -118,35 +118,9 @@ const Register6 = (props) => {
                       }
                     />
 
-                    {/* <Block row style={styles.passwordCheck}>
-                      <Text size={12} color={argonTheme.COLORS.MUTED}>
-                        password strength:
-                      </Text>
-                      <Text bold size={12} color={argonTheme.COLORS.SUCCESS}>
-                        {" "}
-                        strong
-                      </Text>
-                    </Block> */}
+
                   </Block>
-                  {/* <Block row width={width * 0.75}>
-                    <Checkbox
-                      checkboxStyle={{
-                        borderWidth: 3
-                      }}
-                      color={argonTheme.COLORS.PRIMARY}
-                      label="I agree with the"
-                    />
-                    <Button
-                      style={{ width: 100 }}
-                      color="transparent"
-                      textStyle={{
-                        color: argonTheme.COLORS.PRIMARY,
-                        fontSize: 14
-                      }}
-                    >
-                      Privacy Policy
-                    </Button>
-                  </Block> */}
+
                   <Block middle marginTop={40}>
                     <Button
                       // onPress={() => navigation.navigate('Login')}
@@ -161,15 +135,7 @@ const Register6 = (props) => {
                     >
                       제출
                     </Button>
-                    {/* <Button 
-                      // onPress={() => navigation.navigate('Login')}
-                      onPress={handleRegister}
-                      color={"primary"} 
-                      style={{...styles.createButton, marginTop:7}}
-                      textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
-                    >
-                      건너뛰기
-                    </Button> */}
+
 
                     {fail && (
                       <Text style={styles.failText}>
