@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import {
   StyleSheet,
   Dimensions,
@@ -7,18 +7,17 @@ import {
   ImageBackground,
   Platform,
 } from "react-native";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Block, Text, theme } from "galio-framework";
 
 import { Button, Input } from "../../components";
 import { Images, argonTheme } from "../../constants";
 import { HeaderHeight } from "../../constants/utils";
-import { UserContext } from '../../UserContext';
+import { UserContext } from "../../UserContext";
 
 const { width, height } = Dimensions.get("screen");
 
 const thumbMeasure = (width - 48 - 32) / 3;
-
 
 const ProfileEdit = (props) => {
   const { navigation, route } = props;
@@ -29,7 +28,6 @@ const ProfileEdit = (props) => {
   const [nstore_name, setNstore_name] = useState(store_name);
 
   const { user } = useContext(UserContext);
-  // console.log(user)
 
   const handleEdit = async () => {
     try {
@@ -38,27 +36,24 @@ const ProfileEdit = (props) => {
         headers: {
           'accept': 'application/json',
         },
-        // body: JSON.stringify({ email }),
       });
-      // console.log(email)
       const data = await response.json();
-      // console.log(data);
       if (data.isSuccess) {
-        //팝업
-        navigation.navigate('Profile')
+        navigation.navigate("Profile");
+      } else {
+        console.error("Network error2:", error);
       }
-      else {
-        console.error('Network error2:', error);
-    }
     } catch (error) {
-      console.error('Network error:', error);
+      console.error("Network error:", error);
     }
   };
 
-  
-
   return (
-    <KeyboardAwareScrollView resetScrollToCoords={{ x: 0, y: 0 }} contentContainerStyle={{ flex: 1 }} scrollEnabled={false}>
+    <KeyboardAwareScrollView
+      resetScrollToCoords={{ x: 0, y: 0 }}
+      contentContainerStyle={{ flex: 1 }}
+      scrollEnabled={false}
+    >
       <Block flex style={styles.profile}>
         <Block flex>
           <ImageBackground
@@ -68,7 +63,7 @@ const ProfileEdit = (props) => {
           >
             <ScrollView
               showsVerticalScrollIndicator={false}
-              style={{ width, marginTop: '15%' }}
+              style={{ width, marginTop: "15%" }}
             >
               <Block flex style={styles.profileCard}>
                 <Block middle style={styles.avatarContainer}>
@@ -77,21 +72,29 @@ const ProfileEdit = (props) => {
                     style={styles.avatar}
                   />
                 </Block>
-                <Block style={styles.info}>
-                </Block>
+                <Block style={styles.info}></Block>
                 <Block flex>
                   <Block middle style={styles.nameInfo}>
-                    <Text bold size={28} color="#32325D" style={styles.textName}>
+                    <Text
+                      bold
+                      size={28}
+                      color="#32325D"
+                      style={styles.textName}
+                    >
                       홍길동
                     </Text>
-                    <Text size={16} color="#32325D" style={{ ...styles.text, marginTop: 10 }} >
+                    <Text
+                      size={16}
+                      color="#32325D"
+                      style={{ ...styles.text, marginTop: 10 }}
+                    >
                       사장님
                     </Text>
                   </Block>
                   <Block middle style={{ marginTop: 30, marginBottom: 16 }}>
                     <Block style={styles.divider} />
                   </Block>
-                  <Block middle style={{marginTop: 20}} row space="between">
+                  <Block middle style={{ marginTop: 20 }} row space="between">
                     <Text bold size={16} color="#525F7F" style={styles.text}>
                       이메일
                     </Text>
@@ -99,7 +102,7 @@ const ProfileEdit = (props) => {
                       {email}
                     </Text>
                   </Block>
-                  <Block middle style={{marginTop: 20}} row space="between">
+                  <Block middle style={{ marginTop: 20 }} row space="between">
                     <Text bold size={16} color="#525F7F" style={styles.text}>
                       PW
                     </Text>
@@ -109,10 +112,10 @@ const ProfileEdit = (props) => {
                     <Input
                       // style={styles.textInput}
                       defaultValue={" "}
-                      onChangeText={text => setNpassword(text)}
+                      onChangeText={(text) => setNpassword(text)}
                     />
                   </Block>
-                  <Block middle style={{marginTop: 20}} row space="between">
+                  <Block middle style={{ marginTop: 20 }} row space="between">
                     <Text bold size={16} color="#525F7F" style={styles.text}>
                       매장명
                     </Text>
@@ -122,15 +125,19 @@ const ProfileEdit = (props) => {
                     <Input
                       // style={styles.textInput}
                       defaultValue={store_name}
-                      onChangeText={text => setNstore_name(text)}
+                      onChangeText={(text) => setNstore_name(text)}
                     />
                   </Block>
                   <Block middle marginTop={50}>
-                    <Button 
+                    <Button
                       onPress={handleEdit}
-                      color={ "primary" } 
+                      color={"primary"}
                       style={styles.createButton}
-                      textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
+                      textStyle={{
+                        fontSize: 13,
+                        color: argonTheme.COLORS.WHITE,
+                        fontFamily: "NGB",
+                      }}
                     >
                       저장하기
                     </Button>
@@ -143,24 +150,23 @@ const ProfileEdit = (props) => {
       </Block>
     </KeyboardAwareScrollView>
   );
-}
-
+};
 
 const styles = StyleSheet.create({
   profile: {
     marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
     // marginBottom: -HeaderHeight * 2,
-    flex: 1
+    flex: 1,
   },
   profileContainer: {
     width: width,
     height: height,
     padding: 0,
-    zIndex: 1
+    zIndex: 1,
   },
   profileBackground: {
     width: width,
-    height: height/2
+    height: height / 2,
   },
   profileCard: {
     // position: "relative",
@@ -175,49 +181,49 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowRadius: 8,
     shadowOpacity: 0.2,
-    zIndex: 2
+    zIndex: 2,
   },
   info: {
-    paddingHorizontal: 40
+    paddingHorizontal: 40,
   },
   avatarContainer: {
     position: "relative",
-    marginTop: -80
+    marginTop: -80,
   },
   avatar: {
     width: 124,
     height: 124,
     borderRadius: 62,
-    borderWidth: 0
+    borderWidth: 0,
   },
   nameInfo: {
-    marginTop: 35
+    marginTop: 35,
   },
   divider: {
     width: "90%",
     borderWidth: 1,
-    borderColor: "#E9ECEF"
+    borderColor: "#E9ECEF",
   },
   thumb: {
     borderRadius: 4,
     marginVertical: 4,
     alignSelf: "center",
     width: thumbMeasure,
-    height: thumbMeasure
+    height: thumbMeasure,
   },
-  text: { 
-    fontFamily: 'SGB',
+  text: {
+    fontFamily: "SGB",
     marginStart: 10,
-    color: '#172B4D',
+    color: "#172B4D",
     // fontColor: '#172B4D',
   },
   text2: {
-    fontFamily: 'NGB',
+    fontFamily: "NGB",
     marginTop: 3,
     marginEnd: 10,
   },
   textName: {
-    fontFamily: 'SGB',
+    fontFamily: "SGB",
   },
 });
 

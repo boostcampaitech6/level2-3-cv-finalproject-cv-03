@@ -11,8 +11,6 @@ import {
 } from "react-native";
 import { Text } from "galio-framework";
 import { Images, argonTheme } from "../../constants";
-import { NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "../../navigation/RootStackNavigator";
 import { UserContext } from "../../UserContext";
 
 interface Cctvlist {
@@ -23,11 +21,7 @@ interface Cctvlist {
 
 const { width, height } = Dimensions.get("screen");
 
-type Props = {
-  navigation: NavigationProp<RootStackParamList, "CctvSettingScreen">;
-};
-
-export default function CctvSettingScreen({ navigation }: Props) {
+export default function CctvSettingScreen() {
   const { user } = useContext(UserContext);
   const [Cctvlists, setCctvlists] = useState<Cctvlist[]>([]);
   const [registerModalVisible, setRegisterModalVisible] = useState(false);
@@ -280,7 +274,15 @@ export default function CctvSettingScreen({ navigation }: Props) {
         <FlatList
           ListHeaderComponent={
             <View style={styles.header}>
-              <Text style={{ color: "white", fontFamily: "C24", fontSize: 25, marginStart: 8, marginTop: 10, }}>
+              <Text
+                style={{
+                  color: "white",
+                  fontFamily: "C24",
+                  fontSize: 25,
+                  marginStart: 8,
+                  marginTop: 10,
+                }}
+              >
                 CCTV 세팅
               </Text>
               <TouchableOpacity

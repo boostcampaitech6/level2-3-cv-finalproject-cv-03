@@ -1,20 +1,18 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import {
   StyleSheet,
   ImageBackground,
   Dimensions,
   StatusBar,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
 } from "react-native";
-import { Block, Checkbox, Text, theme, View } from "galio-framework";
+import { Block, Text } from "galio-framework";
 
 import { Button, Input } from "../../components";
 import { Images, argonTheme } from "../../constants";
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { TouchableOpacity } from 'react-native';
-import { UserContext } from '../../UserContext';
-
-
+import Icon from "react-native-vector-icons/FontAwesome";
+import { TouchableOpacity } from "react-native";
+import { UserContext } from "../../UserContext";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -24,7 +22,6 @@ const Login = (props) => {
   const [fail, setFail] = useState(false);
   const [fail2, setFail2] = useState(false);
   const { user, setUser } = useContext(UserContext);
-
 
   const { navigation } = props;
 
@@ -45,11 +42,10 @@ const Login = (props) => {
 
       if (data.isSuccess && data.result) {
         // const token = data.token;
-        
+
         // 로그인 성공
         console.log("Login successful", data);
-        
-        
+
         // 여기서 필요한 동작을 수행하고 홈 화면으로 이동
         // dispatch(setUser(data.user));
         // AsyncStorage.setItem('authToken', token);
@@ -109,8 +105,17 @@ const Login = (props) => {
               </Block>
             </Block> */}
             <Block flex>
-              <Block flex={0.5} paddingLeft={30} style={{ justifyContent: 'flex-end' }}>
-                <Text color="black" size={28} paddingBottom={20} style={styles.subTitle}>
+              <Block
+                flex={0.5}
+                paddingLeft={30}
+                style={{ justifyContent: "flex-end" }}
+              >
+                <Text
+                  color="black"
+                  size={28}
+                  paddingBottom={20}
+                  style={styles.subTitle}
+                >
                   로그인
                 </Text>
               </Block>
@@ -125,7 +130,9 @@ const Login = (props) => {
                       borderless
                       placeholder="Email"
                       value={email}
-                      onChangeText={(text) => {setEmail(text)}}
+                      onChangeText={(text) => {
+                        setEmail(text);
+                      }}
                       iconContent={
                         <Icon
                           size={16}
@@ -142,7 +149,9 @@ const Login = (props) => {
                       borderless
                       placeholder="Password"
                       value={password}
-                      onChangeText={(text) => {setPassword(text)}}
+                      onChangeText={(text) => {
+                        setPassword(text);
+                      }}
                       iconContent={
                         <Icon
                           size={16}
@@ -154,24 +163,57 @@ const Login = (props) => {
                     />
                   </Block>
                   {fail && (
-                    <Text style={styles.text}  color={argonTheme.COLORS.ERROR}>회원 정보가 없습니다.</Text>
+                    <Text style={styles.text} color={argonTheme.COLORS.ERROR}>
+                      회원 정보가 없습니다.
+                    </Text>
                   )}
                   {fail2 && (
-                    <Text style={styles.text}  color={argonTheme.COLORS.ERROR}>네트워크 에러입니다.</Text>
+                    <Text style={styles.text} color={argonTheme.COLORS.ERROR}>
+                      네트워크 에러입니다.
+                    </Text>
                   )}
 
                   <Block middle>
-                  <TouchableOpacity onPress={() => navigation.navigate('Register')} >
-                    <Text bold size={14} style={{ fontSize: 13, color: argonTheme.COLORS.PLACEHOLDER, fontFamily: 'NGB', marginTop: 20}}>
-                      회원가입
-                    </Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate("Register")}
+                    >
+                      <Text
+                        bold
+                        size={14}
+                        style={{
+                          fontSize: 13,
+                          color: argonTheme.COLORS.PLACEHOLDER,
+                          fontFamily: "NGB",
+                          marginTop: 20,
+                        }}
+                      >
+                        회원가입
+                      </Text>
+                    </TouchableOpacity>
 
-                    <Text bold size={14} style={{ fontSize: 13, color: argonTheme.COLORS.PLACEHOLDER, fontFamily: 'NGB', marginTop: 20}}>
+                    <Text
+                      bold
+                      size={14}
+                      style={{
+                        fontSize: 13,
+                        color: argonTheme.COLORS.PLACEHOLDER,
+                        fontFamily: "NGB",
+                        marginTop: 20,
+                      }}
+                    >
                       이메일/비밀번호 찾기
                     </Text>
 
-                    <Button color="primary" style={styles.createButton} textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}} onPress={handleLogin}>
+                    <Button
+                      color="primary"
+                      style={styles.createButton}
+                      textStyle={{
+                        fontSize: 13,
+                        color: argonTheme.COLORS.WHITE,
+                        fontFamily: "NGB",
+                      }}
+                      onPress={handleLogin}
+                    >
                       확인
                     </Button>
                   </Block>
@@ -183,8 +225,7 @@ const Login = (props) => {
       </ImageBackground>
     </Block>
   );
-}
-
+};
 
 const styles = StyleSheet.create({
   registerContainer: {
@@ -195,17 +236,17 @@ const styles = StyleSheet.create({
     shadowColor: argonTheme.COLORS.BLACK,
     shadowOffset: {
       width: 0,
-      height: 4
+      height: 4,
     },
     shadowRadius: 8,
     shadowOpacity: 0.1,
     elevation: 1,
-    overflow: "hidden"
+    overflow: "hidden",
   },
   socialConnect: {
     backgroundColor: argonTheme.COLORS.WHITE,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: "#8898AA"
+    borderColor: "#8898AA",
   },
   socialButtons: {
     width: 120,
@@ -214,37 +255,36 @@ const styles = StyleSheet.create({
     shadowColor: argonTheme.COLORS.BLACK,
     shadowOffset: {
       width: 0,
-      height: 4
+      height: 4,
     },
     shadowRadius: 8,
     shadowOpacity: 0.1,
-    elevation: 1
+    elevation: 1,
   },
   socialTextButtons: {
     color: argonTheme.COLORS.PRIMARY,
     fontWeight: "800",
-    fontSize: 14
+    fontSize: 14,
   },
   inputIcons: {
-    marginRight: 12
+    marginRight: 12,
   },
   passwordCheck: {
     paddingLeft: 15,
     paddingTop: 13,
-    paddingBottom: 30
+    paddingBottom: 30,
   },
   createButton: {
     width: width * 0.5,
-    marginTop: 25
+    marginTop: 25,
   },
   subTitle: {
-    fontFamily: 'SG',
-    marginTop: 20
+    fontFamily: "SG",
+    marginTop: 20,
   },
   text: {
-    fontFamily: 'NGB',
+    fontFamily: "NGB",
   },
-  
 });
 
 export default Login;

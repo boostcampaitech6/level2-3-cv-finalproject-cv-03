@@ -1,42 +1,55 @@
-import React from 'react';
-import { useNavigation } from '@react-navigation/native';
-import PropTypes from 'prop-types';
-import { StyleSheet, Dimensions, Image, TouchableWithoutFeedback } from 'react-native';
-import { Block, Text, theme } from 'galio-framework';
+import React from "react";
+import { useNavigation } from "@react-navigation/native";
+import PropTypes from "prop-types";
+import {
+  StyleSheet,
+  Dimensions,
+  Image,
+  TouchableWithoutFeedback,
+} from "react-native";
+import { Block, Text, theme } from "galio-framework";
 
-import { argonTheme } from '../constants';
-
+import { argonTheme } from "../constants";
 
 const Card = ({ item, horizontal, full, style, ctaColor, imageStyle }) => {
   const navigation = useNavigation();
 
   const imageStyles = [
     full ? styles.fullImage : styles.horizontalImage,
-    imageStyle
+    imageStyle,
   ];
   const cardContainer = [styles.card, styles.shadow, style];
-  const imgContainer = [styles.imageContainer,
+  const imgContainer = [
+    styles.imageContainer,
     horizontal ? styles.horizontalStyles : styles.verticalStyles,
-    styles.shadow
+    styles.shadow,
   ];
 
-    return (
-      <Block row={horizontal} card flex style={cardContainer}>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate('Pro')}>
-          <Block flex style={imgContainer}>
-            <Image source={{uri: item.image}} style={imageStyles} />
-          </Block>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate('Pro')}>
-          <Block flex space="between" style={styles.cardDescription}>
-            <Text size={14} style={styles.cardTitle}>{item.title}</Text>
-            <Text size={12} muted={!ctaColor} color={ctaColor || argonTheme.COLORS.ACTIVE} bold>{item.cta}</Text>
-          </Block>
-        </TouchableWithoutFeedback>
-      </Block>
-    );
-  }
-
+  return (
+    <Block row={horizontal} card flex style={cardContainer}>
+      <TouchableWithoutFeedback onPress={() => navigation.navigate("Pro")}>
+        <Block flex style={imgContainer}>
+          <Image source={{ uri: item.image }} style={imageStyles} />
+        </Block>
+      </TouchableWithoutFeedback>
+      <TouchableWithoutFeedback onPress={() => navigation.navigate("Pro")}>
+        <Block flex space="between" style={styles.cardDescription}>
+          <Text size={14} style={styles.cardTitle}>
+            {item.title}
+          </Text>
+          <Text
+            size={12}
+            muted={!ctaColor}
+            color={ctaColor || argonTheme.COLORS.ACTIVE}
+            bold
+          >
+            {item.cta}
+          </Text>
+        </Block>
+      </TouchableWithoutFeedback>
+    </Block>
+  );
+};
 
 Card.propTypes = {
   item: PropTypes.object,
@@ -44,7 +57,7 @@ Card.propTypes = {
   full: PropTypes.bool,
   ctaColor: PropTypes.string,
   imageStyle: PropTypes.any,
-}
+};
 
 const styles = StyleSheet.create({
   card: {
@@ -52,27 +65,27 @@ const styles = StyleSheet.create({
     marginVertical: theme.SIZES.BASE,
     borderWidth: 0,
     minHeight: 114,
-    marginBottom: 16
+    marginBottom: 16,
   },
   cardTitle: {
     flex: 1,
-    flexWrap: 'wrap',
-    paddingBottom: 6
+    flexWrap: "wrap",
+    paddingBottom: 6,
   },
   cardDescription: {
-    padding: theme.SIZES.BASE / 2
+    padding: theme.SIZES.BASE / 2,
   },
   imageContainer: {
     borderRadius: 3,
     elevation: 1,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   image: {
     // borderRadius: 3,
   },
   horizontalImage: {
     height: 122,
-    width: 'auto',
+    width: "auto",
   },
   horizontalStyles: {
     borderTopRightRadius: 0,
@@ -80,10 +93,10 @@ const styles = StyleSheet.create({
   },
   verticalStyles: {
     borderBottomRightRadius: 0,
-    borderBottomLeftRadius: 0
+    borderBottomLeftRadius: 0,
   },
   fullImage: {
-    height: 215
+    height: 215,
   },
   shadow: {
     shadowColor: theme.COLORS.BLACK,

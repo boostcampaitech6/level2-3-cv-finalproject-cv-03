@@ -4,14 +4,14 @@ import {
   ImageBackground,
   Dimensions,
   StatusBar,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
 } from "react-native";
-import { Block, Checkbox, Text, theme } from "galio-framework";
+import { Block, Text } from "galio-framework";
 
 import { Button, Input } from "../../components";
 import { Images, argonTheme } from "../../constants";
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { View } from 'react-native';
+import Icon from "react-native-vector-icons/FontAwesome";
+import { View } from "react-native";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -39,16 +39,35 @@ const Register5 = (props) => {
         <Block safe flex middle>
           <Block style={styles.registerContainer}>
             <Block flex>
-              <Block flex={0.33} paddingLeft={30} style={{ justifyContent: 'flex-end' }}>
-                <Text color="black" size={28} paddingBottom={20} style={styles.subTitle}>
+              <Block
+                flex={0.33}
+                paddingLeft={30}
+                style={{ justifyContent: "flex-end" }}
+              >
+                <Text
+                  color="black"
+                  size={28}
+                  paddingBottom={20}
+                  style={styles.subTitle}
+                >
                   회원가입
                 </Text>
               </Block>
-              <View paddingLeft={30} style={{ flexDirection: 'row' }}>
-                <Text color={argonTheme.COLORS.MUTED} size={10} paddingBottom={20} style={styles.text}>
-                  1. 약관 동의{" "} > 2. 이메일 인증{" "}>{" "}3. 비밀번호 입력{" "}>{" "}
+              <View paddingLeft={30} style={{ flexDirection: "row" }}>
+                <Text
+                  color={argonTheme.COLORS.MUTED}
+                  size={10}
+                  paddingBottom={20}
+                  style={styles.text}
+                >
+                  1. 약관 동의 {'>'} 2. 이메일 인증 {'>'} 3. 비밀번호 입력 {'>'}{" "}
                 </Text>
-                <Text color="black" size={10} paddingBottom={20} style={styles.text} >
+                <Text
+                  color="black"
+                  size={10}
+                  paddingBottom={20}
+                  style={styles.text}
+                >
                   4. URL 등록
                 </Text>
               </View>
@@ -62,7 +81,9 @@ const Register5 = (props) => {
                     <Input
                       borderless
                       placeholder="CCTV 이름"
-                      onChangeText={(text) => {setName(text)}}
+                      onChangeText={(text) => {
+                        setName(text);
+                      }}
                       value={name}
                       iconContent={
                         <Icon
@@ -78,7 +99,9 @@ const Register5 = (props) => {
                     <Input
                       borderless
                       placeholder="CCTV URL"
-                      onChangeText={(text) => {setUrl(text)}}
+                      onChangeText={(text) => {
+                        setUrl(text);
+                      }}
                       value={url}
                       iconContent={
                         <Icon
@@ -90,7 +113,6 @@ const Register5 = (props) => {
                       }
                     />
 
-                  
                     {/* <Block row style={styles.passwordCheck}>
                       <Text size={12} color={argonTheme.COLORS.MUTED}>
                         password strength:
@@ -101,7 +123,14 @@ const Register5 = (props) => {
                       </Text>
                     </Block> */}
                     {fail && (
-                    <Text style={styles.text2} marginTop={10} marginStart={5} color={argonTheme.COLORS.ERROR}>URL이 잘못되었습니다.</Text>
+                      <Text
+                        style={styles.text2}
+                        marginTop={10}
+                        marginStart={5}
+                        color={argonTheme.COLORS.ERROR}
+                      >
+                        URL이 잘못되었습니다.
+                      </Text>
                     )}
                   </Block>
                   {/* <Block row width={width * 0.75}>
@@ -124,12 +153,23 @@ const Register5 = (props) => {
                     </Button>
                   </Block> */}
                   <Block middle marginTop={40}>
-                    <Button 
-                      onPress={() => navigation.navigate('Register6', { email: email, password: password, cctv_url: url, cctv_name: name })}
-                      color={(fail) ? "muted" : "primary"} 
+                    <Button
+                      onPress={() =>
+                        navigation.navigate("Register6", {
+                          email: email,
+                          password: password,
+                          cctv_url: url,
+                          cctv_name: name,
+                        })
+                      }
+                      color={fail ? "muted" : "primary"}
                       style={styles.createButton}
                       disabled={fail} // Button is disabled if either isChecked2 or isChecked3 is not checked
-                      textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
+                      textStyle={{
+                        fontSize: 13,
+                        color: argonTheme.COLORS.WHITE,
+                        fontFamily: "NGB",
+                      }}
                     >
                       제출
                     </Button>
@@ -142,8 +182,7 @@ const Register5 = (props) => {
       </ImageBackground>
     </Block>
   );
-}
-
+};
 
 const styles = StyleSheet.create({
   registerContainer: {
@@ -154,17 +193,17 @@ const styles = StyleSheet.create({
     shadowColor: argonTheme.COLORS.BLACK,
     shadowOffset: {
       width: 0,
-      height: 4
+      height: 4,
     },
     shadowRadius: 8,
     shadowOpacity: 0.1,
     elevation: 1,
-    overflow: "hidden"
+    overflow: "hidden",
   },
   socialConnect: {
     backgroundColor: argonTheme.COLORS.WHITE,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: "#8898AA"
+    borderColor: "#8898AA",
   },
   socialButtons: {
     width: 120,
@@ -173,38 +212,38 @@ const styles = StyleSheet.create({
     shadowColor: argonTheme.COLORS.BLACK,
     shadowOffset: {
       width: 0,
-      height: 4
+      height: 4,
     },
     shadowRadius: 8,
     shadowOpacity: 0.1,
-    elevation: 1
+    elevation: 1,
   },
   socialTextButtons: {
     color: argonTheme.COLORS.PRIMARY,
     fontWeight: "800",
-    fontSize: 14
+    fontSize: 14,
   },
   inputIcons: {
-    marginRight: 12
+    marginRight: 12,
   },
   passwordCheck: {
     paddingLeft: 15,
     paddingTop: 13,
-    paddingBottom: 30
+    paddingBottom: 30,
   },
   createButton: {
     width: width * 0.5,
-    marginTop: 25
+    marginTop: 25,
   },
   subTitle: {
-    fontFamily: 'SG',
-    marginTop: 20
+    fontFamily: "SG",
+    marginTop: 20,
   },
   text: {
-    fontFamily: 'NGB',
+    fontFamily: "NGB",
   },
   text2: {
-    fontFamily: 'NGB',
+    fontFamily: "NGB",
     fontSize: 13,
   },
 });
