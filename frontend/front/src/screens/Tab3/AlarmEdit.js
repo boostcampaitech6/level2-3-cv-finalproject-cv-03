@@ -24,21 +24,14 @@ const thumbMeasure = (width - 48 - 32) / 3;
 
 const AlarmEdit = (props) => {
   const { navigation, route } = props;
-  // const { user } = useContext(UserContext);
-
+  const { user } = useContext(UserContext);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [password2Visible, setPassword2Visible] = useState(false);
   const { threshold } = route.params;
   const { save_time_length } = route.params;
   const [nthreshold, setNthreshold] = useState(threshold);
   const [nsave_time_length, setNsave_time_length] = useState(save_time_length);
 
-  // const options = [
-  //   { label: "0", value: 0 },
-  //   { label: "0.2", value: 0.2 },
-  //   { label: "0.4", value: 0.4 },
-  //   { label: "0.6", value: 0.6 },
-  //   { label: "0.8", value: 0.8 },
-  //   { label: "1", value: 1 },
-  // ];
 
   const handleSave = async () => {
     setPasswordVisible(true);
@@ -46,7 +39,7 @@ const AlarmEdit = (props) => {
   const handleEdit = async () => {
     try {
       const response = await fetch(
-        `http://10.28.224.142:30438/api/v0/settings/alarm_edit?member_id=82&threshold=${nthreshold}&save_time_length=${nsave_time_length}`,
+        `http://10.28.224.142:30438/api/v0/settings/alarm_edit?member_id=${user}&threshold=${nthreshold}&save_time_length=${nsave_time_length}`,
         {
           method: "POST",
           headers: { accept: "application/json" },
@@ -101,34 +94,13 @@ const AlarmEdit = (props) => {
                   <Text bold size={16} color="#525F7F" style={styles.text}>
                     임계값
                   </Text>
-                  {/* <Text bold size={16} color="#525F7F" style={styles.text2}>
-                    {threshold}
-                  </Text> */}
+
                   <Input
                     // style={styles.textInput}
                     defaultValue={threshold.toString()}
                     onChangeText={(text) => setNthreshold(text)}
                   />
-                  {/* <View style={{flex: 1, height: '100%'}}>
-                  <DropDownPicker
-                    items={[
-                      { label: '0', value: 0 },
-                      { label: '0.2', value: 0.2 },
-                      { label: '0.4', value: 0.4 },
-                      { label: '0.6', value: 0.6 },
-                      { label: '0.8', value: 0.8 },
-                      { label: '1', value: 1 },
-                    ]}
-                    defaultValue={threshold}
-                    containerStyle={{height: 40}}
-                    style={{backgroundColor: '#fafafa'}}
-                    itemStyle={{
-                      justifyContent: 'flex-start'
-                    }}
-                    dropDownStyle={{backgroundColor: '#fafafa'}}
-                    onChangeItem={item => setNthreshold(item.value)}
-                  />
-                </View> */}
+
                 </Block>
                 <Text
                   style={{
@@ -149,9 +121,7 @@ const AlarmEdit = (props) => {
                   <Text bold size={16} color="#525F7F" style={styles.text}>
                     시간
                   </Text>
-                  {/* <Text bold size={16} color="#525F7F" style={styles.text2}>
-                    {save_time_length}
-                  </Text> */}
+
                   <Input
                     // style={styles.textInput}
                     defaultValue={save_time_length.toString()}
