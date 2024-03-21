@@ -15,6 +15,7 @@ import Register3 from "../screens/SignUp/Register3";
 import Register4 from "../screens/SignUp/Register4";
 import Register5 from "../screens/SignUp/Register5";
 import Register6 from "../screens/SignUp/Register6";
+import Register7 from "../screens/SignUp/Register7";
 
 import Login from "../screens/SignIn/Login";
 
@@ -62,6 +63,7 @@ export default function RootStackNavigator() {
       <Stack.Screen name="Register4" component={Register4} />
       <Stack.Screen name="Register5" component={Register5} />
       <Stack.Screen name="Register6" component={Register6} />
+      <Stack.Screen name="Register7" component={Register7} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen
         name="Home"
