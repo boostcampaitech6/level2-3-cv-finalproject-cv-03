@@ -24,7 +24,8 @@ const Register4 = (props) => {
   const [fail3, setFail3] = useState(false); // 정규식 조건
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
-  const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#])[\da-zA-Z!@#]{8,}$/;
+  const passwordRegex =
+    /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#])[\da-zA-Z!@#]{8,}$/;
 
   useEffect(() => {
     if (password.length !== 0) {
@@ -116,7 +117,16 @@ const Register4 = (props) => {
                       }
                     />
                     {fail3 && (
-                    <Text style={styles.text2} marginTop={10} marginStart={5} color={argonTheme.COLORS.ERROR}>비밀번호는 8자 이상-숫자, 영어 대/소문자, 특수문자!/@/# 를 각각 적어도 하나 포함해야 합니다.</Text>
+                      <Text
+                        style={styles.text2}
+                        marginTop={10}
+                        marginStart={5}
+                        color={argonTheme.COLORS.ERROR}
+                      >
+                        비밀번호는 8자 이상이어야 합니다.{"\n"}숫자, 영어
+                        대/소문자, 특수문자!/@/# 를 각각 적어도 하나 포함해야
+                        합니다.
+                      </Text>
                     )}
 
                     <Input
@@ -265,7 +275,8 @@ const styles = StyleSheet.create({
   },
   text2: {
     fontFamily: "NGB",
-    fontSize: 14,
+    fontSize: 12,
+    marginBottom: 15,
   },
 });
 
