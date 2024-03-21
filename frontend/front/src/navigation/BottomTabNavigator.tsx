@@ -85,7 +85,7 @@ export default function BottomTabNavigator() {
 
   React.useEffect(() => {
     const intervalId = setInterval(async () => {
-      const response = await fetch(`http://10.28.224.201:30576/api/v0/cctv/log_count?member_id=${user}`);
+      const response = await fetch(`http://10.28.224.201:30435/api/v0/cctv/log_count?member_id=${user}`);
       const result = await response.json();
       console.log("bottom tab navigator")
       console.log(result.result);

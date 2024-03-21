@@ -30,7 +30,7 @@ const Login = (props) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch(`http://10.28.224.201:30576/api/v0/members/login`, {
+      const response = await fetch(`http://10.28.224.201:30435/api/v0/members/login`, {
         method: "POST",
         headers: {
           "accept": "application/json",

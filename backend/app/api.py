@@ -175,7 +175,7 @@ def register_member(
     session.commit()
 
     cctv.hls_url = (
-        f"http://10.28.224.201:30576/hls/cctv_stream/{cctv.cctv_id}/index.m3u8"
+        f"http://10.28.224.201:30435/hls/cctv_stream/{cctv.cctv_id}/index.m3u8"
     )
     session.commit()
 
@@ -411,7 +411,7 @@ def cctv_register(
         session.add(cctv)
         session.commit()
 
-        cctv.hls_url = f"http://10.28.224.201:30576/hls/cctv_stream/{cctv.cctv_id}/index.m3u8"
+        cctv.hls_url = f"http://10.28.224.201:30435/hls/cctv_stream/{cctv.cctv_id}/index.m3u8"
         session.commit()
 
         def_return_dict["result"] = {

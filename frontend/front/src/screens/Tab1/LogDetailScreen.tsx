@@ -46,7 +46,7 @@ export default function CCTVDetailScreen({
   const handleDelete = async () => {
     try {
       const response = await fetch(
-        `http://10.28.224.201:30576/api/v0/cctv/log_delete?log_id=${log_id}`,
+        `http://10.28.224.201:30435/api/v0/cctv/log_delete?log_id=${log_id}`,
         {
           method: "DELETE",
           headers: {
@@ -72,7 +72,7 @@ export default function CCTVDetailScreen({
   const handleFeedback = async () => {
     try {
       const response = await fetch(
-        `http://10.28.224.201:30576/api/v0/cctv/feedback?log_id=${log_id}&feedback=${1}`,
+        `http://10.28.224.201:30435/api/v0/cctv/feedback?log_id=${log_id}&feedback=${1}`,
         {
           method: "PUT",
           headers: {
@@ -99,7 +99,7 @@ export default function CCTVDetailScreen({
     const fileUri = FileSystem.documentDirectory + filename;
     try {
       const result = await FileSystem.downloadAsync(
-        `http://10.28.224.201:30576/api/v0/cctv/${log_id}/video.mp4?video_path=${anomaly_save_path}`,
+        `http://10.28.224.201:30435/api/v0/cctv/${log_id}/video.mp4?video_path=${anomaly_save_path}`,
         // "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
         fileUri,
       );
@@ -135,7 +135,7 @@ export default function CCTVDetailScreen({
   const handleFeedback2 = async () => {
     try {
       const response = await fetch(
-        `http://10.28.224.201:30576/api/v0/cctv/feedback?log_id=${log_id}&feedback=${0}`,
+        `http://10.28.224.201:30435/api/v0/cctv/feedback?log_id=${log_id}&feedback=${0}`,
         {
           method: "PUT",
           headers: {
@@ -165,7 +165,7 @@ export default function CCTVDetailScreen({
           ref={video}
           style={styles.video}
           source={{
-            uri: `http://10.28.224.201:30576/api/v0/cctv/${log_id}/video.mp4?video_path=${anomaly_save_path}`,
+            uri: `http://10.28.224.201:30435/api/v0/cctv/${log_id}/video.mp4?video_path=${anomaly_save_path}`,
           }}
           useNativeControls
           resizeMode={ResizeMode.CONTAIN}

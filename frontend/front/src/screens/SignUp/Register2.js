@@ -35,7 +35,7 @@ const Register2 = (props) => {
     setDup(false);
     setDup2(false);
     try {
-      const response = await fetch(`http://10.28.224.201:30576/api/v0/members/duplicate?email=${encodeURIComponent(email)}`, {
+      const response = await fetch(`http://10.28.224.201:30435/api/v0/members/duplicate?email=${encodeURIComponent(email)}`, {
         method: 'POST',
         headers: {
           'accept': 'application/json',

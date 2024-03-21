@@ -28,7 +28,7 @@ const Register6 = (props) => {
   const handleRegister = async () => {
     console.log(email, password, name, cctv_url, cctv_name)
     try {
-      const response = await fetch(`http://10.28.224.201:30576/api/v0/members/register?email=${encodeURIComponent(email)}&password=${password}&member_name=${member_name}d&store_name=${name}&cctv_url=${cctv_url}&cctv_name=${cctv_name}`, {
+      const response = await fetch(`http://10.28.224.201:30435/api/v0/members/register?email=${encodeURIComponent(email)}&password=${password}&member_name=${member_name}d&store_name=${name}&cctv_url=${cctv_url}&cctv_name=${cctv_name}`, {
         method: 'POST',
         headers: {
           'accept': 'application/json',
