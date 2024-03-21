@@ -24,6 +24,8 @@ const Register6 = (props) => {
   // eslint-disable-next-line
   const [member_name, setMember_name] = useState("hong");
   const [fail, setFail] = useState(false);
+  const [successVisible, setSuccessVisible] = useState(false);
+
 
   const handleRegister = async () => {
     console.log(email, password, name, cctv_url, cctv_name);
@@ -41,6 +43,7 @@ const Register6 = (props) => {
       console.log(data);
       if (data.isSuccess) {
         setFail(false);
+        setSuccessVisible(true);
         navigation.navigate("Login");
       } else {
         setFail(true);
@@ -174,6 +177,11 @@ const Register6 = (props) => {
                       </Text>
                     )}
                   </Block>
+                  <Overlay isVisible={successVisible} onBackdropPress={() => setSuccessVisible(false)}>
+                    <View style={{ alignItems: 'center', justifyContent: 'center', padding: 40 }}>
+                      <Text style={styles.poptitle}>회원가입이 완료되었습니다.</Text>                    
+                    </View>
+                  </Overlay>
                 </KeyboardAvoidingView>
               </Block>
             </Block>
