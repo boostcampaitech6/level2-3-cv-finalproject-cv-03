@@ -38,7 +38,7 @@ settingRouter = APIRouter(prefix="/api/v0/settings")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-redis_server = redis.Redis(host="10.28.224.201", port=30575, db=0)
+redis_server = redis.Redis(host="10.28.224.201", port=30435, db=0)
 
 
 def hash_password(password):

@@ -6,6 +6,8 @@ import requests
 import subprocess
 import threading
 import time
+import uuid
+import shutil
 from datetime import datetime
 import numpy as np
 import cv2
@@ -54,43 +56,42 @@ def save_anomaly_log(cctv_id, anomaly_score):
 
     current_time = time.strftime("%Y%m%d_%H%M%S")
     anomaly_save_path = f"{save_hls_log_video_dir}/{current_time}.mp4"
-    anomaly_txt_save_path = f"{save_hls_log_video_dir}/{current_time}.txt"
+    anomaly_temp_dir = f"{save_hls_log_video_dir}/temp/{uuid.uuid4()}"
+    os.makedirs(anomaly_temp_dir, exist_ok=True)
 
     save_image_cnt = int(fps * save_time_length * 60)
     save_image_paths = sorted(glob.glob(f"{save_image_dir}/*"))
     save_image_paths = save_image_paths[-save_image_cnt:]
     print("save_image_paths :", len(save_image_paths))
 
-    with open(anomaly_txt_save_path, "w") as w:
-        for save_image_path in save_image_paths:
-            if save_image_path.endswith(".png"):
-                w.write(f"file {save_image_path}\n")
+    for save_image_path in save_image_paths:
+        shutil.copy(
+            save_image_path,
+            os.path.join(anomaly_temp_dir, os.path.basename(save_image_path)),
+        )
 
-    # test_path = os.path.join("/data/ephemeral/home/level2-3-cv-finalproject-cv-03/backend/hls/log_videos/test2",os.path.basename(anomaly_save_path))
     command = [
         "ffmpeg",
-        "-f",
-        "concat",
-        "-safe",
-        "0",
+        "-pattern_type",
+        "glob",
+        "-r",
+        str(fps),
         "-i",
-        anomaly_txt_save_path,
-        "-c:v",
-        "libx264",
-        # '-r', '10',
+        f"{anomaly_temp_dir}/*.png",
+        "-loglevel",
+        "panic",
         anomaly_save_path,
-        # test_path
     ]
     subprocess.run(command, check=True)
+
+    shutil.rmtree(anomaly_temp_dir)
+
     with open(anomaly_save_path, "rb") as video_file:
         files = {"video_file": (anomaly_save_path, video_file)}
         requests.post(
-            f"http://10.28.224.201:30576/api/v0/cctv/log_register?cctv_id={cctv_id}&anomaly_create_time={current_time}&anomaly_score={anomaly_score}&anomaly_save_path={anomaly_save_path}",
+            f"http://10.28.224.201:30438/api/v0/cctv/log_register?cctv_id={cctv_id}&anomaly_create_time={current_time}&anomaly_score={anomaly_score}&anomaly_save_path={anomaly_save_path}",
             files=files,
         )
-    # with open(test_path, 'rb') as video_file:
-    #     files = {'video_file': (test_path, video_file)}
-    #     response = requests.post(f"http://10.28.224.201:30576/api/v0/cctv/log_register?cctv_id={cctv_id}&anomaly_create_time={current_time}&anomaly_score={anomaly_score}&anomaly_save_path={test_path}", files=files)
 
 
 def save_video(image_paths):
@@ -101,8 +102,7 @@ def save_video(image_paths):
     video_path = os.path.join(save_video_dir, video_name)
 
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    # video = cv2.VideoWriter(video_path, fourcc, fps, (width,height))
-    video = cv2.VideoWriter(video_path, fourcc, 10, (width, height))
+    video = cv2.VideoWriter(video_path, fourcc, fps, (width, height))
 
     for image_path in image_paths:
         video.write(cv2.imread(image_path))
@@ -195,7 +195,6 @@ def predict(cctv_id, model, buffer, stop_flag, frame_per_sec=10, total_sec=3):
                     sleep_cnt += 1
                     continue
                 else:
-                    print(f"anomaly create.. score : {anomaly_score}")
                     redis_server.lpush(f"{cctv_id}_anomaly", anomaly_score)
 
                     sleep_cnt = 0
@@ -305,7 +304,7 @@ def inference(cctv_info, capture_interval=0.1, frame_per_sec=10, total_sec=3):
             image_paths = json.loads(v)["image_paths"]
             save_video(image_paths)
         elif k == anomaly_key:
-            print("anomaly detected..")
+            print(f"anomaly create.. score : {v}")
             anomaly_score = v
             save_anomaly_log(cctv_info["cctv_id"], anomaly_score)
 
@@ -315,7 +314,7 @@ def inference(cctv_info, capture_interval=0.1, frame_per_sec=10, total_sec=3):
 
 
 if __name__ == "__main__":
-    redis_server = redis.Redis(host="10.28.224.201", port=30575, db=0)
+    redis_server = redis.Redis(host="10.28.224.201", port=30435, db=0)
     while True:
         key, value = redis_server.brpop(keys="start_inf", timeout=None)
         cctv_info = json.loads(value.decode("utf-8"))
