@@ -80,6 +80,8 @@ def save_anomaly_log(cctv_id, anomaly_score):
         f"{anomaly_temp_dir}/*.png",
         "-loglevel",
         "panic",
+        "-pix_fmt",
+        "yuv420p",
         anomaly_save_path,
     ]
     subprocess.run(command, check=True)
