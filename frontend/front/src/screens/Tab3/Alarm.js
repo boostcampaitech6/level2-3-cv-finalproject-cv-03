@@ -48,7 +48,7 @@ const Alarm = (props) => {
     React.useCallback(() => {
       const fetchData = async () => {
         try {
-          const response = await fetch(`http://10.28.224.142:30016/api/v0/settings/alarm_lookup?member_id=${user}`, {
+          const response = await fetch(`http://10.28.224.201:30576/api/v0/settings/alarm_lookup?member_id=${user}`, {
             method: "GET",
             headers: { 'accept': 'application/json' },
           });
