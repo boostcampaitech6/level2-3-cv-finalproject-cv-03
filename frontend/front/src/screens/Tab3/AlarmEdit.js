@@ -14,7 +14,7 @@ import { Block, Text, theme } from "galio-framework";
 import { Button, Input } from "../../components";
 import { Images, argonTheme } from "../../constants";
 import { HeaderHeight } from "../../constants/utils";
-// import { UserContext } from "../../UserContext";
+import { UserContext } from "../../UserContext";
 import { Overlay } from "react-native-elements";
 import { View } from "react-native";
 
@@ -31,7 +31,8 @@ const AlarmEdit = (props) => {
   const { save_time_length } = route.params;
   const [nthreshold, setNthreshold] = useState(threshold);
   const [nsave_time_length, setNsave_time_length] = useState(save_time_length);
-
+  const { store_name } = route.params;
+  const [nstore_name, setNstore_name] = useState(store_name);
 
   const handleSave = async () => {
     setPasswordVisible(true);
@@ -39,7 +40,7 @@ const AlarmEdit = (props) => {
   const handleEdit = async () => {
     try {
       const response = await fetch(
-        `http://10.28.224.142:30438/api/v0/settings/alarm_edit?member_id=${user}&threshold=${nthreshold}&save_time_length=${nsave_time_length}`,
+        `http://10.28.224.201:30438/api/v0/settings/alarm_edit?member_id=${user}&threshold=${nthreshold}&save_time_length=${nsave_time_length}`,
         {
           method: "POST",
           headers: { accept: "application/json" },
@@ -100,7 +101,6 @@ const AlarmEdit = (props) => {
                     defaultValue={threshold.toString()}
                     onChangeText={(text) => setNthreshold(text)}
                   />
-
                 </Block>
                 <Text
                   style={{

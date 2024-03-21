@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import {
   StyleSheet,
   Dimensions,
@@ -23,10 +23,6 @@ const Alarm = (props) => {
   const { user } = useContext(UserContext);
   const [threshold, setThreshold] = useState(0);
   const [save_time_length, setSave_time_length] = useState(0);
-
-  useEffect(() => {
-    setNstore_name(store_name);
-  }, [store_name]);
 
   useFocusEffect(
     React.useCallback(() => {
