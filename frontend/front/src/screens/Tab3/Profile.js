@@ -48,7 +48,7 @@ const Profile = (props) => {
     try {
       const newStoreName = nstore_name;
       const response = await fetch(
-        `http://10.28.224.142:30576/api/v0/settings/shop_edit?member_id=${user}&store_name=${nstore_name}`,
+        `http://10.28.224.142:30438/api/v0/settings/shop_edit?member_id=${user}&store_name=${nstore_name}`,
         {
           method: "POST",
           headers: { accept: "application/json" },
@@ -71,7 +71,7 @@ const Profile = (props) => {
   const handleEditPassword = async () => {
     try {
       const response = await fetch(
-        `http://10.28.224.142:30576/api/v0/settings/password_edit?member_id=${user}&password=${npassword}`,
+        `http://10.28.224.142:30438/api/v0/settings/password_edit?member_id=${user}&password=${npassword}`,
         {
           method: "POST",
           headers: {
@@ -95,7 +95,7 @@ const Profile = (props) => {
   const handleCheck = async () => {
     try {
       const response = await fetch(
-        `http://10.28.224.142:30576/api/v0/members/login`,
+        `http://10.28.224.142:30438/api/v0/members/login`,
         {
           method: "POST",
           headers: {
@@ -134,7 +134,7 @@ const Profile = (props) => {
       const fetchData = async () => {
         try {
           const response = await fetch(
-            `http://10.28.224.142:30576/api/v0/settings/profile_lookup?member_id=${user}`,
+            `http://10.28.224.142:30438/api/v0/settings/profile_lookup?member_id=${user}`,
             {
               method: "GET",
               headers: { accept: "application/json" },

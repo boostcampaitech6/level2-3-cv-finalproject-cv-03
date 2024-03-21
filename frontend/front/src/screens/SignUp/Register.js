@@ -187,6 +187,7 @@ const Register = (props) => {
                         style={styles.text}
                         onChange={handleCheckbox2Change}
                         isChecked={isChecked2}
+                        label=""
                       />
                       <Text bold size={12} color="black" style={styles.text}>
                         {"  "}이용약관에 동의합니다. (필수)
@@ -219,6 +220,7 @@ const Register = (props) => {
                         style={styles.text}
                         onChange={handleCheckbox3Change}
                         isChecked={isChecked3}
+                        label=""
                       />
                       <Text bold size={12} color="black" style={styles.text}>
                         {"  "}개인정보 수집 및 이용에 동의합니다. (필수)
@@ -348,10 +350,12 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: "NGB",
+    fontSize: 9,
   },
   text2: {
     fontFamily: "NGB",
     marginTop: 3,
+    fontSize: 9,
   },
 });
 

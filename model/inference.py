@@ -128,6 +128,6 @@ def inference(
 
 
 if __name__ == "__main__":
-    video_source = "rtsp://10.28.224.201:30576/stream"
+    video_source = "rtsp://10.28.224.201:30438/stream"
 
     inference(video_source)

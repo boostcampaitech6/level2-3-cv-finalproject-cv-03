@@ -46,7 +46,7 @@ const AlarmEdit = (props) => {
   const handleEdit = async () => {
     try {
       const response = await fetch(
-        `http://10.28.224.142:30576/api/v0/settings/alarm_edit?member_id=82&threshold=${nthreshold}&save_time_length=${nsave_time_length}`,
+        `http://10.28.224.142:30438/api/v0/settings/alarm_edit?member_id=82&threshold=${nthreshold}&save_time_length=${nsave_time_length}`,
         {
           method: "POST",
           headers: { accept: "application/json" },

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   ImageBackground,
@@ -6,7 +6,7 @@ import {
   StatusBar,
   KeyboardAvoidingView,
 } from "react-native";
-import { Block, Checkbox, Text, theme } from "galio-framework";
+import { Block, Text } from "galio-framework";
 
 import { Button, Input } from "../../components";
 import { Images, argonTheme } from "../../constants";
@@ -18,8 +18,6 @@ const { width, height } = Dimensions.get("screen");
 const Register2 = (props) => {
   const { navigation, route } = props;
   const { email } = route.params;
-  const [isChecked2, setIsChecked2] = useState(false);
-  const [isChecked3, setIsChecked3] = useState(false);
   const [auth, setAuth] = useState(false);
   const [sent, setSent] = useState(false); // 인증번호를 전송했습니다.
   const [fail, setFail] = useState(false); // 실패했습니다.
@@ -28,12 +26,15 @@ const Register2 = (props) => {
 
   const handleAuth = async () => {
     try {
-      const response = await fetch(`http://10.28.224.201:30576/api/v0/members/confirm_auth?email=${email}&code=${token}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `http://10.28.224.201:30438/api/v0/members/confirm_auth?email=${email}&code=${token}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
       console.log(email, token);
 
       const data = await response.json();
@@ -55,10 +56,13 @@ const Register2 = (props) => {
 
   const handleSendAuth = async () => {
     try {
-      const response = await fetch(`http://10.28.224.142:30016/api/v0/members/send_auth?email=${email}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `http://10.28.224.142:30016/api/v0/members/send_auth?email=${email}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
       );
 
@@ -139,7 +143,7 @@ const Register2 = (props) => {
                   paddingBottom={20}
                   style={styles.text}
                 >
-                  1. 약관 동의 {'>'} {""}
+                  1. 약관 동의 {">"} {""}
                 </Text>
                 <Text
                   color="black"
@@ -155,7 +159,7 @@ const Register2 = (props) => {
                   paddingBottom={20}
                   style={styles.text}
                 >
-                  {'>'} 3. 비밀번호 입력 {'>'} 4. URL 등록
+                  {">"} 3. 비밀번호 입력 {">"} 4. URL 등록
                 </Text>
               </View>
               <Block flex center>
@@ -359,7 +363,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: "NGB",
-    fontSize: 10,
+    fontSize: 9,
   },
   text2: {
     fontFamily: "NGB",

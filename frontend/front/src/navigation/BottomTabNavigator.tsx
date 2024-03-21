@@ -1,4 +1,3 @@
-// src/navigation/BottomTabNavigator.tsx
 import React, { useEffect, useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -8,9 +7,7 @@ import Tab2Screen from "../screens/Tab2/Tab2Screen";
 import Tab3Screen from "../screens/Tab3/Tab3Screen";
 import LogDetailScreen from "../screens/Tab1/LogDetailScreen";
 import Profile from "../screens/Tab3/Profile";
-import ProfileEdit from "../screens/Tab3/ProfileEdit";
 import CctvSettingScreen from "../screens/Tab3/CctvSettingScreen";
-import AlarmSettingScreen from "../screens/Tab3/AlarmSettingScreen";
 import Alarm from "../screens/Tab3/Alarm";
 import AlarmEdit from "../screens/Tab3/AlarmEdit";
 import { UserContext } from "../UserContext";
@@ -47,14 +44,9 @@ function Tab3StackNavigator() {
       <Tab3Stack.Screen name="Profile" component={Profile} />
       <Tab3Stack.Screen name="Alarm" component={Alarm} />
       <Tab3Stack.Screen name="AlarmEdit" component={AlarmEdit} />
-      <Tab3Stack.Screen name="ProfileEdit" component={ProfileEdit} />
       <Tab3Stack.Screen
         name="CctvSettingScreen"
         component={CctvSettingScreen}
-      />
-      <Tab3Stack.Screen
-        name="AlarmSettingScreen"
-        component={AlarmSettingScreen}
       />
     </Tab3Stack.Navigator>
   );
@@ -91,7 +83,7 @@ export default function BottomTabNavigator() {
   React.useEffect(() => {
     const intervalId = setInterval(async () => {
       const response = await fetch(
-        `http://10.28.224.201:30576/api/v0/cctv/log_count?member_id=${user}`,
+        `http://10.28.224.201:30438/api/v0/cctv/log_count?member_id=${user}`,
       );
       const result = await response.json();
       console.log("bottom tab navigator");

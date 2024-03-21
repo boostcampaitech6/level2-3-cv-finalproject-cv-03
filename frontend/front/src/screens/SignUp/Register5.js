@@ -241,6 +241,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: "NGB",
+    fontSize: 9,
   },
   text2: {
     fontFamily: "NGB",

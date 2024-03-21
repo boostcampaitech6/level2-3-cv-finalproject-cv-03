@@ -34,7 +34,7 @@ const Register2 = (props) => {
     setDup2(false);
     try {
       const response = await fetch(
-        `http://10.28.224.201:30576/api/v0/members/duplicate?email=${encodeURIComponent(email)}`,
+        `http://10.28.224.201:30438/api/v0/members/duplicate?email=${encodeURIComponent(email)}`,
         {
           method: "POST",
           headers: {
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: "NGB",
-    fontSize: 10,
+    fontSize: 9,
   },
   text2: {
     fontFamily: "NGB",
