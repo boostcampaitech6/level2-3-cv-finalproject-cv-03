@@ -4,14 +4,14 @@ import {
   ImageBackground,
   Dimensions,
   StatusBar,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
 } from "react-native";
-import { Block, Checkbox, Text, theme } from "galio-framework";
+import { Block, Text } from "galio-framework";
 
 import { Button, Input } from "../../components";
 import { Images, argonTheme } from "../../constants";
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { View } from 'react-native';
+import Icon from "react-native-vector-icons/FontAwesome";
+import { View } from "react-native";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -29,8 +29,7 @@ const Register4 = (props) => {
     }
     if (password !== password2 && password.length !== 0) {
       setFail2(true);
-    }
-    else {
+    } else {
       setFail2(false);
     }
   }, [password, password2]);
@@ -44,20 +43,44 @@ const Register4 = (props) => {
         <Block safe flex middle>
           <Block style={styles.registerContainer}>
             <Block flex>
-              <Block flex={0.33} paddingLeft={30} style={{ justifyContent: 'flex-end' }}>
-                <Text color="black" size={28} paddingBottom={20} style={styles.subTitle}>
+              <Block
+                flex={0.33}
+                paddingLeft={30}
+                style={{ justifyContent: "flex-end" }}
+              >
+                <Text
+                  color="black"
+                  size={28}
+                  paddingBottom={20}
+                  style={styles.subTitle}
+                >
                   회원가입
                 </Text>
               </Block>
-              <View  paddingLeft={30} style={{ flexDirection: 'row' }}>
-                <Text color={argonTheme.COLORS.MUTED} size={12} paddingBottom={20} style={styles.text}>
-                  1. 약관 동의{" "} > 2. 이메일 인증{" "}>{" "}
+              <View paddingLeft={30} style={{ flexDirection: "row" }}>
+                <Text
+                  color={argonTheme.COLORS.MUTED}
+                  size={12}
+                  paddingBottom={20}
+                  style={styles.text}
+                >
+                  1. 약관 동의 {">"} 2. 이메일 인증 {">"}{" "}
                 </Text>
-                <Text color="black" size={12} paddingBottom={20} style={styles.text}>
+                <Text
+                  color="black"
+                  size={12}
+                  paddingBottom={20}
+                  style={styles.text}
+                >
                   3. 비밀번호 입력{" "}
                 </Text>
-                <Text color={argonTheme.COLORS.MUTED} size={12} paddingBottom={20} style={styles.text}>
-                  > 4. URL 등록
+                <Text
+                  color={argonTheme.COLORS.MUTED}
+                  size={12}
+                  paddingBottom={20}
+                  style={styles.text}
+                >
+                  {">"} 4. URL 등록
                 </Text>
               </View>
               <Block flex center>
@@ -66,13 +89,14 @@ const Register4 = (props) => {
                   behavior="padding"
                   enabled
                 >
-                  
                   <Block width={width * 0.8} marginTop={40}>
                     <Input
                       password
                       borderless
                       placeholder="비밀번호"
-                      onChangeText={(text) => {setPassword(text)}}
+                      onChangeText={(text) => {
+                        setPassword(text);
+                      }}
                       iconContent={
                         <Icon
                           size={16}
@@ -87,7 +111,9 @@ const Register4 = (props) => {
                       password
                       borderless
                       placeholder="비밀번호 확인"
-                      onChangeText={(text) => {setPassword2(text)}}
+                      onChangeText={(text) => {
+                        setPassword2(text);
+                      }}
                       iconContent={
                         <Icon
                           size={16}
@@ -107,7 +133,14 @@ const Register4 = (props) => {
                       </Text>
                     </Block> */}
                     {fail2 && (
-                    <Text style={styles.text2} marginTop={10} marginStart={5} color={argonTheme.COLORS.ERROR}>비밀번호와 비밀번호 확인이 일치하지 않습니다.</Text>
+                      <Text
+                        style={styles.text2}
+                        marginTop={10}
+                        marginStart={5}
+                        color={argonTheme.COLORS.ERROR}
+                      >
+                        비밀번호와 비밀번호 확인이 일치하지 않습니다.
+                      </Text>
                     )}
                   </Block>
                   {/* <Block row width={width * 0.75}>
@@ -130,12 +163,21 @@ const Register4 = (props) => {
                     </Button>
                   </Block> */}
                   <Block middle marginTop={40}>
-                    <Button 
-                      onPress={() => navigation.navigate('Register5', { email: email, password: password })}
-                      color={(fail || fail2) ? "muted" : "primary"} 
+                    <Button
+                      onPress={() =>
+                        navigation.navigate("Register5", {
+                          email: email,
+                          password: password,
+                        })
+                      }
+                      color={fail || fail2 ? "muted" : "primary"}
                       style={styles.createButton}
                       disabled={fail || fail2} // Button is disabled if either isChecked2 or isChecked3 is not checked
-                      textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
+                      textStyle={{
+                        fontSize: 13,
+                        color: argonTheme.COLORS.WHITE,
+                        fontFamily: "NGB",
+                      }}
                     >
                       다음
                     </Button>
@@ -148,8 +190,7 @@ const Register4 = (props) => {
       </ImageBackground>
     </Block>
   );
-}
-
+};
 
 const styles = StyleSheet.create({
   registerContainer: {
@@ -160,17 +201,17 @@ const styles = StyleSheet.create({
     shadowColor: argonTheme.COLORS.BLACK,
     shadowOffset: {
       width: 0,
-      height: 4
+      height: 4,
     },
     shadowRadius: 8,
     shadowOpacity: 0.1,
     elevation: 1,
-    overflow: "hidden"
+    overflow: "hidden",
   },
   socialConnect: {
     backgroundColor: argonTheme.COLORS.WHITE,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: "#8898AA"
+    borderColor: "#8898AA",
   },
   socialButtons: {
     width: 120,
@@ -179,39 +220,39 @@ const styles = StyleSheet.create({
     shadowColor: argonTheme.COLORS.BLACK,
     shadowOffset: {
       width: 0,
-      height: 4
+      height: 4,
     },
     shadowRadius: 8,
     shadowOpacity: 0.1,
-    elevation: 1
+    elevation: 1,
   },
   socialTextButtons: {
     color: argonTheme.COLORS.PRIMARY,
     fontWeight: "800",
-    fontSize: 14
+    fontSize: 14,
   },
   inputIcons: {
-    marginRight: 12
+    marginRight: 12,
   },
   passwordCheck: {
     paddingLeft: 15,
     paddingTop: 13,
-    paddingBottom: 30
+    paddingBottom: 30,
   },
   createButton: {
     width: width * 0.5,
-    marginTop: 25
+    marginTop: 25,
   },
   subTitle: {
-    fontFamily: 'SG',
-    marginTop: 20
+    fontFamily: "SG",
+    marginTop: 20,
   },
   text: {
-    fontFamily: 'NGB',
-    fontSize: 10,
+    fontFamily: "NGB",
+    fontSize: 9,
   },
   text2: {
-    fontFamily: 'NGB',
+    fontFamily: "NGB",
     fontSize: 14,
   },
 });

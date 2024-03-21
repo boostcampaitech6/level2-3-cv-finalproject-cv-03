@@ -11,8 +11,6 @@ import {
 } from "react-native";
 import { Text } from "galio-framework";
 import { Images, argonTheme } from "../../constants";
-import { NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "../../navigation/RootStackNavigator";
 import { UserContext } from "../../UserContext";
 
 interface Cctvlist {
@@ -23,11 +21,7 @@ interface Cctvlist {
 
 const { width, height } = Dimensions.get("screen");
 
-type Props = {
-  navigation: NavigationProp<RootStackParamList, "CctvSettingScreen">;
-};
-
-export default function CctvSettingScreen({ navigation }: Props) {
+export default function CctvSettingScreen() {
   const { user } = useContext(UserContext);
   const [Cctvlists, setCctvlists] = useState<Cctvlist[]>([]);
   const [registerModalVisible, setRegisterModalVisible] = useState(false);
@@ -40,7 +34,7 @@ export default function CctvSettingScreen({ navigation }: Props) {
   const fetchCctvList = async () => {
     try {
       const response = await fetch(
-        `http://10.28.224.201:30576/api/v0/settings/cctv_list_lookup?member_id=${user}`,
+        `http://10.28.224.201:30438/api/v0/settings/cctv_list_lookup?member_id=${user}`,
         {
           method: "GET",
           headers: { accept: "application/json" },
@@ -63,10 +57,10 @@ export default function CctvSettingScreen({ navigation }: Props) {
   const cctvRegister = async () => {
     try {
       const response = await fetch(
-        `http://10.28.224.201:30576/api/v0/settings/cctv_register?member_id=${user}&cctv_name=${newCctvName}&cctv_url=${newCctvUrl}`,
+        `http://10.28.224.201:30438/api/v0/settings/cctv_register?member_id=${user}&cctv_name=${newCctvName}&cctv_url=${newCctvUrl}`,
         {
           method: "POST",
-          headers: { accept: "application/json" },
+          headers: { accept: "application/json; charset=utf-8" },
         },
       );
       const data = await response.json();
@@ -85,7 +79,7 @@ export default function CctvSettingScreen({ navigation }: Props) {
   const cctvEditer = async () => {
     try {
       const response = await fetch(
-        `http://10.28.224.201:30576/api/v0/settings/cctv_edit?cctv_id=${cctvId}&cctv_name=${newCctvName}&cctv_url=${newCctvUrl}`,
+        `http://10.28.224.201:30438/api/v0/settings/cctv_edit?cctv_id=${cctvId}&cctv_name=${newCctvName}&cctv_url=${newCctvUrl}`,
         {
           method: "POST",
           headers: { accept: "application/json" },
@@ -110,7 +104,7 @@ export default function CctvSettingScreen({ navigation }: Props) {
   const cctvDelete = async () => {
     try {
       const response = await fetch(
-        `http://10.28.224.201:30576/api/v0/settings/cctv_delete?cctv_id=${cctvId}`,
+        `http://10.28.224.201:30438/api/v0/settings/cctv_delete?cctv_id=${cctvId}`,
         {
           method: "DELETE",
           headers: { accept: "application/json" },
@@ -280,7 +274,15 @@ export default function CctvSettingScreen({ navigation }: Props) {
         <FlatList
           ListHeaderComponent={
             <View style={styles.header}>
-              <Text style={{ color: "white", fontFamily: "C24", fontSize: 25, marginStart: 8, marginTop: 10, }}>
+              <Text
+                style={{
+                  color: "white",
+                  fontFamily: "C24",
+                  fontSize: 25,
+                  marginStart: 8,
+                  marginTop: 10,
+                }}
+              >
                 CCTV 세팅
               </Text>
               <TouchableOpacity

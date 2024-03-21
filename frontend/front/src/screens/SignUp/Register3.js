@@ -1,25 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   ImageBackground,
   Dimensions,
   StatusBar,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
 } from "react-native";
-import { Block, Checkbox, Text, theme } from "galio-framework";
+import { Block, Text } from "galio-framework";
 
 import { Button, Input } from "../../components";
 import { Images, argonTheme } from "../../constants";
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { View } from 'react-native';
+import Icon from "react-native-vector-icons/FontAwesome";
+import { View } from "react-native";
 
 const { width, height } = Dimensions.get("screen");
 
 const Register2 = (props) => {
   const { navigation, route } = props;
   const { email } = route.params;
-  const [isChecked2, setIsChecked2] = useState(false);
-  const [isChecked3, setIsChecked3] = useState(false);
   const [auth, setAuth] = useState(false);
   const [sent, setSent] = useState(false); // 인증번호를 전송했습니다.
   const [fail, setFail] = useState(false); // 실패했습니다.
@@ -28,54 +26,58 @@ const Register2 = (props) => {
 
   const handleAuth = async () => {
     try {
-      const response = await fetch(`http://10.28.224.201:30576/api/v0/members/confirm_auth?email=${email}&code=${token}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `http://10.28.224.201:30438/api/v0/members/confirm_auth?email=${email}&code=${token}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
-      console.log(email, token)
-  
+      );
+      console.log(email, token);
+
       const data = await response.json();
       console.log(data);
 
       if (data.isSuccess) {
-        setSuccess(true)
-        setAuth(true)
-        setFail(false)
+        setSuccess(true);
+        setAuth(true);
+        setFail(false);
+      } else {
+        setSuccess(false);
+        setAuth(false);
+        setFail(true);
       }
-      else {
-        setSuccess(false)
-        setAuth(false)
-        setFail(true)
-    }
     } catch (error) {
-      console.error('Network error:', error);
+      console.error("Network error:", error);
     }
   };
 
   const handleSendAuth = async () => {
     try {
-      const response = await fetch(`http://10.28.224.201:30576/api/v0/members/send_auth?email=${email}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `http://10.28.224.142:30016/api/v0/members/send_auth?email=${email}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
-  
+      );
+
       const data = await response.json();
       console.log(data);
 
       if (data.isSuccess) {
-        setSent(true)
-        setFail(false)
+        setSent(true);
+        setFail(false);
+      } else {
+        setSent(false);
+        setFail(true);
       }
-      else {
-        setSent(false)
-        setFail(true)
-    }
     } catch (error) {
-      console.error('Network error:', error);
+      console.error("Network error:", error);
     }
   };
 
@@ -120,20 +122,44 @@ const Register2 = (props) => {
               </Block>
             </Block> */}
             <Block flex>
-              <Block flex={0.33} paddingLeft={30} style={{ justifyContent: 'flex-end' }}>
-                <Text color="black" size={28} paddingBottom={20} style={styles.subTitle}>
+              <Block
+                flex={0.33}
+                paddingLeft={30}
+                style={{ justifyContent: "flex-end" }}
+              >
+                <Text
+                  color="black"
+                  size={28}
+                  paddingBottom={20}
+                  style={styles.subTitle}
+                >
                   회원가입
                 </Text>
               </Block>
-              <View paddingLeft={30} style={{ flexDirection: 'row'}}>
-                <Text color={argonTheme.COLORS.MUTED} size={12} paddingBottom={20} style={styles.text}>
-                  1. 약관 동의{" "} > {""}
+              <View paddingLeft={30} style={{ flexDirection: "row" }}>
+                <Text
+                  color={argonTheme.COLORS.MUTED}
+                  size={12}
+                  paddingBottom={20}
+                  style={styles.text}
+                >
+                  1. 약관 동의 {">"} {""}
                 </Text>
-                <Text color="black" size={12} paddingBottom={20} style={styles.text}>
+                <Text
+                  color="black"
+                  size={12}
+                  paddingBottom={20}
+                  style={styles.text}
+                >
                   2. 이메일 인증{" "}
                 </Text>
-                <Text color={argonTheme.COLORS.MUTED} size={12} paddingBottom={20} style={styles.text}>
-                  > 3. 비밀번호 입력 > 4. URL 등록
+                <Text
+                  color={argonTheme.COLORS.MUTED}
+                  size={12}
+                  paddingBottom={20}
+                  style={styles.text}
+                >
+                  {">"} 3. 비밀번호 입력 {">"} 4. URL 등록
                 </Text>
               </View>
               <Block flex center>
@@ -142,11 +168,16 @@ const Register2 = (props) => {
                   behavior="padding"
                   enabled
                 >
-                  
-
-                    <View marginTop={30} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Block width={width * 0.55} >
-                        {/* <Input
+                  <View
+                    marginTop={30}
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Block width={width * 0.55}>
+                      {/* <Input
                           borderless
                           placeholder="Email"
                           defaultValue={email}
@@ -159,62 +190,108 @@ const Register2 = (props) => {
                             />
                           }
                         /> */}
-                        <Text style={styles.text3}>
-                          {email}
-                        </Text>
-                      </Block>
-                      <Button 
-                        onPress={handleSendAuth}
-                        color="button_color2"
-                        style={{...styles.createButton, width: '25%', marginTop:6, marginRight:0}}
-                        textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
-                      >
-                        전송
-                      </Button>
-                    </View>
-                    {sent && (
-                    <Text style={styles.text2} marginStart={5} color={argonTheme.COLORS.SUCCESS}>전송했습니다.</Text>
-                    )}
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Block width={width * 0.55} >
-                        <Input
-                          borderless
-                          placeholder="인증번호"
-                          value={token}
-                          onChangeText={(text) => setToken(text)}
-                          iconContent={
-                            <Icon
-                              size={16}
-                              color={argonTheme.COLORS.ICON}
-                              name="key"
-                              style={styles.inputIcons}
-                            />
-                          }
-                        />
-                      </Block>
-                      <Button 
-                        onPress={handleAuth}
-                        color="button_color2"
-                        style={{...styles.createButton, width: '25%', marginTop:6, marginRight:0 }}
-                        textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
-                      >
-                        제출
-                      </Button>
-                    </View>
-                    {success && (
-                    <Text style={styles.text2} marginStart={5} color={argonTheme.COLORS.SUCCESS}>인증되었습니다.</Text>
-                    )}
-                    {fail && (
-                    <Text style={styles.text2} marginStart={5} color={argonTheme.COLORS.ERROR}>실패했습니다.</Text>
-                    )}
-                  
+                      <Text style={styles.text3}>{email}</Text>
+                    </Block>
+                    <Button
+                      onPress={handleSendAuth}
+                      color="button_color2"
+                      style={{
+                        ...styles.createButton,
+                        width: "25%",
+                        marginTop: 6,
+                        marginRight: 0,
+                      }}
+                      textStyle={{
+                        fontSize: 13,
+                        color: argonTheme.COLORS.WHITE,
+                        fontFamily: "NGB",
+                      }}
+                    >
+                      전송
+                    </Button>
+                  </View>
+                  {sent && (
+                    <Text
+                      style={styles.text2}
+                      marginStart={5}
+                      color={argonTheme.COLORS.SUCCESS}
+                    >
+                      전송했습니다.
+                    </Text>
+                  )}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Block width={width * 0.55}>
+                      <Input
+                        borderless
+                        placeholder="인증번호"
+                        value={token}
+                        onChangeText={(text) => setToken(text)}
+                        iconContent={
+                          <Icon
+                            size={16}
+                            color={argonTheme.COLORS.ICON}
+                            name="key"
+                            style={styles.inputIcons}
+                          />
+                        }
+                      />
+                    </Block>
+                    <Button
+                      onPress={handleAuth}
+                      color="button_color2"
+                      style={{
+                        ...styles.createButton,
+                        width: "25%",
+                        marginTop: 6,
+                        marginRight: 0,
+                      }}
+                      textStyle={{
+                        fontSize: 13,
+                        color: argonTheme.COLORS.WHITE,
+                        fontFamily: "NGB",
+                      }}
+                    >
+                      제출
+                    </Button>
+                  </View>
+                  {success && (
+                    <Text
+                      style={styles.text2}
+                      marginStart={5}
+                      color={argonTheme.COLORS.SUCCESS}
+                    >
+                      인증되었습니다.
+                    </Text>
+                  )}
+                  {fail && (
+                    <Text
+                      style={styles.text2}
+                      marginStart={5}
+                      color={argonTheme.COLORS.ERROR}
+                    >
+                      실패했습니다.
+                    </Text>
+                  )}
+
                   <Block middle marginTop={30}>
-                    <Button 
-                      onPress={() => navigation.navigate('Register4', { email: email })}
-                      color={auth ? "primary" : "muted" } 
+                    <Button
+                      onPress={() =>
+                        navigation.navigate("Register4", { email: email })
+                      }
+                      color={auth ? "primary" : "muted"}
                       style={styles.createButton}
                       disabled={!auth} // Button is disabled if either isChecked2 or isChecked3 is not checked
-                      textStyle={{ fontSize: 13, color: argonTheme.COLORS.WHITE, fontFamily: 'NGB',}}
+                      textStyle={{
+                        fontSize: 13,
+                        color: argonTheme.COLORS.WHITE,
+                        fontFamily: "NGB",
+                      }}
                     >
                       다음
                     </Button>
@@ -227,8 +304,7 @@ const Register2 = (props) => {
       </ImageBackground>
     </Block>
   );
-}
-
+};
 
 const styles = StyleSheet.create({
   registerContainer: {
@@ -239,17 +315,17 @@ const styles = StyleSheet.create({
     shadowColor: argonTheme.COLORS.BLACK,
     shadowOffset: {
       width: 0,
-      height: 4
+      height: 4,
     },
     shadowRadius: 8,
     shadowOpacity: 0.1,
     elevation: 1,
-    overflow: "hidden"
+    overflow: "hidden",
   },
   socialConnect: {
     backgroundColor: argonTheme.COLORS.WHITE,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: "#8898AA"
+    borderColor: "#8898AA",
   },
   socialButtons: {
     width: 120,
@@ -258,44 +334,44 @@ const styles = StyleSheet.create({
     shadowColor: argonTheme.COLORS.BLACK,
     shadowOffset: {
       width: 0,
-      height: 4
+      height: 4,
     },
     shadowRadius: 8,
     shadowOpacity: 0.1,
-    elevation: 1
+    elevation: 1,
   },
   socialTextButtons: {
     color: argonTheme.COLORS.PRIMARY,
     fontWeight: "800",
-    fontSize: 14
+    fontSize: 14,
   },
   inputIcons: {
-    marginRight: 12
+    marginRight: 12,
   },
   passwordCheck: {
     paddingLeft: 15,
     paddingTop: 13,
-    paddingBottom: 30
+    paddingBottom: 30,
   },
   createButton: {
     width: width * 0.5,
-    marginTop: 25
+    marginTop: 25,
   },
   subTitle: {
-    fontFamily: 'SG',
-    marginTop: 20
+    fontFamily: "SG",
+    marginTop: 20,
   },
   text: {
-    fontFamily: 'NGB',
-    fontSize: 10,
+    fontFamily: "NGB",
+    fontSize: 9,
   },
   text2: {
-    fontFamily: 'NGB',
+    fontFamily: "NGB",
     fontSize: 13,
     marginBottom: 10,
   },
   text3: {
-    fontFamily: 'NGB',
+    fontFamily: "NGB",
     fontSize: 12,
     marginStart: 5,
   },

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   FlatList,
@@ -86,12 +86,10 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
   // let previousResult: number | null = null;
   // const previousResultRef = useRef<number | null>(null);
 
-
   // setInterval(async () => {
-  //   const response = await fetch(`http://10.28.224.201:30576/api/v0/cctv/log_count?member_id=${user}`);
+  //   const response = await fetch(`http://10.28.224.201:30438/api/v0/cctv/log_count?member_id=${user}`);
   //   const result = await response.json();
   //   console.log(result.result);
-
 
   //   if (previousResultRef.current !== null && result.result > previousResultRef.current) {
   //     Notifications.scheduleNotificationAsync({
@@ -115,7 +113,7 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
   const fetchAnomalyEvents = async () => {
     try {
       const response = await fetch(
-        `http://10.28.224.201:30576/api/v0/cctv/loglist_lookup?member_id=${user}`,
+        `http://10.28.224.201:30438/api/v0/cctv/loglist_lookup?member_id=${user}`,
         {
           method: "GET",
           headers: { accept: "application/json" },
