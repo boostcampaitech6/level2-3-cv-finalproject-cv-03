@@ -117,14 +117,18 @@ def main(args):
 if __name__ == "__main__":
     root_dir = "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid"
     args = {
-        "labeling_csv_path": os.path.join(root_dir, "labeling_aihub.csv"),
+        "labeling_csv_path": os.path.join(
+            root_dir, "labeling_aihub_valid.csv"
+        ),
         "video_dir_path": os.path.join(root_dir, "videos"),
         "clip_sec": 5,
         "clip_frame": 16,
         "frame_size": (640, 640),
     }
 
-    args["video_anno_path"] = os.path.join(root_dir, "video_anno_aihub.csv")
+    args["video_anno_path"] = os.path.join(
+        root_dir, "video_anno_aihub_valid.csv"
+    )
     args["clip_dir_path"] = os.path.join(
         root_dir,
         "clips",
