@@ -57,7 +57,7 @@ const Register2 = (props) => {
   const handleSendAuth = async () => {
     try {
       const response = await fetch(
-        `http://10.28.224.142:30016/api/v0/members/send_auth?email=${email}`,
+        `http://10.28.224.201:30438/api/v0/members/send_auth?email=${email}`,
         {
           method: "GET",
           headers: {
