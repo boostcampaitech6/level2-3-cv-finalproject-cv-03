@@ -20,25 +20,21 @@ from app.db import models
 from passlib.context import CryptContext
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from app.config import config
 
 DEFAULT_RETURN_DICT = {"isSuccess": True, "result": None}
 
-SMTP_SSL_PORT = 465  # SSL connection
-SMTP_SERVER = "smtp.gmail.com"
-
-SENDER_EMAIL = "gusdn00751@gmail.com"
-SENDER_PASSWORD = "wcrcavozgdpcehwd"
-
-
-router = APIRouter()
+# Routers
 memberRouter = APIRouter(prefix="/api/v0/members")
 cctvRouter = APIRouter(prefix="/api/v0/cctv")
 streamingRouter = APIRouter(prefix="/api/v0/streaming")
 settingRouter = APIRouter(prefix="/api/v0/settings")
 
+# env
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-redis_server = redis.Redis(host="10.28.224.201", port=30435, db=0)
+redis_server = redis.Redis(
+    host=config.redis_host, port=config.redis_port, db=0
+)
 
 
 def hash_password(password):
@@ -51,7 +47,7 @@ def verify_password(plain_password, hashed_password):
 
 def generate_verification_code():
     characters = string.ascii_letters + string.digits
-    code = "".join(random.choice(characters) for i in range(8))
+    code = "".join(random.choice(characters) for _ in range(8))
     return code
 
 
@@ -68,7 +64,7 @@ def send_auth(email: str, session: Session = Depends(get_db)):
     context = ssl.create_default_context()
 
     msg = MIMEMultipart()
-    msg["From"] = SENDER_EMAIL
+    msg["From"] = config.sender_email
     msg["To"] = email
     msg["Subject"] = "와치덕 인증번호입니다."
 
@@ -89,10 +85,10 @@ def send_auth(email: str, session: Session = Depends(get_db)):
 
     try:
         with smtplib.SMTP_SSL(
-            SMTP_SERVER, SMTP_SSL_PORT, context=context
+            config.smtp_server, config.smtp_ssl_port, context=context
         ) as server:
-            server.login(SENDER_EMAIL, SENDER_PASSWORD)
-            server.sendmail(SENDER_EMAIL, email, msg.as_string())
+            server.login(config.sender_email, config.sender_pass)
+            server.sendmail(config.sender_email, email, msg.as_string())
     except Exception:
         def_return_dict["isSuccess"] = False
         return def_return_dict
@@ -174,9 +170,7 @@ def register_member(
     session.add(cctv)
     session.commit()
 
-    cctv.hls_url = (
-        f"http://10.28.224.201:30438/hls/cctv_stream/{cctv.cctv_id}/index.m3u8"
-    )
+    cctv.hls_url = config.hls_url_template.format(cctv_id=cctv.cctv_id)
     session.commit()
 
     redis_server.lpush(
@@ -412,7 +406,7 @@ def cctv_register(
         session.add(cctv)
         session.commit()
 
-        cctv.hls_url = f"http://10.28.224.201:30438/hls/cctv_stream/{cctv.cctv_id}/index.m3u8"
+        cctv.hls_url = config.hls_url_template.format(cctv_id=cctv.cctv_id)
         session.commit()
 
         def_return_dict["result"] = {
@@ -510,7 +504,6 @@ def cctv_edit(
     return def_return_dict
 
 
-# ================ Hyunwoo ================
 @cctvRouter.get("/loglist_lookup")
 def select_loglist_lookup(member_id: int, session: Session = Depends(get_db)):
     def_return_dict = DEFAULT_RETURN_DICT.copy()
@@ -666,7 +659,7 @@ async def get_video(video_path: str, log_id: int):
     return FileResponse(video_path)
 
 
-@router.delete("/delete_member")
+@memberRouter.delete("/delete_member")
 def delete_member(email: str, session: Session = Depends(get_db)):
     def_return_dict = DEFAULT_RETURN_DICT.copy()
     try:
