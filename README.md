@@ -43,7 +43,7 @@
 - Expo: Android, iOS, Web 모두 같은 코드로 호환 가능한 개발
 - 푸시 알림: Polling 방식을 사용하여 새 도난 탐지 기록 발생 시 푸시 알림 발생
 
-**페이지 목록**
+**3.1.페이지 목록**
 
 | 페이지명 | 페이지 상세 | 기능 |
 | --- | --- | --- |
@@ -60,12 +60,12 @@
 
 🔧 `FastAPI` `Redis`
 
-**DB(PostgreSQL) & ORM(SQLAlchemy**)
+**4.1. DB(PostgreSQL) & ORM(SQLAlchemy**)
 - DB Schema
 
 ![DB](https://github.com/boostcampaitech6/level2-3-cv-finalproject-cv-03/assets/79782180/371b7b00-fa28-48b8-b26e-d58738a6b486)
 
-**API**
+**4.2. API**
 - a.b.c 형식으로 Versioning하여 API 명세서 관리
   - a : 배포
   - b : 백-프론트 합의
@@ -82,6 +82,8 @@
 
 
 # 팀 소개
+
+
 
 <div align="center">
 <table>
@@ -100,12 +102,12 @@
     </td>
   </tr>
   <tr>
-    <td><b>Model</b> <br/>- 전체적 틀 구성<br/>- 데이터셋 라벨링<br/>- 데이터 전처리, 모델 및 학습 코드 작성</td>
-    <td><b>Model</b> <br/>- 영상 데이터 라벨링 및 전처리<br/>- 모델 구조 설계<br/>- 실시간 추론 구현<br/>- 예측 시각화</td>
-    <td><b>Frontend</b> <br/>- 전체적 틀 구성<br/>- 로그인,회원가입,알림<br/>- 기록 삭제/피드백<br/>- 설정 탭 알림/개인정보</td>
-    <td><b>Frontend</b> <br/>- linter, formatter CI 검사 빌딩<br/>- 기록 리스트/상세 페이지<br/>- 실시간 스트리밍 페이지<br/>- 설정 탭 CCTV 세팅 페이지</td>
-    <td><b>Backend</b> <br/>- DB 구성 및 개발<br/>- FastAPI 구성 및 개발<br/>- 전체적 코드 정리</td>
-    <td><b>Backend</b> <br/>- FastAPI 구성 및 개발<br/>- Streaming Pipeline개발<br/>- Inference Pipeline 개발</td>
+    <td><b>Model</b> </td>
+    <td><b>Model</b> </td>
+    <td><b>Frontend</b> </td>
+    <td><b>Frontend</b> </td>
+    <td><b>Backend</b> </td>
+    <td><b>Backend</b> </td>
   </tr>
 </table>
 </div>
