@@ -391,12 +391,12 @@ const styles = StyleSheet.create({
     fontFamily: "SG",
   },
   itemHeaderText: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: "bold",
     fontFamily: "NGB",
   },
   urlText: {
-    fontSize: 16,
+    fontSize: 11,
     marginVertical: 4,
     fontFamily: "NGB",
     flexShrink: 1,
@@ -425,10 +425,10 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 11,
     alignContent: "center",
     textAlign: "center",
-    fontFamily: "NGB",
+    fontFamily: "C24",
   },
   addButton: {
     alignItems: "center",
@@ -487,6 +487,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: "70%",
     fontFamily: "NGB",
+    fontSize: 11,
   },
   modalCloseButton: {
     alignSelf: "flex-end",
@@ -529,13 +530,13 @@ const styles = StyleSheet.create({
   },
   modalButtonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 11,
     textAlign: "center",
-    fontFamily: "NGB",
+    fontFamily: "C24",
   },
   textModal: {
-    fontSize: 16,
+    fontSize: 11,
     marginVertical: 4,
-    fontFamily: "NGB",
+    fontFamily: "C24",
   },
 });
