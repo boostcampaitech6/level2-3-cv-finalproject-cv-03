@@ -264,6 +264,7 @@ def profile_lookup(member_id: int, session: Session = Depends(get_db)):
             "email": member.email,
             "password": member.password,
             "store_name": member.store_name,
+            "member_name": member.member_name,
         }
     else:
         def_return_dict["isSuccess"] = False
@@ -663,6 +664,37 @@ def select_log_count(member_id: int, session: Session = Depends(get_db)):
 @cctvRouter.get("/{log_id}/video.mp4")
 async def get_video(video_path: str, log_id: int):
     return FileResponse(video_path)
+
+
+@router.delete("/delete_member")
+def delete_member(email: str, session: Session = Depends(get_db)):
+    def_return_dict = DEFAULT_RETURN_DICT.copy()
+    try:
+        member = (
+            session.query(models.Member)
+            .filter(models.Member.email == email)
+            .first()
+        )
+        cctvs = (
+            session.query(models.CCTV)
+            .filter(models.CCTV.member_id == member.member_id)
+            .all()
+        )
+        for cctv in cctvs:
+            logs = (
+                session.query(models.Log)
+                .filter(models.Log.cctv_id == cctv.cctv_id)
+                .all()
+            )
+            for log in logs:
+                session.delete(log)
+            session.delete(cctv)
+        session.delete(member)
+        session.commit()
+    except Exception:
+        def_return_dict["isSuccess"] = False
+
+    return def_return_dict
 
 
 # API v 0.3.0

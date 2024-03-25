@@ -15,23 +15,31 @@ def run_ffmpeg(cctv_config, hls_root_dir):
     command = [
         "ffmpeg",
         "-fflags",
-        "+genpts",
+        "nobuffer",
+        "-loglevel",
+        "error",
+        "-rtsp_transport",
+        "tcp",
         "-i",
         rtsp_url,
-        "-c:v",
+        "-vsync",
+        "0",
+        "-copyts",
+        "-vcodec",
         "copy",
-        "-c:a",
-        "copy",
-        "-strict",
-        "experimental",
+        "-movflags",
+        "frag_keyframe+empty_moov",
+        "-an",
+        "-hls_flags",
+        "delete_segments+append_list",
         "-f",
         "hls",
         "-hls_time",
-        "1",
+        "2",
         "-hls_list_size",
         "3",
-        "-hls_flags",
-        "delete_segments+append_list",
+        "-hls_segment_type",
+        "mpegts",
         "-hls_segment_filename",
         f"{hls_stream_dir}/%3d.ts",
         f"{hls_stream_dir}/index.m3u8",
@@ -39,7 +47,6 @@ def run_ffmpeg(cctv_config, hls_root_dir):
 
     process = subprocess.Popen(command)
     process_dict[cctv_id] = process
-    print("hls streaming start..")
 
 
 def stop_ffmpeg(cctv_id, hls_root_dir):
@@ -48,7 +55,6 @@ def stop_ffmpeg(cctv_id, hls_root_dir):
 
     hls_stream_dir = os.path.join(hls_root_dir, str(cctv_id))
     shutil.rmtree(hls_stream_dir)
-    print("hls streaming stop..")
 
 
 if __name__ == "__main__":
@@ -67,7 +73,9 @@ if __name__ == "__main__":
         k, v = k.decode("utf-8"), v.decode("utf-8")
         if k == start_hls_stream_key:
             config = json.loads(v)
+            print(f"hls streaming start.. : {config}")
             run_ffmpeg(config, hls_root_dir)
         elif k == stop_hls_stream_key:
             cctv_id = v
+            print(f"hls streaming stop.. : {cctv_id}")
             stop_ffmpeg(cctv_id, hls_root_dir)
