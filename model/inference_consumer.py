@@ -16,6 +16,7 @@ import torch.nn.functional as F
 import albumentations as A
 from arch import *
 from utils import RNN_INPUT_SIZE
+from ..backend.app.config import config
 
 
 class StopFlag:
@@ -91,7 +92,12 @@ def save_anomaly_log(cctv_id, anomaly_score):
     with open(anomaly_save_path, "rb") as video_file:
         files = {"video_file": (anomaly_save_path, video_file)}
         requests.post(
-            f"http://10.28.224.201:30438/api/v0/cctv/log_register?cctv_id={cctv_id}&anomaly_create_time={current_time}&anomaly_score={anomaly_score}&anomaly_save_path={anomaly_save_path}",
+            config.request_log_register.format(
+                cctv_id=cctv_id,
+                current_time=current_time,
+                anomaly_score=anomaly_score,
+                anomaly_save_path=anomaly_save_path,
+            ),
             files=files,
         )
 
@@ -268,11 +274,14 @@ def inference(cctv_info, capture_interval=0.1, frame_per_sec=10, total_sec=3):
         cctv_info["save_time_length"],
     )
 
-    save_hls_log_video_dir = (
-        f"/data/saved/saved_log_videos/{cctv_info['cctv_id']}"
+    save_hls_log_video_dir = config.saved_log_dir.format(
+        cctv_id=cctv_info["cctv_id"]
     )
-    save_image_dir = f"/data/saved/saved_images/{cctv_info['cctv_id']}"
-    save_video_dir = f"/data/saved/saved_videos/{cctv_info['cctv_id']}"
+
+    save_image_dir = config.saved_img_dir.format(cctv_id=cctv_info["cctv_id"])
+    save_video_dir = config.saved_video_dir.format(
+        cctv_id=cctv_info["cctv_id"]
+    )
 
     os.makedirs(save_hls_log_video_dir, exist_ok=True)
     os.makedirs(save_image_dir, exist_ok=True)
@@ -316,7 +325,9 @@ def inference(cctv_info, capture_interval=0.1, frame_per_sec=10, total_sec=3):
 
 
 if __name__ == "__main__":
-    redis_server = redis.Redis(host="10.28.224.201", port=30435, db=0)
+    redis_server = redis.Redis(
+        host=config.redis_host, port=config.redis_port, db=0
+    )
     while True:
         key, value = redis_server.brpop(keys="start_inf", timeout=None)
         cctv_info = json.loads(value.decode("utf-8"))
