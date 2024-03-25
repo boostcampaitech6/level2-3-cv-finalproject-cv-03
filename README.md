@@ -102,12 +102,12 @@
     </td>
   </tr>
   <tr>
-    <td><b>Model</b> </td>
-    <td><b>Model</b> </td>
-    <td><b>Frontend</b> </td>
-    <td><b>Frontend</b> </td>
-    <td><b>Backend</b> </td>
-    <td><b>Backend</b> </td>
+    <td align="center"><b>Model</b> </td>
+    <td align="center"><b>Model</b> </td>
+    <td align="center"><b>Frontend</b> </td>
+    <td align="center"><b>Frontend</b> </td>
+    <td align="center"><b>Backend</b> </td>
+    <td align="center"><b>Backend</b> </td>
   </tr>
 </table>
 </div>
