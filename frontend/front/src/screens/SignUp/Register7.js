@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   ImageBackground,
@@ -10,36 +10,49 @@ import { Block, Text } from "galio-framework";
 
 import { Button, Input } from "../../components";
 import { Images, argonTheme } from "../../constants";
+import { Overlay } from "react-native-elements";
+import { View } from "react-native";
+
 import Icon from "react-native-vector-icons/FontAwesome";
 
 const { width, height } = Dimensions.get("screen");
 
-const Register6 = (props) => {
+const Register7 = (props) => {
   const { navigation, route } = props;
   const { email } = route.params;
   const { password } = route.params;
   const { cctv_url } = route.params;
   const { cctv_name } = route.params;
+  const { member_name } = route.params;
+  const [name, setName] = useState("default");
   // eslint-disable-next-line
-  const [member_name, setMember_name] = useState("");
   const [fail, setFail] = useState(false);
-
-  useEffect(() => {
-    if (member_name.length === 0) {
-      setFail(true);
-    } else {
-      setFail(false);
-    }
-  }, [member_name]);
+  const [successVisible, setSuccessVisible] = useState(false);
 
   const handleRegister = async () => {
-    navigation.navigate("Register7", {
-      email: email,
-      password: password,
-      member_name: member_name,
-      cctv_url: cctv_url,
-      cctv_name: cctv_name,
-    });
+    console.log(email, password, name, cctv_url, cctv_name);
+    try {
+      const response = await fetch(
+        `http://10.28.224.201:30438/api/v0/members/register?email=${email}&password=${password}&member_name=${member_name}d&store_name=${name}&cctv_url=${cctv_url}&cctv_name=${cctv_name}`,
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json; charset=utf-8",
+          },
+        },
+      );
+      const data = await response.json();
+      console.log(data);
+      if (data.isSuccess) {
+        setFail(false);
+        setSuccessVisible(true);
+        navigation.navigate("Login");
+      } else {
+        setFail(true);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
   };
 
   // const handleRegisterSkip = async () => {
@@ -68,7 +81,7 @@ const Register6 = (props) => {
                   paddingBottom={20}
                   style={styles.subTitle}
                 >
-                  사용자 이름 등록
+                  매장 이름 등록
                 </Text>
               </Block>
 
@@ -78,19 +91,30 @@ const Register6 = (props) => {
                   behavior="padding"
                   enabled
                 >
+                  <Text
+                    color="black"
+                    size={14}
+                    paddingLeft={10}
+                    paddingBottom={20}
+                    style={styles.text2}
+                    marginStart={0}
+                  >
+                    입력하지 않으시면 기본값으로 설정됩니다.
+                  </Text>
+
                   <Block width={width * 0.8} marginTop={40}>
                     <Input
                       borderless
-                      placeholder="사용자 이름"
+                      placeholder="매장 이름"
                       onChangeText={(text) => {
-                        setMember_name(text);
+                        setName(text);
                       }}
-                      value={member_name}
+                      value={name}
                       iconContent={
                         <Icon
                           size={16}
                           color={argonTheme.COLORS.ICON}
-                          name="user-circle"
+                          name="shopping-bag"
                           style={styles.inputIcons}
                         />
                       }
@@ -101,8 +125,7 @@ const Register6 = (props) => {
                     <Button
                       // onPress={() => navigation.navigate('Login')}
                       onPress={handleRegister}
-                      color={fail ? "muted" : "primary"}
-                      disabled={fail}
+                      color={"primary"}
                       style={styles.createButton}
                       textStyle={{
                         fontSize: 13,
@@ -110,15 +133,31 @@ const Register6 = (props) => {
                         fontFamily: "NGB",
                       }}
                     >
-                      다음
+                      제출
                     </Button>
 
-                    {/* {fail && (
+                    {fail && (
                       <Text style={styles.failText}>
                         회원가입에 실패했습니다.
                       </Text>
-                    )} */}
+                    )}
                   </Block>
+                  <Overlay
+                    isVisible={successVisible}
+                    onBackdropPress={() => setSuccessVisible(false)}
+                  >
+                    <View
+                      style={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: 40,
+                      }}
+                    >
+                      <Text style={styles.poptitle}>
+                        회원가입이 완료되었습니다.
+                      </Text>
+                    </View>
+                  </Overlay>
                 </KeyboardAvoidingView>
               </Block>
             </Block>
@@ -199,4 +238,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Register6;
+export default Register7;

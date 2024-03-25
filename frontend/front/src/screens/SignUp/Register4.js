@@ -21,18 +21,28 @@ const Register4 = (props) => {
   // console.log(email);
   const [fail, setFail] = useState(true);
   const [fail2, setFail2] = useState(false);
+  const [fail3, setFail3] = useState(false); // 정규식 조건
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
+  const passwordRegex =
+    /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#])[\da-zA-Z!@#]{8,}$/;
+
   useEffect(() => {
     if (password.length !== 0) {
       setFail(false);
-    }
-    if (password !== password2 && password.length !== 0) {
-      setFail2(true);
-    } else {
-      setFail2(false);
+      if (password !== password2) {
+        setFail2(true);
+      } else {
+        setFail2(false);
+      }
+      if (!passwordRegex.test(password)) {
+        setFail3(true);
+      } else {
+        setFail3(false);
+      }
     }
   }, [password, password2]);
+
   return (
     <Block flex middle>
       <StatusBar hidden />
@@ -106,6 +116,18 @@ const Register4 = (props) => {
                         />
                       }
                     />
+                    {fail3 && (
+                      <Text
+                        style={styles.text2}
+                        marginTop={10}
+                        marginStart={5}
+                        color={argonTheme.COLORS.ERROR}
+                      >
+                        비밀번호는 8자 이상이어야 합니다.{"\n"}숫자, 영어
+                        대/소문자, 특수문자!/@/# 를 각각 적어도 하나 포함해야
+                        합니다.
+                      </Text>
+                    )}
 
                     <Input
                       password
@@ -170,9 +192,9 @@ const Register4 = (props) => {
                           password: password,
                         })
                       }
-                      color={fail || fail2 ? "muted" : "primary"}
+                      color={fail || fail2 || fail3 ? "muted" : "primary"}
                       style={styles.createButton}
-                      disabled={fail || fail2} // Button is disabled if either isChecked2 or isChecked3 is not checked
+                      disabled={fail || fail2 || fail3} // Button is disabled if either isChecked2 or isChecked3 is not checked
                       textStyle={{
                         fontSize: 13,
                         color: argonTheme.COLORS.WHITE,
@@ -253,7 +275,8 @@ const styles = StyleSheet.create({
   },
   text2: {
     fontFamily: "NGB",
-    fontSize: 14,
+    fontSize: 12,
+    marginBottom: 15,
   },
 });
 
