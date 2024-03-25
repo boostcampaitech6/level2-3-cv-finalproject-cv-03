@@ -3,6 +3,7 @@ import json
 import shutil
 import redis
 import subprocess
+from app.config import config
 
 
 def run_ffmpeg(cctv_config, hls_root_dir):
@@ -61,9 +62,10 @@ if __name__ == "__main__":
     global process_dict
     process_dict = dict()
 
-    redis_server = redis.Redis(host="10.28.224.201", port=30435, db=0)
-    hls_root_dir = "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/backend/hls/cctv_stream"
-
+    redis_server = redis.Redis(
+        host=config.redis_host, port=config.redis_port, db=0
+    )
+    hls_root_dir = config.hls_root_dir
     start_hls_stream_key = "start_hls_stream"
     stop_hls_stream_key = "stop_hls_stream"
     while True:
