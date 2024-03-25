@@ -106,7 +106,7 @@ export default function CCTVDetailScreen({
       console.log(result);
       console.log("Download successful:", result);
       await save(result.uri);
-      await deleteFile(fileUri);
+      // await deleteFile(fileUri);
     } catch (error) {
       console.error("Download error :", error);
     }
@@ -123,14 +123,14 @@ export default function CCTVDetailScreen({
       console.error("Error sharing file:", error);
     }
   };
-  const deleteFile = async (fileUri) => {
-    try {
-      await FileSystem.deleteAsync(fileUri);
-      console.log("File deleted successfully");
-    } catch (error) {
-      console.error("Error deleting file:", error);
-    }
-  };
+  // const deleteFile = async (fileUri) => {
+  //   try {
+  //     await FileSystem.deleteAsync(fileUri);
+  //     console.log("File deleted successfully");
+  //   } catch (error) {
+  //     console.error("Error deleting file:", error);
+  //   }
+  // };
 
   const handleFeedback2 = async () => {
     try {
