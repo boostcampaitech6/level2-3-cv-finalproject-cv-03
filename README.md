@@ -77,11 +77,16 @@
 
 5.1. **Streaming Architecture**
 
+![Untitled (27)](https://github.com/boostcampaitech6/level2-3-cv-finalproject-cv-03/assets/79782180/89c17fef-3618-4464-929e-38e5a2972157)
+
 
 5.2. **System Architecture**
 
+![Untitled (28)](https://github.com/boostcampaitech6/level2-3-cv-finalproject-cv-03/assets/79782180/58c9005b-42c9-40d8-860e-6cb82a389da7)
+
 
 # 팀 소개
+![Untitled (28)](https://github.com/boostcampaitech6/level2-3-cv-finalproject-cv-03/assets/79782180/0e1cffc5-249b-40c1-ae76-e8cc8c7f7f0b)
 
 
 
