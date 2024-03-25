@@ -11,9 +11,11 @@ import {
 import { NavigationProp } from "@react-navigation/native";
 import { UserContext } from "../../UserContext";
 import { Text } from "galio-framework";
-import { Images } from "../../constants";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Overlay } from "react-native-elements";
+import { Images } from "../../constants";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -58,7 +60,10 @@ interface Tab1ScreenProps {
   navigation: NavigationProp<Tab1ParamList, "Tab1Screen">;
 }
 
-function formatDateTime(dateTimeString: string): string {
+function formatDateTime(
+  dateTimeString: string,
+  apicall: boolean = false,
+): string {
   const date = new Date(dateTimeString);
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -67,9 +72,12 @@ function formatDateTime(dateTimeString: string): string {
   const minutes = date.getMinutes().toString().padStart(2, "0");
   const seconds = date.getSeconds().toString().padStart(2, "0");
 
-  return `${year}.${month}.${day} ${hours}:${minutes}:${seconds}`;
+  if (apicall) {
+    return `${year}-${month}-${day}%20${hours}:${minutes}:${seconds}`;
+  } else {
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
 }
-
 export default function Tab1Screen(props: Tab1ScreenProps) {
   const { user } = useContext(UserContext);
   const { navigation } = props;
@@ -82,29 +90,105 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
   const itemsPerPage = 4;
   const [performSearch, setPerformSearch] = useState(false);
 
-  // const [previousResult, setPreviousResult] = useState(0);
-  // let previousResult: number | null = null;
-  // const previousResultRef = useRef<number | null>(null);
+  // 날짜 및 시간 상태 추가
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [datePickerMode, setDatePickerMode] = useState<"date" | "time">("date");
+  const [isStartDatePicker, setIsStartDatePicker] = useState(true); // true면 시작 날짜, false면 종료 날짜
+  const [dateFilter, setDateFilter] = useState(false);
 
-  // setInterval(async () => {
-  //   const response = await fetch(`http://10.28.224.201:30438/api/v0/cctv/log_count?member_id=${user}`);
-  //   const result = await response.json();
-  //   console.log(result.result);
-
-  //   if (previousResultRef.current !== null && result.result > previousResultRef.current) {
-  //     Notifications.scheduleNotificationAsync({
-  //       content: {
-  //         title: "도난 의심 행위 발생",
-  //         body: '확인 바랍니다.',
-  //       },
-  //       trigger: {
-  //         seconds: 1,
-  //       },
-  //     });
-
-  //     previousResultRef.current = result.result
-  //   }
-  // }, 5000);
+  const onChangeDate = (event, selectedDate) => {
+    setShowDatePicker(false); // DatePicker를 일단 닫음
+    if (selectedDate) {
+      const currentDate = selectedDate;
+      if (datePickerMode === "date") {
+        if (isStartDatePicker) {
+          setStartDate(currentDate);
+        } else {
+          setEndDate(currentDate);
+        }
+        // 시간 선택 모드로 전환하고, 모달을 재표시하기 위해 setTimeout 사용
+        setTimeout(() => {
+          setDatePickerMode("time");
+          setShowDatePicker(true);
+        }, 0);
+      } else if (datePickerMode === "time") {
+        if (isStartDatePicker) {
+          setStartDate((prevDate) => {
+            const newDate = new Date(prevDate);
+            newDate.setHours(currentDate.getHours(), currentDate.getMinutes());
+            return newDate;
+          });
+        } else {
+          setEndDate((prevDate) => {
+            const newDate = new Date(prevDate);
+            newDate.setHours(currentDate.getHours(), currentDate.getMinutes());
+            return newDate;
+          });
+        }
+        setDatePickerMode("date");
+      }
+    }
+  };
+  useEffect(() => {
+    console.log("startDate 업데이트됨:", formatDateTime(startDate));
+    console.log("endDate 업데이트됨:", formatDateTime(endDate));
+  }, [startDate, endDate]);
+  const renderDatePickerButtons = () => (
+    <View style={styles.modalView}>
+      <View style={{ flexDirection: "column", alignItems: "center" }}>
+        <TouchableOpacity
+          onPress={() => {
+            setShowDatePicker(true);
+            setIsStartDatePicker(true);
+            setDatePickerMode("date");
+          }}
+          style={styles.searchButton}
+        >
+          <Text style={{ fontFamily: "C24", fontSize: 11 }}>
+            시작 날짜 설정
+          </Text>
+        </TouchableOpacity>
+        <Text style={{ fontFamily: "NGB", fontSize: 11 }}>
+          {formatDateTime(startDate)}
+        </Text>
+        <TouchableOpacity
+          onPress={() => {
+            setShowDatePicker(true);
+            setIsStartDatePicker(false);
+            setDatePickerMode("date");
+          }}
+          style={styles.searchButton}
+        >
+          <Text style={{ fontFamily: "C24", fontSize: 11 }}>
+            종료 날짜 설정
+          </Text>
+        </TouchableOpacity>
+        <Text style={{ fontFamily: "NGB", fontSize: 11 }}>
+          {formatDateTime(endDate)}
+        </Text>
+        {showDatePicker && (
+          <DateTimePicker
+            value={isStartDatePicker ? startDate : endDate}
+            mode={datePickerMode}
+            is24Hour={true}
+            display="default"
+            onChange={onChangeDate}
+          />
+        )}
+      </View>
+      <TouchableOpacity
+        style={styles.modalRegisterButton}
+        onPress={() => {
+          fetchAnomalyDateEvents(startDate, endDate);
+          setDateFilter(false);
+        }}
+      >
+        <Text style={styles.modalButtonText}>적용하기</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   const onSearch = () => {
     setPerformSearch((prev) => !prev);
@@ -135,6 +219,37 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
       console.error("API 호출 중 예외가 발생했습니다:", error);
     }
   };
+  const fetchAnomalyDateEvents = async (startDate, endDate) => {
+    const formattedStartDate = formatDateTime(startDate, true);
+    const formattedEndDate = formatDateTime(endDate, true);
+
+    try {
+      const response = await fetch(
+        `http://10.28.224.201:30438/api/v0/cctv/loglist_lookup_search?member_id=${user}&start_date=${formattedStartDate}&end_date=${formattedEndDate}`,
+        {
+          method: "GET",
+          headers: { accept: "application/json" },
+        },
+      );
+      console.log("receving data...");
+      const data = await response.json();
+      console.log(response.ok);
+      console.log(
+        `http://10.28.224.201:30438/api/v0/cctv/loglist_lookup_search?member_id=${user}&start_date=${formatDateTime(startDate)}&end_date=${formatDateTime(endDate)}`,
+      );
+
+      if (response.ok) {
+        console.log(data.isSuccess);
+        // console.log(data.result);
+        setAnomalyEvents(data.result);
+        setTotalPages(Math.ceil(data.result.length / itemsPerPage));
+      } else {
+        console.error("API 호출에 실패했습니다:", data);
+      }
+    } catch (error) {
+      console.error("API 호출 중 예외가 발생했습니다:", error);
+    }
+  };
   useFocusEffect(
     React.useCallback(() => {
       fetchAnomalyEvents();
@@ -146,23 +261,15 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
     setSearchText("");
   }, [searchResults]);
 
-  // 검색 로직
   useEffect(() => {
     const filtered = anomalyEvents.filter((event) => {
-      const formattedTime = formatDateTime(
-        event.anomaly_create_time,
-      ).toLowerCase();
-      return (
-        event.cctv_name.toLowerCase().includes(searchText.toLowerCase()) ||
-        formattedTime.includes(searchText.toLowerCase())
-      );
+      return event.cctv_name.toLowerCase().includes(searchText.toLowerCase());
     });
 
-    setSearchResults(filtered); // 검색된 결과를 저장
-    setCurrentPage(1); // 페이지를 첫 페이지로 설정
+    setSearchResults(filtered);
+    setCurrentPage(1);
   }, [anomalyEvents, performSearch]);
 
-  // 페이지 변경 로직
   useEffect(() => {
     const endIndex = currentPage * itemsPerPage;
     const startIndex = endIndex - itemsPerPage;
@@ -187,7 +294,7 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
         })
       }
     >
-      <Text style={{ fontSize: 24, fontFamily: "C24", marginBottom: 5 }}>
+      <Text style={{ fontSize: 16, fontFamily: "C24", marginBottom: 5 }}>
         {item.cctv_name}
       </Text>
       <Text style={styles.timestamp}>
@@ -262,12 +369,27 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
             }}
             onChangeText={setSearchText}
             value={searchText}
-            placeholder="검색 (CCTV 이름 또는 날짜)"
+            placeholder="검색 (CCTV 이름)"
           />
           <TouchableOpacity onPress={onSearch} style={styles.searchButton}>
             <Text style={{ fontFamily: "C24" }}>검색</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setDateFilter(true);
+            }}
+            style={styles.searchButton}
+          >
+            <Text style={{ fontFamily: "C24" }}>필터</Text>
+          </TouchableOpacity>
         </View>
+        <Overlay
+          isVisible={dateFilter}
+          overlayStyle={styles.overlayStyle}
+          onBackdropPress={() => setDateFilter(false)}
+        >
+          {renderDatePickerButtons()}
+        </Overlay>
         <FlatList
           data={filteredEvents}
           renderItem={renderItem}
@@ -293,14 +415,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     alignItems: "flex-start", // 자식 요소들 왼쪽 정렬
   },
-  title: {
-    fontSize: 24, // 제목 폰트 사이즈
-    fontWeight: "bold", // 글씨 두껍게
-    marginBottom: 4, // 제목과 날짜/시간 사이의 여백
-    fontFamily: "C24",
-  },
   timestamp: {
-    fontSize: 16, // 날짜/시간 폰트 사이즈
+    fontSize: 11, // 날짜/시간 폰트 사이즈
     color: "#555555", // 날짜/시간 색상
     fontFamily: "NGB",
   },
@@ -349,6 +465,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#ddd", // 버튼의 배경색, 필요에 따라 조정
     borderRadius: 10, // 버튼의 모서리를 둥글게
+    margin: 5,
   },
   refreshButton: {
     marginLeft: 10, // 페이지네이션 버튼과의 간격
@@ -358,5 +475,45 @@ const styles = StyleSheet.create({
   refreshButtonText: {
     color: "#000", // 텍스트 색상
     fontSize: 20,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "stretch",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    width: "80%",
+  },
+  centeredView: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalRegisterButton: {
+    marginTop: 20,
+    backgroundColor: "grey",
+    borderRadius: 20,
+    height: 50,
+    justifyContent: "center",
+    width: "100%",
+  },
+  modalButtonText: {
+    color: "#fff",
+    fontSize: 11,
+    textAlign: "center",
+    fontFamily: "C24",
+  },
+  overlayStyle: {
+    width: "90%", // Overlay의 너비 조정
+    backgroundColor: "transparent", // 배경색을 투명하게 설정하여 하얀색 박스 제거
+    elevation: 0, // Android에서의 하얀색 박스 제거
+    shadowOpacity: 0, // iOS에서의 하얀색 박스 제거
   },
 });
