@@ -2102,6 +2102,13 @@
     prompts "^2.4.2"
     semver "^7.5.2"
 
+"@react-native-community/datetimepicker@^7.6.3":
+  version "7.6.3"
+  resolved "https://registry.npmjs.org/@react-native-community/datetimepicker/-/datetimepicker-7.6.3.tgz"
+  integrity sha512-Ceb+zWwX67tJKK8gTk6JRRIlU1DqIuwe2kaFwz28s6SKrU8bn/nSSB8/y9B4vic3hb8Z0WTo22807GA1Kg4W7A==
+  dependencies:
+    invariant "^2.2.4"
+
 "@react-native-firebase/app@^19.0.1":
   version "19.0.1"
   resolved "https://registry.npmjs.org/@react-native-firebase/app/-/app-19.0.1.tgz"
