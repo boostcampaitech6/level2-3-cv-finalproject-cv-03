@@ -86,9 +86,6 @@
 
 
 # 팀 소개
-![Untitled (28)](https://github.com/boostcampaitech6/level2-3-cv-finalproject-cv-03/assets/79782180/0e1cffc5-249b-40c1-ae76-e8cc8c7f7f0b)
-
-
 
 <div align="center">
 <table>
