@@ -16,7 +16,12 @@ import torch.nn.functional as F
 import albumentations as A
 from arch import *
 from utils import RNN_INPUT_SIZE
-from ..backend.app.config import config
+import sys
+
+sys.path.append(
+    os.path.dirname(os.path.abspath(os.path.dirname("inference_consumer.py")))
+)
+from backend.app.config import config
 
 
 class StopFlag:
