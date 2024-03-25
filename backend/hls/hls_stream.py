@@ -55,7 +55,7 @@ if __name__ == "__main__":
     global process_dict
     process_dict = dict()
 
-    redis_server = redis.Redis(host="10.28.224.201", port=30575, db=0)
+    redis_server = redis.Redis(host="10.28.224.201", port=30435, db=0)
     hls_root_dir = "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/backend/hls/cctv_stream"
 
     start_hls_stream_key = "start_hls_stream"
