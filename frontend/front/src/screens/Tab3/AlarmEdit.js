@@ -51,7 +51,7 @@ const AlarmEdit = (props) => {
       if (data.isSuccess) {
         navigation.navigate("Alarm");
       } else {
-        console.error("No information:", error);
+        console.error("No information available");
       }
     } catch (error) {
       console.error("Network error:", error);
