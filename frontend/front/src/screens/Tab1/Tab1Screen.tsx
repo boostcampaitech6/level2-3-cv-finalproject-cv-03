@@ -192,33 +192,11 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
     setPerformSearch((prev) => !prev);
   };
 
-  const fetchAnomalyEvents = async () => {
-    try {
-      const response = await fetch(
-        `http://10.28.224.201:30438/api/v0/cctv/loglist_lookup?member_id=${user}`,
-        {
-          method: "GET",
-          headers: { accept: "application/json" },
-        },
-      );
-      console.log("receving data...");
-      const data = await response.json();
-      console.log(response.ok);
-
-      if (response.ok) {
-        console.log(data.isSuccess);
-        setAnomalyEvents(data.result);
-        setTotalPages(Math.ceil(data.result.length / itemsPerPage));
-      } else {
-        console.error("API 호출에 실패했습니다:", data);
-      }
-    } catch (error) {
-      console.error("API 호출 중 예외가 발생했습니다:", error);
-    }
-  };
   const fetchAnomalyDateEvents = async (startDate, endDate) => {
-    const formattedStartDate = formatDateTime(startDate, true);
-    const formattedEndDate = formatDateTime(endDate, true);
+    const formattedStartDate =
+      startDate !== "" ? formatDateTime(startDate, true) : "";
+    const formattedEndDate =
+      endDate !== "" ? formatDateTime(endDate, true) : "";
 
     try {
       const response = await fetch(
@@ -248,7 +226,7 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
   };
   useFocusEffect(
     React.useCallback(() => {
-      fetchAnomalyEvents();
+      fetchAnomalyDateEvents("", "");
     }, [user]),
   );
   useEffect(() => {
@@ -341,7 +319,7 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
         <View style={{ flex: 1, alignItems: "flex-end" }}>
           <TouchableOpacity
             style={styles.refreshButton}
-            onPress={() => fetchAnomalyEvents()}
+            onPress={() => fetchAnomalyDateEvents("", "")}
           >
             <Text style={styles.refreshButtonText}>🔃</Text>
           </TouchableOpacity>
