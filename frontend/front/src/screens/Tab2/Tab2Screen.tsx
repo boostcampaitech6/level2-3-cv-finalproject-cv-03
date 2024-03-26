@@ -41,21 +41,6 @@ const Tab2Screen = () => {
     fetchVideos();
   }, []);
 
-  // const videos = [
-  //   {
-  //     cctv_id: 292,
-  //     cctv_name: "Video 1",
-  //     hls_url:
-  //       "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
-  //   },
-  //   {
-  //     cctv_id: 300,
-  //     cctv_name: "Video 2",
-  //     hls_url:
-  //       "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
-  //   },
-  // ];
-
   const numColumns = videos.length > 9 ? 4 : videos.length > 6 ? 3 : 2;
   const videoWidth = Dimensions.get("window").width / numColumns;
 
