@@ -36,7 +36,6 @@ const Alarm = (props) => {
             },
           );
           const data = await response.json();
-          // console.log(data);
           if (data.isSuccess) {
             setThreshold(data.result.threshold);
             setSave_time_length(data.result.save_time_length);

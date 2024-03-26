@@ -90,16 +90,15 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
   const itemsPerPage = 4;
   const [performSearch, setPerformSearch] = useState(false);
 
-  // 날짜 및 시간 상태 추가
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [datePickerMode, setDatePickerMode] = useState<"date" | "time">("date");
-  const [isStartDatePicker, setIsStartDatePicker] = useState(true); // true면 시작 날짜, false면 종료 날짜
+  const [isStartDatePicker, setIsStartDatePicker] = useState(true);
   const [dateFilter, setDateFilter] = useState(false);
 
   const onChangeDate = (event, selectedDate) => {
-    setShowDatePicker(false); // DatePicker를 일단 닫음
+    setShowDatePicker(false);
     if (selectedDate) {
       const currentDate = selectedDate;
       if (datePickerMode === "date") {
@@ -108,7 +107,6 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
         } else {
           setEndDate(currentDate);
         }
-        // 시간 선택 모드로 전환하고, 모달을 재표시하기 위해 setTimeout 사용
         setTimeout(() => {
           setDatePickerMode("time");
           setShowDatePicker(true);
@@ -209,7 +207,6 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
 
       if (response.ok) {
         console.log(data.isSuccess);
-        // console.log(data.result);
         setAnomalyEvents(data.result);
         setTotalPages(Math.ceil(data.result.length / itemsPerPage));
       } else {
@@ -240,7 +237,6 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
 
       if (response.ok) {
         console.log(data.isSuccess);
-        // console.log(data.result);
         setAnomalyEvents(data.result);
         setTotalPages(Math.ceil(data.result.length / itemsPerPage));
       } else {
@@ -406,18 +402,18 @@ export default function Tab1Screen(props: Tab1ScreenProps) {
 
 const styles = StyleSheet.create({
   item: {
-    backgroundColor: "#FFFFFF", // 회색 배경
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "#CCCCCC", // 테두리 색상
-    borderRadius: 10, // 모서리 둥글게
-    padding: 20, // 내부 패딩
+    borderColor: "#CCCCCC",
+    borderRadius: 10,
+    padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
-    alignItems: "flex-start", // 자식 요소들 왼쪽 정렬
+    alignItems: "flex-start",
   },
   timestamp: {
-    fontSize: 11, // 날짜/시간 폰트 사이즈
-    color: "#555555", // 날짜/시간 색상
+    fontSize: 11,
+    color: "#555555",
     fontFamily: "NGB",
   },
   bottomControl: {
@@ -447,33 +443,33 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
   },
   searchContainer: {
-    flexDirection: "row", // 자식 요소들을 수평으로 나란히 배치
-    alignItems: "center", // 자식 요소들을 세로 방향으로 가운데 정렬
-    alignContent: "center", // 자식 요소들을 수평 방향으로 가운데 정렬
+    flexDirection: "row",
+    alignItems: "center",
+    alignContent: "center",
     margin: 15,
   },
   searchInput: {
     height: 40,
     borderWidth: 1,
     paddingLeft: 8,
-    flex: 1, // 남은 공간을 모두 차지하도록 함
+    flex: 1,
     borderRadius: 10,
     borderColor: "#CCCCCC",
-    marginRight: 8, // 검색 버튼과의 간격을 주기 위함
+    marginRight: 8,
   },
   searchButton: {
     padding: 10,
-    backgroundColor: "#ddd", // 버튼의 배경색, 필요에 따라 조정
-    borderRadius: 10, // 버튼의 모서리를 둥글게
+    backgroundColor: "#ddd",
+    borderRadius: 10,
     margin: 5,
   },
   refreshButton: {
-    marginLeft: 10, // 페이지네이션 버튼과의 간격
+    marginLeft: 10,
     padding: 10,
-    borderRadius: 10, // 버튼 모서리 둥글게
+    borderRadius: 10,
   },
   refreshButtonText: {
-    color: "#000", // 텍스트 색상
+    color: "#000",
     fontSize: 20,
   },
   modalView: {
@@ -511,9 +507,9 @@ const styles = StyleSheet.create({
     fontFamily: "C24",
   },
   overlayStyle: {
-    width: "90%", // Overlay의 너비 조정
-    backgroundColor: "transparent", // 배경색을 투명하게 설정하여 하얀색 박스 제거
-    elevation: 0, // Android에서의 하얀색 박스 제거
-    shadowOpacity: 0, // iOS에서의 하얀색 박스 제거
+    width: "90%",
+    backgroundColor: "transparent",
+    elevation: 0,
+    shadowOpacity: 0,
   },
 });

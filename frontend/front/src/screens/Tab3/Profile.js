@@ -56,7 +56,6 @@ const Profile = (props) => {
         },
       );
       const data = await response.json();
-      // console.log(data);
       if (data.isSuccess) {
         setNstore_name(newStoreName);
         setUpdate(!update);
@@ -80,13 +79,11 @@ const Profile = (props) => {
           },
         },
       );
-      // console.log(email)
       const data = await response.json();
       console.log(data);
       if (data.isSuccess) {
         setSuccessVisible(true);
         setUpdate2(!update2);
-        // navigator.navigate('Profile');
       }
     } catch (error) {
       console.error("Network error:", error);
@@ -112,17 +109,12 @@ const Profile = (props) => {
       console.log(data.result);
 
       if (data.isSuccess && data.result) {
-        // const token = data.token;
-
-        // 로그인 성공
         console.log("Login successful", data);
 
         setPasswordVisible(false);
         setPassword2Visible(true);
         setFail(false);
       } else {
-        // 로그인 실패
-        // console.error("Login failed", data.message);
         setFail(true);
       }
     } catch (error) {
@@ -497,7 +489,6 @@ const Profile = (props) => {
 const styles = StyleSheet.create({
   profile: {
     marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
-    // marginBottom: -HeaderHeight * 2,
     flex: 1,
   },
   profileContainer: {
@@ -511,7 +502,6 @@ const styles = StyleSheet.create({
     height: height / 2,
   },
   profileCard: {
-    // position: "relative",
     padding: theme.SIZES.BASE,
     marginHorizontal: theme.SIZES.BASE,
     marginTop: 65,

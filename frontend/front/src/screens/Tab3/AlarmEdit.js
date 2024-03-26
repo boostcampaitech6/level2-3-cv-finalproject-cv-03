@@ -8,8 +8,6 @@ import {
   Platform,
 } from "react-native";
 import { Block, Text, theme } from "galio-framework";
-// import DropDownPicker from "react-native-dropdown-picker";
-// import { Picker } from "@react-native-picker/picker";
 
 import { Button, Input } from "../../components";
 import { Images, argonTheme } from "../../constants";
@@ -47,7 +45,6 @@ const AlarmEdit = (props) => {
         },
       );
       const data = await response.json();
-      // console.log(data);
       if (data.isSuccess) {
         navigation.navigate("Alarm");
       } else {
@@ -97,7 +94,6 @@ const AlarmEdit = (props) => {
                   </Text>
 
                   <Input
-                    // style={styles.textInput}
                     defaultValue={threshold.toString()}
                     onChangeText={(text) => setNthreshold(text)}
                   />
@@ -123,7 +119,6 @@ const AlarmEdit = (props) => {
                   </Text>
 
                   <Input
-                    // style={styles.textInput}
                     defaultValue={save_time_length.toString()}
                     onChangeText={(text) => setNsave_time_length(text)}
                   />
@@ -229,7 +224,6 @@ const AlarmEdit = (props) => {
 const styles = StyleSheet.create({
   profile: {
     marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
-    // marginBottom: -HeaderHeight * 2,
     flex: 1,
   },
   profileContainer: {
@@ -243,7 +237,6 @@ const styles = StyleSheet.create({
     height: height / 2,
   },
   profileCard: {
-    // position: "relative",
     padding: theme.SIZES.BASE,
     marginHorizontal: theme.SIZES.BASE,
     marginTop: 65,

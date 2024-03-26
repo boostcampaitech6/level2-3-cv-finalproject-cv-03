@@ -76,20 +76,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   button: {
-    backgroundColor: "#FFFFFF", // White color for the button background
+    backgroundColor: "#FFFFFF",
     padding: 20,
     marginVertical: 10,
     borderRadius: 10,
-    shadowColor: "rgba(0,0,0, .4)", // Shadow color
+    shadowColor: "rgba(0,0,0, .4)",
     shadowOffset: { height: 1, width: 1 },
     shadowOpacity: 1,
     shadowRadius: 1,
     elevation: 2,
-    width: "80%", // Set width to 80% of the container width
+    width: "80%",
   },
   buttonText: {
     fontSize: 18,
-    color: "#000", // Black color for the text
+    color: "#000",
     textAlign: "center",
     fontFamily: "NGB",
   },
