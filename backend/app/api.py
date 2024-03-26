@@ -520,11 +520,15 @@ def select_loglist_lookup_search(
             .filter(
                 models.CCTV.member_id == member_id,
                 models.Log.anomaly_delete_yn == False,  # noqa: E712
-                models.Log.anomaly_create_time.between(start_date, end_date),
             )
-            .order_by(models.Log.log_id.desc())
-            .all()
         )
+        if start_date != "" and end_date != "":
+            info_list = info_list.filter(
+                models.Log.anomaly_create_time.between(start_date, end_date)
+            )
+
+        info_list = info_list.order_by(models.Log.log_id.desc()).all()
+
         if info_list is None:
             raise Exception()
 
@@ -539,38 +543,6 @@ def select_loglist_lookup_search(
         def_return_dict["result"] = tmp_list
     except Exception as e:
         print(e)
-        def_return_dict["isSuccess"] = False
-    return def_return_dict
-
-
-@cctvRouter.get("/loglist_lookup")
-def select_loglist_lookup(member_id: int, session: Session = Depends(get_db)):
-    def_return_dict = DEFAULT_RETURN_DICT.copy()
-    try:
-        tmp_list = []
-        info_list = (
-            session.query(models.Log, models.CCTV)
-            .join(models.CCTV, models.CCTV.cctv_id == models.Log.cctv_id)
-            .filter(
-                models.CCTV.member_id == member_id,
-                models.Log.anomaly_delete_yn == False,  # noqa: E712
-            )
-            .order_by(models.Log.log_id.desc())
-            .all()
-        )
-        if info_list is None:
-            raise Exception()
-
-        for log_info, cctv_info in info_list:
-            tmp_dict = dict()
-            log_dict, cctv_dict = vars(log_info), vars(cctv_info)
-            for k, v in log_dict.items():
-                tmp_dict[k] = v
-            for k, v in cctv_dict.items():
-                tmp_dict[k] = v
-            tmp_list.append(tmp_dict)
-        def_return_dict["result"] = tmp_list
-    except Exception:
         def_return_dict["isSuccess"] = False
     return def_return_dict
 
