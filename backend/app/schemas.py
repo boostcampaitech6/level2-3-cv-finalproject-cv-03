@@ -23,7 +23,7 @@ class MemberBase(CustomBaseModel):
 class MemberDetail(MemberBase):
     member_id: int
     threshold: float
-    save_time_length: int
+    save_time_length: float
     cctv_info_yn: bool
     create_time: datetime
     update_time: Optional[datetime]
