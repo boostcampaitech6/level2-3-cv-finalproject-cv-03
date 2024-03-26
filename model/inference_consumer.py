@@ -15,7 +15,7 @@ import torch
 import torch.nn.functional as F
 import albumentations as A
 from arch import *
-from utils import RNN_INPUT_SIZE
+from utils import RNN_INPUT_SIZE, CLASSES
 import sys
 
 sys.path.append(
@@ -137,11 +137,6 @@ def capture_frames(
     fps = video.get(cv2.CAP_PROP_FPS)
     max_frames = max_save_time * fps
 
-    ## Test Setting!
-    # max_save_time = 0
-    # save_interval = 10
-    # max_frames = 10
-
     start_time = time.time()
     next_time = start_time + interval
     save_time = start_time + save_interval + max_save_time
@@ -154,7 +149,7 @@ def capture_frames(
         cur_time = time.time()
         if cur_time >= next_time:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            resize_frame = A.Resize(224, 224)(image=frame)["image"]
+            resize_frame = A.Resize(640, 640)(image=frame)["image"]
             norm_frame = (resize_frame / 255.0).astype(np.float32)
 
             image_path = os.path.join(
@@ -225,12 +220,12 @@ def predict(cctv_id, model, buffer, stop_flag, frame_per_sec=10, total_sec=3):
 
             pred_time += time.time() - pred_st
 
-            pred_class = "Normal" if pred == 0 else "Shoplifting"
+            pred_class = CLASSES[pred]
             print(
                 f"class: {pred_class:>11} | probability: {prob:.4f} | time: {time.time() - init_st:.2f}s | threshold: {threshold} | save_time_length: {save_time_length}"
             )
 
-            if pred and prob > threshold:
+            if pred == 1 and prob > threshold:
                 sleep_flag = True
                 anomaly_score = float(prob)  # noqa: F841
 
@@ -251,8 +246,8 @@ def inference(cctv_info, capture_interval=0.1, frame_per_sec=10, total_sec=3):
     stop_flag = StopFlag()
 
     # define model
-    # model = get_model()
-    model = MobileNetGRU()
+    model = get_model()
+    model.load_state_dict(torch.load(config.model_path))
 
     capture_thread = threading.Thread(
         target=capture_frames,
@@ -337,4 +332,4 @@ if __name__ == "__main__":
         key, value = redis_server.brpop(keys="start_inf", timeout=None)
         cctv_info = json.loads(value.decode("utf-8"))
         print("start inferene :", cctv_info)
-        inference(cctv_info)
+        inference(cctv_info, frame_per_sec=3, total_sec=4)

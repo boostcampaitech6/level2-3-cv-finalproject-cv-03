@@ -45,5 +45,10 @@ class Config(BaseSettings):
         env="REQ_LOG_REG",
     )
 
+    model_path: str = Field(
+        default="/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/best_model_exp4.pth",
+        env="MODEL_PATH",
+    )
+
 
 config = Config()
