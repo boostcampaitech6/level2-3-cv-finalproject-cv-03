@@ -32,7 +32,7 @@ def make_video_annotation(video_dir_path, labeling_csv_path, video_anno_path):
     for video_name in os.listdir(video_dir_path):
         TOTAL_FRAME = VIDEO_INFO[video_name][0]
         FPS = VIDEO_INFO[video_name][1]
-        
+
         video_labels[video_name] = [0 for _ in range(TOTAL_FRAME)]
 
     labeling_df = pd.read_csv(labeling_csv_path)
@@ -43,7 +43,7 @@ def make_video_annotation(video_dir_path, labeling_csv_path, video_anno_path):
 
         if abnormal_frame_idx.get(video_name) is None:
             abnormal_frame_idx[video_name] = []
-        
+
         if normal_frame_idx.get(video_name) is None:
             normal_frame_idx[video_name] = []
 
@@ -51,10 +51,16 @@ def make_video_annotation(video_dir_path, labeling_csv_path, video_anno_path):
         end_frame_idx = int(row["temporal_segment_end"] * FPS)
 
         if row["metadata"] == '{"Class":"1"}':
-            abnormal_frame_idx[video_name].append((start_frame_idx, end_frame_idx))
-            video_labels[video_name][start_frame_idx : end_frame_idx + 1] = [1] * (end_frame_idx - start_frame_idx + 1)
+            abnormal_frame_idx[video_name].append(
+                (start_frame_idx, end_frame_idx)
+            )
+            video_labels[video_name][start_frame_idx : end_frame_idx + 1] = [
+                1
+            ] * (end_frame_idx - start_frame_idx + 1)
         else:
-            normal_frame_idx[video_name].append([i for i in range(start_frame_idx, end_frame_idx+1)])
+            normal_frame_idx[video_name].append(
+                [i for i in range(start_frame_idx, end_frame_idx + 1)]
+            )
 
     pd.DataFrame(
         list(video_labels.items()), columns=["video_name", "labels"]
@@ -77,21 +83,21 @@ def sample_clip_idx(abnormal_frame_idx, normal_frame_idx, clip_sec):
         abnormal_st, abnormal_end = 0, 0
         for st, end in abnormal_frame_idx[video_name]:
             abnormal_st = st
-            for _ in range(st, end+1):
+            for _ in range(st, end + 1):
                 if st + clip_len <= end:
                     abnormal_end = abnormal_st + clip_len
                     abnormal_range.append((abnormal_st, abnormal_end))
                     abnormal_st = abnormal_end + 1
                 else:
                     continue
-        
+
         abnormal_indices = []
         for st, end in abnormal_range:
             sample_k = min(2, end - st + 1)
             abnormal_indices.extend(
                 random.sample(range(st, end + 1), sample_k)
             )
-        
+
         abnormal_clip_idx[video_name] = abnormal_indices
         normal_clip_idx[video_name] = random.sample(
             normal_frame_idx, len(abnormal_indices)
@@ -120,12 +126,15 @@ def save_clip_frames(
     ):
         FPS = VIDEO_INFO[video_name][1]
         clip_len = int(clip_sec * FPS)
-        
+
         video_path = os.path.join(video_dir_path, video_name)
         video = cv2.VideoCapture(video_path)
 
         for label, clip_idx in enumerate(
-            [normal_clip_idx[video_name], abnormal_clip_idx[video_name]]
+            [
+                normal_clip_idx[video_name],
+                abnormal_clip_idx[video_name],
+            ]
         ):
             for idx in clip_idx:
                 start_idx = idx - clip_len + 1
@@ -186,9 +195,7 @@ def main(args):
 if __name__ == "__main__":
     root_dir = "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/train"
     args = {
-        "labeling_csv_path": os.path.join(
-            root_dir, "ucf_labeling.csv"
-        ),
+        "labeling_csv_path": os.path.join(root_dir, "ucf_labeling.csv"),
         "video_dir_path": os.path.join(root_dir, "videos"),
         "clip_sec": 5,
         "clip_frame": 16,

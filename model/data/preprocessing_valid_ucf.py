@@ -37,11 +37,17 @@ def make_video_annotation(video_dir_path, labeling_csv_path, video_anno_path):
     labeling_df = pd.read_csv(labeling_csv_path)
     for _, row in labeling_df.iterrows():
         video_name = row["file_list"][2:-2]
-        start_frame_idx = int(row["temporal_segment_start"] * VIDEO_INFO[video_name][1])
-        end_frame_idx = int(row["temporal_segment_end"] * VIDEO_INFO[video_name][1])
+        start_frame_idx = int(
+            row["temporal_segment_start"] * VIDEO_INFO[video_name][1]
+        )
+        end_frame_idx = int(
+            row["temporal_segment_end"] * VIDEO_INFO[video_name][1]
+        )
 
         if row["metadata"] == '{"Class":"1"}':
-            video_labels[video_name][start_frame_idx : end_frame_idx + 1] = [1] * (end_frame_idx - start_frame_idx + 1)
+            video_labels[video_name][start_frame_idx : end_frame_idx + 1] = [
+                1
+            ] * (end_frame_idx - start_frame_idx + 1)
 
     pd.DataFrame(
         list(video_labels.items()), columns=["video_name", "labels"]
@@ -61,11 +67,6 @@ def save_clip_frames(
     frame_size=(640, 640),
 ):
     video_anno_df = pd.read_csv(video_anno_path)
-    
-    TOTAL_FRAME = VIDEO_INFO[video_name][0]
-    FPS = VIDEO_INFO[video_name][1]
-    
-    clip_len = int(clip_sec * FPS)
     clip_annotation = {
         "video_name": [],
         "clip_name": [],
@@ -75,6 +76,11 @@ def save_clip_frames(
 
     for _, row in tqdm(video_anno_df.iterrows(), desc="[Save clip frames]"):
         video_name = row["video_name"]
+
+        TOTAL_FRAME = VIDEO_INFO[video_name][0]
+        FPS = VIDEO_INFO[video_name][1]
+        clip_len = int(clip_sec * FPS)
+
         video_path = os.path.join(video_dir_path, video_name)
         video = cv2.VideoCapture(video_path)
         labels = ast.literal_eval(row["labels"])
@@ -137,9 +143,7 @@ def main(args):
 if __name__ == "__main__":
     root_dir = "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid"
     args = {
-        "labeling_csv_path": os.path.join(
-            root_dir, "ucf_val_labeling.csv"
-        ),
+        "labeling_csv_path": os.path.join(root_dir, "ucf_val_labeling.csv"),
         "video_dir_path": os.path.join(root_dir, "videos"),
         "clip_sec": 5,
         "clip_frame": 16,
