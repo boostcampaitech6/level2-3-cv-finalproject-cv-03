@@ -335,7 +335,7 @@ def alarm_lookup(member_id: int, session: Session = Depends(get_db)):
 def alarm_edit(
     member_id: int,
     threshold: float,
-    save_time_length: int,
+    save_time_length: float,
     session: Session = Depends(get_db),
 ):
     def_return_dict = DEFAULT_RETURN_DICT.copy()
