@@ -52,10 +52,8 @@ export default function CCTVDetailScreen({
           headers: {
             accept: "application/json",
           },
-          // body: JSON.stringify({ email }),
         },
       );
-      // console.log(email)
       const data = await response.json();
       console.log(data);
       if (data.isSuccess) {
@@ -78,10 +76,8 @@ export default function CCTVDetailScreen({
           headers: {
             accept: "application/json",
           },
-          // body: JSON.stringify({ email }),
         },
       );
-      // console.log(email)
       const data = await response.json();
       console.log(data);
       if (data.isSuccess) {
@@ -100,13 +96,11 @@ export default function CCTVDetailScreen({
     try {
       const result = await FileSystem.downloadAsync(
         `http://10.28.224.201:30438/api/v0/cctv/${log_id}/video.mp4?video_path=${anomaly_save_path}`,
-        // "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
         fileUri,
       );
       console.log(result);
       console.log("Download successful:", result);
       await save(result.uri);
-      // await deleteFile(fileUri);
     } catch (error) {
       console.error("Download error :", error);
     }
@@ -123,14 +117,6 @@ export default function CCTVDetailScreen({
       console.error("Error sharing file:", error);
     }
   };
-  // const deleteFile = async (fileUri) => {
-  //   try {
-  //     await FileSystem.deleteAsync(fileUri);
-  //     console.log("File deleted successfully");
-  //   } catch (error) {
-  //     console.error("Error deleting file:", error);
-  //   }
-  // };
 
   const handleFeedback2 = async () => {
     try {

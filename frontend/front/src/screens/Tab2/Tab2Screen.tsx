@@ -41,21 +41,6 @@ const Tab2Screen = () => {
     fetchVideos();
   }, []);
 
-  // const videos = [
-  //   {
-  //     cctv_id: 292,
-  //     cctv_name: "Video 1",
-  //     hls_url:
-  //       "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
-  //   },
-  //   {
-  //     cctv_id: 300,
-  //     cctv_name: "Video 2",
-  //     hls_url:
-  //       "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
-  //   },
-  // ];
-
   const numColumns = videos.length > 9 ? 4 : videos.length > 6 ? 3 : 2;
   const videoWidth = Dimensions.get("window").width / numColumns;
 
@@ -64,14 +49,13 @@ const Tab2Screen = () => {
       <View style={{ width: videoWidth }}>
         <TouchableOpacity
           style={[styles.videoItem, { height: videoWidth }]}
-          // style={styles.videoItem}
           onPress={() => handleVideoSelect(item)}
         >
           <Video
             source={{ uri: item.hls_url }}
             style={styles.video}
             resizeMode="cover"
-            isMuted={true} // 비디오를 자동 재생하지 않고, 필요에 따라 소리를 켤 수 있습니다.
+            isMuted={true}
             shouldPlay={true}
             isLooping
             onPlaybackStatusUpdate={onPlaybackStatusUpdate(item.cctv_id)}
@@ -93,7 +77,7 @@ const Tab2Screen = () => {
 
   useEffect(() => {
     if (!isFullScreen) {
-      setSelectedVideo(null); // 전체 화면이 아닐 때 선택된 비디오를 초기화합니다.
+      setSelectedVideo(null);
     }
   }, [isFullScreen]);
 
@@ -155,9 +139,9 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   gridContentContainer: {
-    flexGrow: 1, // FlatList가 전체 공간을 채우도록 함
-    justifyContent: "center", // 아이템들을 수직 방향으로 중앙에 배치
-    alignItems: "center", // 아이템들을 수평 방향으로 중앙에 배치
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   videoItem: {
     justifyContent: "center",
