@@ -40,7 +40,7 @@ const Alarm = (props) => {
             setThreshold(data.result.threshold);
             setSave_time_length(data.result.save_time_length);
           } else {
-            console.error("No information:", error);
+            console.error("No information");
           }
         } catch (error) {
           console.error("Network error:", error);
