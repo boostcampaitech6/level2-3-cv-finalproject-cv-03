@@ -26,14 +26,30 @@
 ### 2. Model
 
 🔧 `Pytorch`
-![model](https://github.com/boostcampaitech6/level2-3-cv-finalproject-cv-03/assets/79782180/3c94a7e0-8f08-4f50-a4a0-1cb08227bcc2)
+![image](https://github.com/boostcampaitech6/level2-3-cv-finalproject-cv-03/assets/79782180/8c19b257-96ec-489e-8eab-089214d0799d)
+
 
 - 구조: CNN+RNN
     - CNN: 클립 영상의 프레임 별 feature 추출
     - RNN: CNN의 output을 입력으로 받아 영상 속 행동 맥락을 파악한 후 결과를 예측
     
     ⇒ **MobileNet_v2 + GRU**
-    
+  
+**2.1. Process**
+
+2.1.1. Training
+- Dataset: Normal과 Doubt 클립을 같은 비율로 추출
+- 한 클립의 프레임들을 한 번에 모델에 통과시킨 후 마지막 프레임 기준으로 클립 클래스 예측, 예측된 클래스와 정답 클래스 비교
+
+2.1.2. Validation
+- Dataset: validation 영상을 학습 데이터 클립과 같은 길이로 1초마다 샘플링
+
+2.1.3. Inference
+- 실시간 스트리밍 영상을 0.1초 간격으로 프레임을 샘플링하여 버퍼에 저장
+- 1초마다 버퍼에서 학습 데이터 클립과 같은 길이로 프레임을 가져와 inference 진행
+- 프레임 샘플링 작업과 추론 작업은 개별 스레드로 진행되어 실시간 추론 가능
+- Doubt 클래스로 예측한 경우 확률값과 함께 backend로 결과 전달
+
 
 ### 3. Frontend
 
@@ -63,7 +79,8 @@
 **4.1. DB(PostgreSQL) & ORM(SQLAlchemy**)
 - DB Schema
 
-![DB](https://github.com/boostcampaitech6/level2-3-cv-finalproject-cv-03/assets/79782180/371b7b00-fa28-48b8-b26e-d58738a6b486)
+![image](https://github.com/boostcampaitech6/level2-3-cv-finalproject-cv-03/assets/79782180/7447586b-b480-4a16-ba5f-3e702e2eaee5)
+
 
 **4.2. API**
 - a.b.c 형식으로 Versioning하여 API 명세서 관리
@@ -73,16 +90,18 @@
 - member, cctv, streaming, settings의 네 개 분류로, 총 20개의 API 이용
 
 
-### 5. Architecture
+### 5. Pipeline
 
-5.1. **Streaming Architecture**
+5.1. **Streaming Pipeline**
 
-![Untitled (27)](https://github.com/boostcampaitech6/level2-3-cv-finalproject-cv-03/assets/79782180/89c17fef-3618-4464-929e-38e5a2972157)
+![image](https://github.com/boostcampaitech6/level2-3-cv-finalproject-cv-03/assets/79782180/9a39f774-b76d-42bb-bc3c-21b2fe2462e4)
 
 
-5.2. **System Architecture**
 
-![Untitled (28)](https://github.com/boostcampaitech6/level2-3-cv-finalproject-cv-03/assets/79782180/58c9005b-42c9-40d8-860e-6cb82a389da7)
+5.2. **Inference Pipeline**
+
+![image](https://github.com/boostcampaitech6/level2-3-cv-finalproject-cv-03/assets/79782180/865f9a5e-392a-4e92-99a7-661da965bb4d)
+
 
 
 # 팀 소개
