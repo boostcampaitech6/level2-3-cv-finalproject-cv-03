@@ -26,6 +26,7 @@
 ### 2. Model
 
 🔧 `Pytorch`
+
 ![image](https://github.com/boostcampaitech6/level2-3-cv-finalproject-cv-03/assets/79782180/8c19b257-96ec-489e-8eab-089214d0799d)
 
 
