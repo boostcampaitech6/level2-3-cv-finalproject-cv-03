@@ -4,11 +4,12 @@ import cv2
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
-from moviepy.editor import ImageSequenceClip
+from moviepy.editor import ImageSequenceClip, concatenate_videoclips
 from tqdm import tqdm
+import albumentations as A
 
-from arch import *
 from data import *
+from arch import *
 from trainer import *
 from utils import *
 
@@ -16,11 +17,13 @@ from utils import *
 def predict(args, model):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    transform = A.Normalize()
+
     valid_dataset = ClipValidDataset(
-        args["clip_dir_path"], args["clip_anno_path"]
+        args["clip_dir_path"], args["clip_anno_path"], transform
     )
     valid_loader = DataLoader(
-        valid_dataset, batch_size=8, shuffle=False, num_workers=8
+        valid_dataset, batch_size=4, shuffle=False, num_workers=8
     )
 
     label_tracker = LabelTracker()
@@ -53,20 +56,20 @@ def predict(args, model):
 
 def visualize(args, labels, probs):
     clips_df = pd.read_csv(args["clip_anno_path"])
+    videos = []
 
     for video_name in tqdm(
         os.listdir(args["video_dir_path"]), desc="[Create prediction videos]"
     ):
         clip_df = clips_df[clips_df["video_name"] == video_name]
-        clip_df = clip_df.sort_values(by="pred_t")
+        clip_df = clip_df.sort_values(by="pred_frame")
 
         video_path = os.path.join(args["video_dir_path"], video_name)
         video = cv2.VideoCapture(video_path)
-        fps = int(video.get(cv2.CAP_PROP_FPS))
 
         frames = []
         for _, row in clip_df.iterrows():
-            idx = row["pred_t"] * fps - 1
+            idx = row["pred_frame"]
             gt_label = row["class"]
             pred_label = labels[row["clip_name"]]
             pred_prob = probs[row["clip_name"]]
@@ -134,11 +137,19 @@ def visualize(args, labels, probs):
 
         video.release()
 
-        save_video_path = os.path.join(args["save_dir_path"], video_name)
+        # save_video_path = os.path.join(args["save_dir_path"], video_name)
         new_video = ImageSequenceClip(frames, fps=2)
-        new_video.write_videofile(
-            save_video_path, codec="libx264", logger=None
-        )
+        # new_video.write_videofile(
+        #     save_video_path, codec="libx264", logger=None
+        # )
+        videos.append(new_video)
+
+    concat_video = concatenate_videoclips(videos)
+    concat_video.write_videofile(
+        os.path.join(args["save_dir_path"], "concat_video.mp4"),
+        codec="libx264",
+        logger=None,
+    )
 
 
 def calc_metric(args, labels, probs):
@@ -149,7 +160,7 @@ def calc_metric(args, labels, probs):
         os.listdir(args["video_dir_path"]), desc="[Calc event metric]"
     ):
         clip_df = clips_df[clips_df["video_name"] == video_name]
-        clip_df = clip_df.sort_values(by="pred_t")
+        clip_df = clip_df.sort_values(by="pred_frame")
 
         prev_class = 0
         predicted = False
@@ -172,30 +183,30 @@ def calc_metric(args, labels, probs):
 
             prev_class = cur_class
 
+    precision = TP / (TP + FP)
+    recall = TP / (TP + FN)
+    f1 = 2 * (precision * recall) / (precision + recall)
+    pred_thr = args["pred_thr"]
     print(
-        f"Event precision: {TP / (TP + FP):.4f} | Event recall: {TP / (TP + FN):.4f}"
+        f"pred_thr: {pred_thr:.2f} | Event f1: {f1:.4f} | Event precision: {precision:.4f} | Event recall: {recall:.4f}"
     )
 
 
 if __name__ == "__main__":
     args = {
-        "model_path": "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/save/T5_F16_S640/best_model.pth",
-        "clip_dir_path": "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/clips/T5_F16_S640",
-        "clip_anno_path": "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/anno_clip_val_t5_f16_s640.csv",
+        "model_path": "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/save/T4_F12_S320/exp6/best_model.pth",
+        "save_dir_path": "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/save/T4_F12_S320/exp6",
+        "clip_dir_path": "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/clips/T4_F12_S320",
+        "clip_anno_path": "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/clip_anno_t4_f12_s320.csv",
         "video_dir_path": "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/videos",
-        "save_dir_path": "/data/ephemeral/home/level2-3-cv-finalproject-cv-03/model/dataset/valid/results",
-        "pred_thr": 0.7,
+        "pred_thr": 0.8,
     }
 
     if not os.path.exists(args["save_dir_path"]):
         os.makedirs(args["save_dir_path"])
 
     # define model
-    cnn = MobileNet()
-    rnn = GRU(
-        input_size=RNN_INPUT_SIZE[str(cnn)], hidden_size=512, num_layers=1
-    )
-    model = ClipModel(cnn, rnn, hidden=512, nc=3)
+    model = CNNFCNN(frame=12)
 
     labels, probs = predict(args, model)
     visualize(args, labels, probs)

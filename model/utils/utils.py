@@ -2,9 +2,10 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
     f1_score,
+    fbeta_score,
 )
 
-CLASSES = ["Normal", "Shoplifting", "Doubt"]
+CLASSES = ["Normal", "Abnormal"]
 
 RNN_INPUT_SIZE = {
     "yolov8n": 256,
@@ -12,11 +13,13 @@ RNN_INPUT_SIZE = {
     "yolov8m": 768,
     "yolov8l": 1024,
     "yolov8x": 1280,
-    "ResNet32": 512,
+    "ResNet34": 512,
     "ResNet50": 2048,
     "MobileNet": 1280,
     "ResNeXt": 2048,
     "VGG16": 25088,
+    "MobileNetV3S": 576,
+    "MobileNetV3L": 960,
 }
 
 
@@ -61,8 +64,11 @@ class MetricTracker:
         scores["recall"] = recall_score(
             self.true, self.pred, average=None, zero_division=0.0
         )
-        scores["f1"] = f1_score(
-            self.true, self.pred, average=None, zero_division=0.0
+        # scores["f1"] = f1_score(
+        #     self.true, self.pred, average=None, zero_division=0.0
+        # )
+        scores["f1"] = fbeta_score(
+            self.true, self.pred, average=None, beta=1.5, zero_division=0.0
         )
 
         return scores
