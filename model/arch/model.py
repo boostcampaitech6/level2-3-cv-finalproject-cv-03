@@ -66,17 +66,16 @@ class CNNRNN(nn.Module):
             rnn_num_layers,
             batch_first=True,
             bidirectional=bidirectional,
-            dropout=0.2
+            dropout=0.2,
         )
 
         # FCNN
         fcnn_in_features = rnn_hidden_size
         if bidirectional:
             fcnn_in_features = rnn_hidden_size * 2
-        
+
         self.fc = nn.Sequential(
-            nn.Dropout(p=0.2),
-            nn.Linear(fcnn_in_features, num_classes)
+            nn.Dropout(p=0.2), nn.Linear(fcnn_in_features, num_classes)
         )
 
     def forward(self, x):
@@ -97,7 +96,7 @@ class CNNRNN(nn.Module):
 class CNNRNNAttention(nn.Module):
     def __init__(self, num_classes=2):
         super(CNNRNNAttention, self).__init__()
-        
+
         # CNN
         self.features = models.mobilenet_v2(weights="DEFAULT").features
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
@@ -113,7 +112,7 @@ class CNNRNNAttention(nn.Module):
             rnn_num_layers,
             batch_first=True,
             bidirectional=bidirectional,
-            dropout=0.2
+            dropout=0.2,
         )
 
         # FCNN + Attention
@@ -122,12 +121,10 @@ class CNNRNNAttention(nn.Module):
             fcnn_in_features = rnn_hidden_size * 2
 
         self.attention = nn.Sequential(
-            nn.Linear(fcnn_in_features, 1),
-            nn.Softmax(dim=1)
+            nn.Linear(fcnn_in_features, 1), nn.Softmax(dim=1)
         )
         self.fc = nn.Sequential(
-            nn.Dropout(p=0.2),
-            nn.Linear(fcnn_in_features, num_classes)
+            nn.Dropout(p=0.2), nn.Linear(fcnn_in_features, num_classes)
         )
 
     def forward(self, x):
@@ -152,7 +149,7 @@ class CNNFCNN(nn.Module):
         super(CNNFCNN, self).__init__()
 
         # CNN
-        self.cnn = models.mobilenet_v2(weights='DEFAULT')
+        self.cnn = models.mobilenet_v2(weights="DEFAULT")
         self.cnn.classifier[-1] = nn.Linear(1280, num_classes)
 
         # FCNN
@@ -161,13 +158,13 @@ class CNNFCNN(nn.Module):
             nn.Linear(fcnn_in_features, 64),
             nn.ReLU(),
             nn.Dropout(p=0.2),
-            nn.Linear(64, num_classes)
+            nn.Linear(64, num_classes),
         )
-        
+
     def forward(self, x):
         batch, frame, C, H, W = x.size()
         x = x.view(batch * frame, C, H, W)
-        
+
         x = self.cnn(x)
 
         x = F.softmax(x, dim=1)
@@ -190,12 +187,11 @@ class CNNAttention(nn.Module):
             nn.Linear(1280, 256),
             nn.Tanh(),
             nn.Linear(256, 1),
-            nn.Softmax(dim=1)
+            nn.Softmax(dim=1),
         )
 
         self.fc = nn.Sequential(
-            nn.Dropout(p=0.2),
-            nn.Linear(1280, num_classes)
+            nn.Dropout(p=0.2), nn.Linear(1280, num_classes)
         )
 
     def forward(self, x):
@@ -205,13 +201,13 @@ class CNNAttention(nn.Module):
         x = self.features(x)
         x = self.avgpool(x)
         x = x.view(batch, frame, -1)
-        
+
         attn_weights = self.attention(x)
         x = (x * attn_weights).sum(dim=1)
-        
+
         x = self.fc(x)
         return x
-    
+
 
 class CNN1DConv(nn.Module):
     def __init__(self, num_classes=2):
@@ -220,23 +216,29 @@ class CNN1DConv(nn.Module):
         # CNN
         self.features = models.mobilenet_v2(weights="DEFAULT").features
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        
+
         # 1DConv
-        in_channels = 1280 # cnn out_features
+        in_channels = 1280  # cnn out_features
         self.conv1d = nn.Sequential(
-            nn.Conv1d(in_channels=in_channels, out_channels=512, kernel_size=3, padding=1),
+            nn.Conv1d(
+                in_channels=in_channels,
+                out_channels=512,
+                kernel_size=3,
+                padding=1,
+            ),
             nn.ReLU(),
-            nn.Conv1d(in_channels=512, out_channels=256, kernel_size=3, padding=1),
-            nn.ReLU()
+            nn.Conv1d(
+                in_channels=512, out_channels=256, kernel_size=3, padding=1
+            ),
+            nn.ReLU(),
         )
-        
+
         # FCNN
         fcnn_in_features = 256
         self.fc = nn.Sequential(
-            nn.Dropout(p=0.2),
-            nn.Linear(fcnn_in_features, num_classes)
-        ) 
-        
+            nn.Dropout(p=0.2), nn.Linear(fcnn_in_features, num_classes)
+        )
+
     def forward(self, x):
         batch, frame, C, H, W = x.size()
         x = x.view(batch * frame, C, H, W)
@@ -245,24 +247,44 @@ class CNN1DConv(nn.Module):
         x = self.avgpool(x)
         x = x.view(batch, frame, -1)
         x = x.transpose(1, 2)
-        
+
         x = self.conv1d(x)
         x = x[:, :, -1]
-        
+
         x = self.fc(x)
         return x
-    
+
 
 class TemporalBlock(nn.Module):
-    def __init__(self, n_inputs, n_outputs, kernel_size, stride, dilation, padding, dropout=0.2):
+    def __init__(
+        self,
+        n_inputs,
+        n_outputs,
+        kernel_size,
+        stride,
+        dilation,
+        padding,
+        dropout=0.2,
+    ):
         super(TemporalBlock, self).__init__()
 
         self.net = nn.Sequential(
-            nn.Conv1d(n_inputs, n_outputs, kernel_size, stride=stride, padding=padding, dilation=dilation),
+            nn.Conv1d(
+                n_inputs,
+                n_outputs,
+                kernel_size,
+                stride=stride,
+                padding=padding,
+                dilation=dilation,
+            ),
             nn.ReLU(),
-            nn.Dropout(dropout)
+            nn.Dropout(dropout),
         )
-        self.downsample = nn.Conv1d(n_inputs, n_outputs, 1) if n_inputs != n_outputs else None
+        self.downsample = (
+            nn.Conv1d(n_inputs, n_outputs, 1)
+            if n_inputs != n_outputs
+            else None
+        )
         self.relu = nn.ReLU()
 
     def forward(self, x):
@@ -270,7 +292,7 @@ class TemporalBlock(nn.Module):
         res = x if self.downsample is None else self.downsample(x)
 
         return self.relu(out + res)
-    
+
 
 class TemporalConvNet(nn.Module):
     def __init__(self, in_features, channels, kernel_size=3, dropout=0.2):
@@ -279,10 +301,20 @@ class TemporalConvNet(nn.Module):
         num_levels = len(channels)
 
         for i in range(num_levels):
-            dilation_size = 2 ** i
-            in_channels = in_features if i == 0 else channels[i-1]
+            dilation_size = 2**i
+            in_channels = in_features if i == 0 else channels[i - 1]
             out_channels = channels[i]
-            layers += [TemporalBlock(in_channels, out_channels, kernel_size, stride=1, dilation=dilation_size, padding=(kernel_size-1) * dilation_size // 2, dropout=dropout)]
+            layers += [
+                TemporalBlock(
+                    in_channels,
+                    out_channels,
+                    kernel_size,
+                    stride=1,
+                    dilation=dilation_size,
+                    padding=(kernel_size - 1) * dilation_size // 2,
+                    dropout=dropout,
+                )
+            ]
 
         self.net = nn.Sequential(*layers)
 
@@ -297,18 +329,17 @@ class CNNTCN(nn.Module):
         # CNN
         self.features = models.mobilenet_v2(weights="DEFAULT").features
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        
-        # TCN 
+
+        # TCN
         tcn_in_features = 1280  # out_features
-        tcn_channels = [256, 128] 
+        tcn_channels = [256, 128]
         self.tcn = TemporalConvNet(tcn_in_features, tcn_channels)
-        
+
         # FCNN
         self.fc = nn.Sequential(
-            nn.Dropout(p=0.2),
-            nn.Linear(tcn_channels[-1], num_classes)
-        ) 
-        
+            nn.Dropout(p=0.2), nn.Linear(tcn_channels[-1], num_classes)
+        )
+
     def forward(self, x):
         batch, frames, C, H, W = x.size()
         x = x.view(batch * frames, C, H, W)
@@ -319,6 +350,6 @@ class CNNTCN(nn.Module):
 
         x = self.tcn(x)
         x = x[:, :, -1]
-        
+
         x = self.fc(x)
         return x
