@@ -6,6 +6,7 @@ import cv2
 import albumentations as A
 from tqdm import tqdm
 import ast
+from multiprocessing import Pool
 
 
 TOTAL_FRAME = 180
@@ -46,7 +47,9 @@ def sample_clip_idx(video_anno_path, clip_sec):
         labels = ast.literal_eval(row["labels"])
 
         normal_indices, abnormal_range = [], []
+        sample_normal_indices, sample_abnormal_indices = [], []
         prev_label, abnormal_st, abnormal_end = 0, 0, 0
+
         for idx, label in enumerate(labels):
             if idx < clip_len - 1:
                 continue
@@ -61,17 +64,31 @@ def sample_clip_idx(video_anno_path, clip_sec):
 
             prev_label = label
 
-        abnormal_indices = []
         for st, end in abnormal_range:
-            sample_k = min(2, end - st + 1)
-            abnormal_indices.extend(
-                random.sample(range(st, end + 1), sample_k)
-            )
+            if (end - st + 1) < 3:
+                sample_abnormal_indices.extend(range(st, end + 1))
+            else:
+                # sample_abnormal_indices.extend(range(st, st + 3))
+                sample_abnormal_indices.extend(
+                    random.sample(range(st, end + 1), 3)
+                )
 
-        abnormal_clip_idx[video_name] = abnormal_indices
-        normal_clip_idx[video_name] = random.sample(
-            normal_indices, len(abnormal_indices)
+            if (st - 1) in normal_indices:
+                sample_normal_indices.append(st - 1)
+                normal_indices.remove(st - 1)
+
+            # sample_list = [max(0, st - 1), max(0, st - FPS), min(TOTAL_FRAME - 1, end + FPS)]
+            # for idx in sample_list:
+            #     if idx in normal_indices:
+            #         sample_normal_indices.append(idx)
+            #         normal_indices.remove(idx)
+
+        sample_normal_indices.extend(
+            random.sample(normal_indices, 3 * len(abnormal_range))
         )
+
+        normal_clip_idx[video_name] = sample_normal_indices
+        abnormal_clip_idx[video_name] = sample_abnormal_indices
 
     print("[DONE] Sample clip index.")
 
@@ -79,7 +96,60 @@ def sample_clip_idx(video_anno_path, clip_sec):
 
 
 # 선택된 인덱스로 실제 클립별 프레임을 추출하여 npy 파일로 저장하고 클립 어노테이션 생성
-def save_clip_frames(
+def save_clip_frames(video_infos):
+    (
+        video_dir_path,
+        video_name,
+        normal_clip_idx,
+        abnormal_clip_idx,
+        clip_dir_path,
+        clip_sec,
+        clip_frame,
+        frame_size,
+    ) = video_infos
+
+    clip_len = int(clip_sec * FPS)
+    clip_annotation = {"video_name": [], "clip_name": [], "class": []}
+
+    video_path = os.path.join(video_dir_path, video_name)
+    video = cv2.VideoCapture(video_path)
+
+    for label, clip_idx in enumerate(
+        [normal_clip_idx[video_name], abnormal_clip_idx[video_name]]
+    ):
+        for idx in clip_idx:
+            start_idx = idx - clip_len + 1
+            end_idx = idx
+
+            indices = np.linspace(start_idx, end_idx, clip_frame)
+            indices = np.round(indices).astype(int)
+
+            frames = []
+            for idx in indices:
+                video.set(cv2.CAP_PROP_POS_FRAMES, idx)
+                success, frame = video.read()
+
+                if not success:
+                    break
+
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                frame = A.Resize(frame_size[0], frame_size[1])(image=frame)[
+                    "image"
+                ]
+                frames.append(frame.astype(np.uint8))
+
+            clip_name = f"{os.path.splitext(video_name)[0]}_{idx}.npy"
+            np.save(os.path.join(clip_dir_path, clip_name), frames)
+
+            clip_annotation["video_name"].append(video_name)
+            clip_annotation["clip_name"].append(clip_name)
+            clip_annotation["class"].append(label)
+
+    video.release()
+    return clip_annotation
+
+
+def save_clip_frames_multiprocessing(
     video_dir_path,
     normal_clip_idx,
     abnormal_clip_idx,
@@ -89,49 +159,32 @@ def save_clip_frames(
     clip_frame=16,
     frame_size=(640, 640),
 ):
-    clip_len = int(clip_sec * FPS)
-    clip_annotation = {"video_name": [], "clip_name": [], "class": []}
+    video_names = os.listdir(video_dir_path)
+    video_infos = [
+        (
+            video_dir_path,
+            video_name,
+            normal_clip_idx,
+            abnormal_clip_idx,
+            clip_dir_path,
+            clip_sec,
+            clip_frame,
+            frame_size,
+        )
+        for video_name in video_names
+    ]
 
-    for video_name in tqdm(
-        os.listdir(video_dir_path), desc="[Save clip frames]"
-    ):
-        video_path = os.path.join(video_dir_path, video_name)
-        video = cv2.VideoCapture(video_path)
-
-        for label, clip_idx in enumerate(
-            [normal_clip_idx[video_name], abnormal_clip_idx[video_name]]
+    aggregated_annotation = {"video_name": [], "clip_name": [], "class": []}
+    with Pool(processes=os.cpu_count()) as pool:
+        for result in tqdm(
+            pool.imap_unordered(save_clip_frames, video_infos),
+            total=len(video_infos),
+            desc="[Save clip frames]",
         ):
-            for idx in clip_idx:
-                start_idx = idx - clip_len + 1
-                end_idx = idx
+            for key in aggregated_annotation.keys():
+                aggregated_annotation[key].extend(result[key])
 
-                indices = np.linspace(start_idx, end_idx, clip_frame)
-                indices = np.round(indices).astype(int)
-
-                frames = []
-                for idx in indices:
-                    video.set(cv2.CAP_PROP_POS_FRAMES, idx)
-                    success, frame = video.read()
-
-                    if not success:
-                        break
-
-                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    frame = A.Resize(frame_size[0], frame_size[1])(
-                        image=frame
-                    )["image"]
-                    frames.append(frame)
-
-                clip_name = f"{os.path.splitext(video_name)[0]}_{idx}.npy"
-                np.save(os.path.join(clip_dir_path, clip_name), frames)
-
-                clip_annotation["video_name"].append(video_name)
-                clip_annotation["clip_name"].append(clip_name)
-                clip_annotation["class"].append(label)
-
-        video.release()
-
-    pd.DataFrame(clip_annotation).to_csv(clip_anno_path, index=False)
+    pd.DataFrame(aggregated_annotation).to_csv(clip_anno_path, index=False)
 
 
 def main(args):
@@ -146,7 +199,7 @@ def main(args):
         args["video_anno_path"], args["clip_sec"]
     )
 
-    save_clip_frames(
+    save_clip_frames_multiprocessing(
         video_dir_path=args["video_dir_path"],
         normal_clip_idx=normal_clip_idx,
         abnormal_clip_idx=abnormal_clip_idx,
@@ -165,14 +218,12 @@ if __name__ == "__main__":
             root_dir, "labeling_aihub_train.csv"
         ),
         "video_dir_path": os.path.join(root_dir, "videos"),
-        "clip_sec": 5,
-        "clip_frame": 16,
+        "clip_sec": 4,
+        "clip_frame": 12,
         "frame_size": (640, 640),
     }
 
-    args["video_anno_path"] = os.path.join(
-        root_dir, "video_anno_aihub_train.csv"
-    )
+    args["video_anno_path"] = os.path.join(root_dir, "video_anno_DY_train.csv")
 
     args["clip_dir_path"] = os.path.join(
         root_dir,

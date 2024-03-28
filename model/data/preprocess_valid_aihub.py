@@ -53,7 +53,11 @@ def save_clip_frames(
         "pred_frame": [],
     }
 
-    for _, row in tqdm(video_anno_df.iterrows(), desc="[Save clip frames]"):
+    for _, row in tqdm(
+        video_anno_df.iterrows(),
+        total=len(video_anno_df),
+        desc="[Save clip frames]",
+    ):
         video_name = row["video_name"]
         video_path = os.path.join(video_dir_path, video_name)
         video = cv2.VideoCapture(video_path)
@@ -78,11 +82,9 @@ def save_clip_frames(
                 frame = A.Resize(frame_size[0], frame_size[1])(image=frame)[
                     "image"
                 ]
-                frames.append(frame)
+                frames.append(frame.astype(np.uint8))
 
-            clip_name = (
-                f"{os.path.splitext(video_name)[0]}_{(idx // FPS) + 1}.npy"
-            )
+            clip_name = f"{os.path.splitext(video_name)[0]}_{idx}.npy"
             np.save(os.path.join(clip_dir_path, clip_name), frames)
 
             clip_annotation["video_name"].append(video_name)
@@ -121,14 +123,12 @@ if __name__ == "__main__":
             root_dir, "labeling_aihub_valid.csv"
         ),
         "video_dir_path": os.path.join(root_dir, "videos"),
-        "clip_sec": 5,
-        "clip_frame": 16,
+        "clip_sec": 4,
+        "clip_frame": 12,
         "frame_size": (640, 640),
     }
 
-    args["video_anno_path"] = os.path.join(
-        root_dir, "video_anno_aihub_valid.csv"
-    )
+    args["video_anno_path"] = os.path.join(root_dir, "video_anno_DY_valid.csv")
     args["clip_dir_path"] = os.path.join(
         root_dir,
         "clips",
